@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:opennutritracker/core/l10n/app_locales.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 class StorageRecoveryApp extends StatelessWidget {
   const StorageRecoveryApp({
@@ -14,6 +17,15 @@ class StorageRecoveryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // The saved language lives in the database that failed to open, so
+      // this screen follows the device language.
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: appLocales(S.supportedLocales),
       home: _StorageRecoveryScreen(errorCode: errorCode, onRetry: onRetry),
     );
   }
@@ -64,19 +76,18 @@ class _StorageRecoveryScreenState extends State<_StorageRecoveryScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Your local data could not be opened safely',
+                    S.of(context).storageRecoveryTitle,
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Your data files have not been changed. Try again. If the problem persists, '
-                    'contact support before clearing the app data or reinstalling.',
+                  Text(
+                    S.of(context).storageRecoveryMessage,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Error code: ${widget.errorCode}',
+                    S.of(context).storageRecoveryErrorCode(widget.errorCode),
                     style: Theme.of(context).textTheme.bodySmall,
                     textAlign: TextAlign.center,
                   ),
@@ -91,7 +102,7 @@ class _StorageRecoveryScreenState extends State<_StorageRecoveryScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.refresh_rounded),
-                      label: const Text('Retry'),
+                      label: Text(S.of(context).retryLabel),
                     ),
                   ),
                 ],

@@ -299,7 +299,7 @@ class _MacroTile extends StatelessWidget {
           ),
           const SizedBox(height: Dimens.spacing12),
           Text(
-            '${intake.toInt()}/${goal.toInt()} g',
+            '${intake.toInt()}/${goal.toInt()} ${S.of(context).gramUnit}',
             style: textTheme.bodySmall?.copyWith(color: palette.textStrong, fontWeight: FontWeight.w700),
           ),
         ],

@@ -64,7 +64,7 @@ class RecipeNutritionSummary extends StatelessWidget {
               Expanded(
                 child: _NutrientCell(
                   value: _total(nutrimentsPer100.carbohydrates100),
-                  label: '${s.carbsLabel} g',
+                  label: '${s.carbsLabel} ${s.gramUnit}',
                   color: palette.carbs,
                   palette: palette,
                 ),
@@ -72,7 +72,7 @@ class RecipeNutritionSummary extends StatelessWidget {
               Expanded(
                 child: _NutrientCell(
                   value: _total(nutrimentsPer100.fat100),
-                  label: '${s.fatLabel} g',
+                  label: '${s.fatLabel} ${s.gramUnit}',
                   color: palette.fat,
                   palette: palette,
                 ),
@@ -80,7 +80,7 @@ class RecipeNutritionSummary extends StatelessWidget {
               Expanded(
                 child: _NutrientCell(
                   value: _total(nutrimentsPer100.proteins100),
-                  label: '${s.proteinLabel} g',
+                  label: '${s.proteinLabel} ${s.gramUnit}',
                   color: palette.protein,
                   palette: palette,
                 ),

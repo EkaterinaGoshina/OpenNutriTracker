@@ -1,7 +1,7 @@
 {
   "activityExample": "напр. бег, велосипед, йога ...",
   "activityLabel": "Активность",
-  "addItemLabel": "Добавить элемент:",
+  "addItemLabel": "Добавить позицию:",
   "addLabel": "Добавить",
   "additionalInfoLabelCompendium2011": "Информация предоставлена\n «Сборником\n физических активностей\n 2024»",
   "additionalInfoLabelCustom": "Свой продукт",
@@ -15,7 +15,7 @@
     }
   },
   "foodSourcesAlwaysEnabledLabel": "Всегда включено",
-  "foodSourcesHelpText": "Результаты поиска приходят из этих баз продуктов. Open Food Facts обеспечивает поиск товаров и по штрихкоду и всегда включён.",
+  "foodSourcesHelpText": "Результаты поиска берутся из этих баз продуктов. Open Food Facts обеспечивает поиск продуктов, в том числе по штрихкоду, и всегда включён.",
   "machineTranslatedNameHint": "Название переведено автоматически",
   "measureUnitBar": "{count, plural, one{батончик} few{батончика} many{батончиков} other{батончика}}",
   "@measureUnitBar": {
@@ -116,8 +116,8 @@
   "settingsFoodSourcesLabel": "Базы продуктов",
   "settingsFoodSourcesSubtitle": "Выберите, откуда берутся результаты поиска продуктов",
   "onboardingOtherOptionsLabel": "Другие настройки",
-  "onboardingOtherOptionsSubtitle": "Настройте приложение под себя — всё можно изменить позже в Настройках",
-  "additionalInfoLabelOFF": "Подробнее на\nOpenFoodFacts",
+  "onboardingOtherOptionsSubtitle": "Настройте приложение под себя — всё можно изменить позже в настройках",
+  "additionalInfoLabelOFF": "Подробнее на\nOpen Food Facts",
   "additionalInfoLabelRecipe": "Свой рецепт",
   "additionalInfoLabelUnknown": "Неизвестный продукт",
   "ageLabel": "Возраст",
@@ -136,7 +136,7 @@
   },
   "barcodeInvalidEan13CheckDigit": "Похоже, этот 13-значный штрихкод введён с ошибкой: последняя цифра не совпадает с остальными",
   "baseQuantityLabel": "Пищевая ценность указана на",
-  "bmiInfo": "Индекс массы тела (ИМТ) — показатель для классификации избыточного веса и ожирения у взрослых. Он определяется как масса тела в килограммах, делённая на квадрат роста в метрах (кг/м²).\n\nИМТ не различает жировую и мышечную массу и может вводить в заблуждение для некоторых людей.",
+  "bmiInfo": "Индекс массы тела (ИМТ) — показатель для классификации избыточного веса и ожирения у взрослых. Он определяется как масса тела в килограммах, делённая на квадрат роста в метрах (кг/м²).\n\nИМТ не различает жировую и мышечную массу и в ряде случаев может вводить в заблуждение.",
   "bmiInfoClassificationSection": "Классификация ВОЗ",
   "bmiInfoFormulaSection": "Формула",
   "bmiInfoScreenTitle": "Как рассчитывается ваш ИМТ",
@@ -150,7 +150,7 @@
   "buttonStartLabel": "НАЧАТЬ",
   "buttonYesLabel": "ДА",
   "calciumLabel": "кальций",
-  "calculationsMacronutrientsDistributionLabel": "Распределение макросов",
+  "calculationsMacronutrientsDistributionLabel": "Распределение БЖУ",
   "calculationsMacrosDistribution": "{pctCarbs}% углеводов, {pctFats}% жиров, {pctProteins}% белков",
   "@calculationsMacrosDistribution": {
     "placeholders": {
@@ -163,20 +163,20 @@
   "calculationsTDEEIOM2006Label": "Уравнение Института медицины (2005)",
   "calculationsTDEELabel": "Уравнение расчёта TDEE",
   "caloriesProfileAveragedLabel": "Усреднённый ориентир (по умолчанию)",
-  "caloriesProfileEstrogenTypicalLabel": "Эстроген-типичный ориентир",
-  "caloriesProfileInfoBody": "Опубликованного ориентира по калориям для небинарных людей не существует — формулы построены на мужской и женской выборках. По умолчанию мы используем среднее двух — нейтральную отправную точку, не требующую раскрывать больше о своём теле. Ползунок ккал в Настройках всегда доступен для точной настройки; это отправная точка, а не точная оценка.",
+  "caloriesProfileEstrogenTypicalLabel": "Ориентир при типичном уровне эстрогена",
+  "caloriesProfileInfoBody": "Опубликованного ориентира по калориям для небинарных людей не существует — формулы построены на мужской и женской выборках. По умолчанию мы берём среднее двух значений — нейтральную отправную точку, которая не требует рассказывать о своём теле больше, чем нужно. Ползунок ккал в настройках всегда доступен для точной подстройки; это отправная точка, а не точная оценка.",
   "caloriesProfileInfoTitle": "Ориентир по калориям",
-  "caloriesProfileTestosteroneTypicalLabel": "Тестостерон-типичный ориентир",
+  "caloriesProfileTestosteroneTypicalLabel": "Ориентир при типичном уровне тестостерона",
   "carbohydrateLabel": "углеводы",
   "carbsLabel": "углеводы",
   "carbsLabelShort": "у",
   "cholesterolLabel": "холестерин",
   "chooseWeeklyWeightGoalLabel": "Темп изменения веса в неделю",
   "chooseWeightGoalLabel": "Выберите цель по весу",
-  "clearOffCacheConfirmContent": "Удаляет локально сохранённые результаты поиска и сканирования из Open Food Facts и FDC. Кэш восстановится автоматически по мере поиска и сканирования продуктов. На ваши свои продукты это не влияет.",
+  "clearOffCacheConfirmContent": "Удаляет локально сохранённые результаты поиска и сканирования из Open Food Facts и FDC. Кэш восстановится автоматически по мере поиска и сканирования продуктов. Ваши собственные продукты это не затрагивает.",
   "clearOffCacheConfirmTitle": "Очистить кэш?",
   "clearOffCacheLabel": "Очистить кэш",
-  "clearOffCacheSubtitle": "{count} элемент(ов) · {size}",
+  "clearOffCacheSubtitle": "Позиций: {count} · {size}",
   "@clearOffCacheSubtitle": {
     "placeholders": {
       "count": {
@@ -200,7 +200,7 @@
   "csvImportContributeOffIosLink": "iOS",
   "csvImportContributeOffPrefix": "Есть штрихкод? Помогите всем — добавьте продукт в Open Food Facts:",
   "csvImportErrorLabel": "Не удалось прочитать CSV-файл. Проверьте формат и попробуйте снова.",
-  "csvImportPartialLabel": "Импортировано {imported} приём(ов) пищи; {skipped} строк(и) пропущено из-за некорректных данных.",
+  "csvImportPartialLabel": "Импортировано приёмов пищи: {imported}; пропущено строк с некорректными данными: {skipped}.",
   "@csvImportPartialLabel": {
     "placeholders": {
       "imported": {
@@ -211,7 +211,7 @@
       }
     }
   },
-  "csvImportSuccessLabel": "Импортировано {count} приём(ов) пищи.",
+  "csvImportSuccessLabel": "Импортировано приёмов пищи: {count}.",
   "@csvImportSuccessLabel": {
     "placeholders": {
       "count": {
@@ -233,10 +233,10 @@
   "customMealBarcodeInvalid": "Штрихкод должен содержать от 8 до 14 цифр",
   "customMealBarcodeLabel": "Штрихкод",
   "customMealBarcodeScanButton": "Сканировать штрихкод",
-  "customMealFormAdvanced": "Расширенно",
+  "customMealFormAdvanced": "Расширенный",
   "customMealFormAdvancedHelp": "Задайте размеры и значения на 100 г для точного масштабирования.",
   "customMealFormModeLabel": "Вид формы",
-  "customMealFormSimple": "Просто",
+  "customMealFormSimple": "Простой",
   "customMealFormSimpleHelp": "Введите суммарные значения на одну порцию.",
   "customMealFormSimpleFieldHelper": "{unit} в одной порции",
   "@customMealFormSimpleFieldHelper": {
@@ -246,7 +246,7 @@
       }
     }
   },
-  "customMealsDeleteConfirmContent": "Все записи в дневнике с этим продуктом также будут удалены.",
+  "customMealsDeleteConfirmContent": "Все записи в дневнике этого профиля с этим продуктом тоже будут удалены.",
   "customMealsDeleteConfirmTitle": "Удалить свой продукт?",
   "customMealsEmptyLabel": "Своих продуктов пока не сохранено.",
   "dailyKcalAdjustmentLabel": "Дневная корректировка ккал:",
@@ -266,7 +266,7 @@
     }
   },
   "lowKcalWarningViewDisclaimer": "Посмотреть предупреждение",
-  "deleteSelectedRecipesConfirmTitle": "Удалить {count} рецепт(ов)?",
+  "deleteSelectedRecipesConfirmTitle": "Удалить выбранные рецепты ({count})?",
   "@deleteSelectedRecipesConfirmTitle": {
     "placeholders": {
       "count": {
@@ -274,10 +274,10 @@
       }
     }
   },
-  "deleteTimeDialogContent": "Удалить выбранный элемент?",
-  "deleteTimeDialogPluralContent": "Удалить все элементы этого приёма пищи?",
-  "deleteTimeDialogPluralTitle": "Удалить элементы?",
-  "deleteTimeDialogTitle": "Удалить элемент?",
+  "deleteTimeDialogContent": "Удалить выбранную позицию?",
+  "deleteTimeDialogPluralContent": "Удалить все позиции этого приёма пищи?",
+  "deleteTimeDialogPluralTitle": "Удалить позиции?",
+  "deleteTimeDialogTitle": "Удалить позицию?",
   "dialogCancelLabel": "ОТМЕНА",
   "dialogCopyLabel": "Скопировать на сегодня",
   "dialogDeleteLabel": "УДАЛИТЬ",
@@ -295,8 +295,8 @@
       }
     }
   },
-  "diaryNutrientPanelDataDisclaimer": "Здесь суммируются только нутриенты, отслеженные в занесённых приёмах пищи. Приём пищи без указанного значения не вносит вклад в этот нутриент — поэтому итоги могут быть занижены.",
-  "diaryNutrientPanelTitle": "Нутриенты сегодня",
+  "diaryNutrientPanelDataDisclaimer": "Здесь суммируются только нутриенты, указанные в записанных приёмах пищи. Если в приёме пищи нет значения для нутриента, он не учитывается, поэтому итоги могут быть занижены.",
+  "diaryNutrientPanelTitle": "Нутриенты за сегодня",
   "driPanelInfoTitle": "Рекомендуемая норма потребления",
   "driPanelInfoBody": "Эти нормы взяты из справочника рекомендуемых норм потребления IOM для взрослых и зависят от возраста и пола. Это ориентир, а не цель — ваши личные потребности могут отличаться.",
   "driPanelInfoLinkLabel": "Источник: IOM Dietary Reference Intakes",
@@ -316,7 +316,7 @@
   "diarySortByTime": "Время добавления",
   "dinnerExample": "напр. суп, курица, вино ...",
   "dinnerLabel": "Ужин",
-  "discardChangesConfirmLabel": "Отменить",
+  "discardChangesConfirmLabel": "Не сохранять",
   "discardChangesContent": "Несохранённые изменения будут потеряны.",
   "discardChangesTitle": "Отменить изменения?",
   "disclaimerText": "OpenNutriTracker не является медицинским приложением. Все предоставленные данные не проверены и должны использоваться с осторожностью. Пожалуйста, придерживайтесь здорового образа жизни и консультируйтесь со специалистом при возникновении проблем. Использование во время болезни, беременности или лактации не рекомендуется. Рецензируемые источники для каждого расчёта доступны по значку информации на главном экране или экране профиля.",
@@ -327,7 +327,7 @@
   "duplicateMealDialogContent": "Этот продукт уже добавлен в этот приём пищи сегодня. Добавить ещё раз?",
   "duplicateRecipeLabel": "Дублировать",
   "duplicateRecipeNameSuffix": "(копия)",
-  "editItemDialogTitle": "Изменить элемент",
+  "editItemDialogTitle": "Изменить позицию",
   "editMealLabel": "Изменить приём пищи",
   "editRecipeTitle": "Изменить рецепт",
   "energyLabel": "энергия",
@@ -366,10 +366,10 @@
   "heightLabel": "Рост",
   "homeLabel": "Главная",
   "homeFirstMealHint": "Нажмите +, чтобы добавить первый приём пищи или активность",
-  "homeDemoBannerLabel": "Вы просматриваете демо-данные",
+  "homeDemoBannerLabel": "Демо-данные",
   "homeDemoBannerAction": "Настроить свой профиль",
   "homeDemoBannerConfirmTitle": "Настроить свой профиль?",
-  "homeDemoBannerConfirmContent": "Демо-данные будут удалены, и вы настроите свой профиль. Отменить это нельзя.",
+  "homeDemoBannerConfirmContent": "Демонстрационные данные будут удалены, и вы настроите свой профиль. Отменить это нельзя.",
   "homeDemoBannerConfirmAction": "Продолжить",
   "trendsDailyAverageLabel": "Среднее в день",
   "trendsLabel": "Тенденции",
@@ -378,12 +378,12 @@
   "trendsDaysOnTrack": "дней в норме на этой неделе",
   "trendsDayStreakLabel": "дней подряд",
   "trendsBestStreakLabel": "лучший результат",
-  "trendsPerWeekSuffix": "/неделю",
+  "trendsPerWeekSuffix": "/нед",
   "trendsWeeksToGoalLabel": "недель до цели",
   "trendsWaterLabel": "Вода",
   "importAction": "Импорт",
   "importActivityConfirmContent": "Эти активности будут добавлены на сегодня.",
-  "importActivityConfirmTitle": "Импортировать {count} активностей?",
+  "importActivityConfirmTitle": "Импортировать активности ({count})?",
   "@importActivityConfirmTitle": {
     "placeholders": {
       "count": {
@@ -395,7 +395,7 @@
   "importActivitySuccessLabel": "Тренировка импортирована",
   "importCustomFoodDataDescription": "Импортируйте свои продукты из CSV-файла или вставив JSON. Скачайте пример, чтобы увидеть ожидаемый формат и обязательные поля.",
   "importCustomFoodDataLabel": "Импорт своих продуктов",
-  "importMealConfirmContent": "Эти элементы будут добавлены в {mealType}.",
+  "importMealConfirmContent": "Эти позиции будут добавлены в раздел «{mealType}».",
   "@importMealConfirmContent": {
     "placeholders": {
       "mealType": {
@@ -403,7 +403,7 @@
       }
     }
   },
-  "importMealConfirmTitle": "Импортировать {count} элемент(ов)?",
+  "importMealConfirmTitle": "Импортировать позиции ({count})?",
   "@importMealConfirmTitle": {
     "placeholders": {
       "count": {
@@ -416,7 +416,7 @@
   "importMealSuccessLabel": "Приём пищи импортирован",
   "importMealsCsvAction": "Импорт приёмов пищи (csv)",
   "importMealsJsonAction": "Импорт приёмов пищи (json)",
-  "importOffFetchFailedLabel": "Не удалось загрузить {count} элемент(ов) из OpenFoodFacts.",
+  "importOffFetchFailedLabel": "Не удалось загрузить позиции из Open Food Facts: {count}.",
   "@importOffFetchFailedLabel": {
     "placeholders": {
       "count": {
@@ -424,7 +424,7 @@
       }
     }
   },
-  "importRecipeConfirmContent": "Импортировать этот рецепт с {count} ингредиент(ами)?",
+  "importRecipeConfirmContent": "Импортировать этот рецепт (ингредиентов: {count})?",
   "@importRecipeConfirmContent": {
     "placeholders": {
       "count": {
@@ -444,25 +444,25 @@
   "infoAddedActivityLabel": "Добавлена новая активность",
   "infoAddedIntakeLabel": "Добавлен новый приём пищи",
   "ironLabel": "железо",
-  "itemDeletedSnackbar": "Элемент удалён",
-  "itemUpdatedSnackbar": "Элемент обновлён",
-  "kcalGoalInfoActivityExplanation": "Калории, сожжённые в занесённых активностях, добавляются сверх вашей цели, поэтому запланированный дефицит или профицит остаётся прежним в дни тренировок.",
+  "itemDeletedSnackbar": "Позиция удалена",
+  "itemUpdatedSnackbar": "Позиция обновлена",
+  "kcalGoalInfoActivityExplanation": "Калории, сожжённые в записанных активностях, добавляются сверх вашей цели, поэтому запланированный дефицит или профицит остаётся прежним в дни тренировок.",
   "kcalGoalInfoActivitySection": "Шаг 4 · Сегодняшняя активность",
   "kcalGoalInfoAdjustmentExplanationFlat": "Ваша цель по весу задаёт фиксированную дневную корректировку: −500 ккал для похудения, +500 ккал для набора, 0 для поддержания.",
   "kcalGoalInfoAdjustmentExplanationWeekly": "Ваш недельный темп задаёт дневную корректировку. 1 кг жировой массы хранит около 7700 ккал, поэтому каждый кг в неделю сдвигает цель примерно на 1100 ккал в день.",
-  "kcalGoalInfoAdjustmentSection": "Шаг 2 · Корректировка по цели веса",
+  "kcalGoalInfoAdjustmentSection": "Шаг 2 · Корректировка под цель по весу",
   "kcalGoalInfoAppliedAdjustmentLabel": "Применённая корректировка",
-  "kcalGoalInfoAveragedNote": "При усреднённом ориентире ваш TDEE — это среднее значение между мужским и женским ориентирами.",
+  "kcalGoalInfoAveragedNote": "При усреднённом ориентире ваш TDEE — это среднее результатов по мужскому и женскому ориентирам.",
   "kcalGoalInfoBaseAdjustmentLabel": "Корректировка цели",
   "kcalGoalInfoEstimateNote": "Все формулы — это оценки на уровне популяции, индивидуальные потребности отличаются. Ваша цель — отправная точка, а не медицинская рекомендация.",
   "kcalGoalInfoFemaleReferenceLabel": "Женский ориентир",
   "kcalGoalInfoInputsSection": "Ваши данные",
-  "kcalGoalInfoIntro": "Ваша дневная норма калорий рассчитывается по опубликованным научным уравнениям, используя только значения ниже. На этой странице показано каждое число, влияющее на сегодняшнюю норму.",
+  "kcalGoalInfoIntro": "Ваша дневная норма калорий рассчитывается по опубликованным научным уравнениям только на основе значений ниже. На этой странице показано каждое число, влияющее на сегодняшнюю норму.",
   "kcalGoalInfoLearnMoreLabel": "Полная документация по расчёту",
-  "kcalGoalInfoMacroExplanation": "Ваша норма калорий делится на углеводы, жиры и белки по вашему распределению макросов (по умолчанию: 60% углеводов, 25% жиров, 15% белков — можно изменить в Настройках). Граммовые нормы следуют из энергетической плотности: углеводы и белки дают 4 ккал на грамм, жиры — 9 ккал на грамм.",
+  "kcalGoalInfoMacroExplanation": "Норма калорий делится на углеводы, жиры и белки в соответствии с вашим распределением БЖУ (по умолчанию: 60% углеводов, 25% жиров, 15% белков; можно изменить в настройках). Нормы в граммах рассчитываются из энергетической ценности: углеводы и белки дают 4 ккал на грамм, жиры — 9 ккал на грамм.",
   "kcalGoalInfoMacroSection": "Распределение макронутриентов",
   "kcalGoalInfoMaleReferenceLabel": "Мужской ориентир",
-  "kcalGoalInfoManualExplanation": "Фиксированная поправка, которую вы задаёте сами в Настройках, если знаете, что ваши потребности отличаются от оценки.",
+  "kcalGoalInfoManualExplanation": "Фиксированная поправка, которую вы задаёте сами в настройках, если знаете, что ваши потребности отличаются от оценки.",
   "kcalGoalInfoManualSection": "Шаг 3 · Ручная корректировка",
   "kcalGoalInfoPaRowLabel": "Коэффициент активности (PA)",
   "kcalGoalInfoPalRowLabel": "Уровень физической активности (PAL)",
@@ -478,13 +478,13 @@
   "kjLabel": "кДж",
   "lbsLabel": "фунт",
   "stLabel": "стоун",
-  "lunchExample": "напр. пицца, салат, рис ...",
+  "lunchExample": "напр. пицца, салат, рис…",
   "lunchLabel": "Обед",
   "macroDistributionLabel": "Распределение макронутриентов:",
   "magnesiumLabel": "магний",
   "mealBrandsLabel": "Бренды",
   "mealCarbsLabel": "Углеводы",
-  "mealDetailCurrentSelectionLabel": "(+{kcal} ккал текущий выбор)",
+  "mealDetailCurrentSelectionLabel": "(+{kcal} ккал — текущий выбор)",
   "@mealDetailCurrentSelectionLabel": {
     "placeholders": {
       "kcal": {
@@ -525,9 +525,9 @@
     }
   },
   "mealNutrientsTotalLabel": "Общее количество",
-  "mealPatternFiveSmall": "Пять малых приёмов",
+  "mealPatternFiveSmall": "Пять небольших приёмов",
   "mealPatternMediterranean": "Средиземноморский",
-  "mealPatternOmad": "OMAD (одно блюдо в день)",
+  "mealPatternOmad": "OMAD (один приём пищи в день)",
   "mealPatternPresetsLabel": "Быстрые шаблоны",
   "mealPatternStandard": "Стандартный",
   "mealPatternTwoMeal": "Два приёма пищи",
@@ -539,19 +539,19 @@
   "milliliterUnit": "мл",
   "missingProductInfo": "У продукта не хватает данных о калорийности или макронутриентах",
   "monounsaturatedFatLabel": "мононенасыщенные жиры",
-  "newCustomMealLabel": "Новый свой продукт",
+  "newCustomMealLabel": "Новый собственный продукт",
   "niacinLabel": "ниацин (B3)",
   "noActivityRecentlyAddedLabel": "Активности недавно не добавлялись",
   "noMealsRecentlyAddedLabel": "Приёмы пищи недавно не добавлялись",
   "noResultsFound": "Ничего не найдено",
   "notAvailableLabel": "Н/Д",
   "nothingAddedLabel": "Ничего не добавлено",
-  "notificationsDailyReminderBody": "Не забудьте занести сегодняшние приёмы пищи!",
+  "notificationsDailyReminderBody": "Не забудьте записать сегодняшние приёмы пищи!",
   "notificationsDailyReminderChannelName": "Ежедневные напоминания",
-  "notificationsDailyReminderChannelDescription": "Ежедневное напоминание о занесении приёмов пищи",
+  "notificationsDailyReminderChannelDescription": "Ежедневное напоминание записать приёмы пищи",
   "notificationsDailyReminderTitle": "OpenNutriTracker",
-  "notificationsPermissionDeniedSnack": "В разрешении на уведомления отказано.",
-  "nutrientPanelAllHiddenLabel": "Все нутриенты скрыты — включите нужные в Настройках → Нутриенты.",
+  "notificationsPermissionDeniedSnack": "Разрешение на уведомления не предоставлено.",
+  "nutrientPanelAllHiddenLabel": "Все нутриенты скрыты — включите нужные в разделе «Настройки → Нутриенты».",
   "nutrientPanelLimitLabel": "лимит",
   "nutrientPanelDayLabel": "День",
   "nutrientPanelWeekLabel": "Неделя",
@@ -590,19 +590,19 @@
   "onboardingIntroSourcesLinkLabel": "Прочитать источники наших медицинских расчётов",
   "onboardingKcalPerDayLabel": "ккал в день",
   "onboardingKjPerDayLabel": "кДж в день",
-  "onboardingNonBinaryDisclaimer": "Опубликованного ориентира по калориям для небинарных людей не существует, поэтому по умолчанию мы используем среднее мужской и женской формул — отправную точку, а не точную оценку. Вы можете точно настроить это в любой момент в Настройках → Расчёты.",
+  "onboardingNonBinaryDisclaimer": "Для небинарных людей нет опубликованного калорийного ориентира, поэтому по умолчанию мы берём среднее между мужской и женской формулами — это отправная точка, а не точная оценка. Вы можете уточнить расчёт в любой момент в разделе «Настройки → Расчёты».",
   "onboardingOverviewLabel": "Обзор",
   "onboardingSaveUserError": "Неверные данные, попробуйте снова",
   "onboardingTargetWeightHintOptional": "Необязательно",
-  "onboardingTargetWeightSubtitle": "Есть ли вес, к которому вы стремитесь? Можно оставить пустым или изменить позже в Профиле.",
+  "onboardingTargetWeightSubtitle": "Есть ли вес, к которому вы стремитесь? Можно оставить пустым или изменить позже в профиле.",
   "onboardingTryDemoLabel": "Попробовать демо",
-  "onboardingTryDemoSubtitle": "Пропустить настройку и изучить приложение на примерных данных. Сначала примите политику конфиденциальности.",
-  "onboardingTryDemoDisclaimer": "Используются только вымышленные примерные данные. Отчёты о сбоях остаются выключенными, пока вы их не включите. Примерные фото и поиск продуктов могут использовать сеть.",
+  "onboardingTryDemoSubtitle": "Пропустить настройку и изучить приложение на демонстрационных данных. Сначала примите политику конфиденциальности.",
+  "onboardingTryDemoDisclaimer": "Используются только вымышленные демонстрационные данные. Отчёты о сбоях остаются выключенными, пока вы их не включите. Демонстрационные фото и поиск продуктов могут использовать сеть.",
   "onboardingTryDemoError": "Не удалось настроить демо-режим. Попробуйте снова.",
   "onboardingWeightExampleHintKg": "напр. 60",
   "onboardingWeightExampleHintLbs": "напр. 132",
   "onboardingWeightQuestionSubtitle": "Какой у вас сейчас вес?",
-  "onboardingFoodUnitsSubtitle": "Как вы заносите еду и напитки",
+  "onboardingFoodUnitsSubtitle": "Как вы записываете продукты и напитки",
   "onboardingWelcomeLabel": "Добро пожаловать в",
   "onboardingWrongHeightLabel": "Введите корректный рост",
   "onboardingWrongWeightLabel": "Введите корректный вес",
@@ -611,12 +611,12 @@
   "ozUnit": "унц.",
   "paActiveVideoGames": "активные видеоигры",
   "paActiveVideoGamesDesc": "Wii Sports, Dance Dance Revolution, общее",
-  "paAmericanFootballGeneral": "Американский футбол",
-  "paAmericanFootballGeneralDesc": "тач, флаг, общее",
+  "paAmericanFootballGeneral": "американский футбол",
+  "paAmericanFootballGeneralDesc": "тач-футбол, флаг-футбол, общее",
   "paArcheryGeneral": "стрельба из лука",
-  "paArcheryGeneralDesc": "не охота",
+  "paArcheryGeneralDesc": "не охотничья",
   "paAutoRacing": "автогонки",
-  "paAutoRacingDesc": "открытые колёса",
+  "paAutoRacingDesc": "с открытыми колёсами",
   "paBackpackingGeneral": "поход с рюкзаком",
   "paBackpackingGeneralDesc": "общее",
   "paBadmintonGeneral": "бадминтон",
@@ -633,7 +633,7 @@
   "paBilliardsGeneralDesc": "общее",
   "paBowlingGeneral": "боулинг",
   "paBowlingGeneralDesc": "общее",
-  "paBoxingBag": "бокс (боксерская груша)",
+  "paBoxingBag": "бокс (боксёрская груша)",
   "paBoxingBagDesc": "боксёрская груша",
   "paBoxingGeneral": "бокс",
   "paBoxingGeneralDesc": "на ринге, общее",
@@ -648,26 +648,26 @@
   "paCheerleading": "чирлидинг",
   "paCheerleadingDesc": "гимнастические элементы, соревновательный",
   "paChildrenGame": "детские игры",
-  "paChildrenGameDesc": "(напр., классики, четыре квадрата, вышибалы, детская площадка, тибол, тезербол, шарики, аркадные игры), умеренная нагрузка",
+  "paChildrenGameDesc": "(напр., классики, четыре квадрата, вышибалы, снаряды на детской площадке, тибол, тезербол, шарики, аркадные игры), умеренная нагрузка",
   "paClimbingHillsNoLoadGeneral": "подъём в гору без груза",
   "paClimbingHillsNoLoadGeneralDesc": "без груза",
   "paCricket": "крикет",
-  "paCricketDesc": "бэттинг, боулинг, полевая игра",
+  "paCricketDesc": "удар битой, подача, игра в поле",
   "paCroquet": "крокет",
   "paCroquetDesc": "общее",
-  "paCrossCountrySkiing": "лыжи (беговые)",
+  "paCrossCountrySkiing": "беговые лыжи",
   "paCrossCountrySkiingDesc": "беговые лыжи, общее",
   "paCurling": "керлинг",
   "paCurlingDesc": "общее",
   "paDancingAerobicGeneral": "аэробика",
   "paDancingAerobicGeneralDesc": "общее",
   "paDancingGeneral": "танцы",
-  "paDancingGeneralDesc": "напр. диско, народные, ирландские, лайн-данс, полька, контра, кантри",
+  "paDancingGeneralDesc": "напр. диско, народные танцы, ирландский степ, лайн-данс, полька, контра-данс, кантри",
   "paDartsWall": "дартс",
   "paDartsWallDesc": "настенный или на лужайке",
   "paDivingGeneral": "дайвинг",
   "paDivingGeneralDesc": "подводное плавание, скуба-дайвинг, общее",
-  "paDivingSpringboardPlatform": "прыжки в воду с платформы",
+  "paDivingSpringboardPlatform": "прыжки в воду с трамплина или вышки",
   "paDivingSpringboardPlatformDesc": "с трамплина или вышки",
   "paFencing": "фехтование",
   "paFencingDesc": "общее",
@@ -685,16 +685,16 @@
   "paHangGliding": "дельтапланеризм",
   "paHangGlidingDesc": "общее",
   "paHeadingBicycling": "велосипед",
-  "paHeadingConditionalExercise": "кондиционные упражнения",
+  "paHeadingConditionalExercise": "общеукрепляющие упражнения",
   "paHeadingDancing": "танцы",
   "paHeadingRunning": "бег",
   "paHeadingSports": "спорт",
   "paHeadingWalking": "ходьба",
-  "paHeadingWaterActivities": "водные активности",
-  "paHeadingWinterActivities": "зимние активности",
+  "paHeadingWaterActivities": "водные виды активности",
+  "paHeadingWinterActivities": "зимние виды активности",
   "paHighIntensityIntervalExercise": "высокоинтенсивная интервальная тренировка",
   "paHighIntensityIntervalExerciseDesc": "умеренная нагрузка",
-  "paHighIntensityIntervalExerciseVigorous": "высокоинтенсивная интервальная тренировка",
+  "paHighIntensityIntervalExerciseVigorous": "высокоинтенсивная интервальная тренировка (интенсивная)",
   "paHighIntensityIntervalExerciseVigorousDesc": "берпи, скалолаз, прыжки из приседа, табата, высокая нагрузка",
   "paHikingCrossCountry": "хайкинг",
   "paHikingCrossCountryDesc": "по пересечённой местности",
@@ -719,7 +719,7 @@
   "paLacrosse": "лакросс",
   "paLacrosseDesc": "общее",
   "paLawnBowling": "боулинг на траве",
-  "paLawnBowlingDesc": "петанк, на улице",
+  "paLawnBowlingDesc": "боччи, на улице",
   "paMartialArtsModerate": "боевые искусства",
   "paMartialArtsModerateDesc": "разные виды, умеренный темп (напр., дзюдо, джиу-джитсу, карате, кикбоксинг, тхэквондо, тай-бо, муай-тай)",
   "paMartialArtsSlower": "боевые искусства (медленный темп)",
@@ -756,8 +756,8 @@
   "paRopeSkippingGeneral": "прыжки со скакалкой",
   "paRopeSkippingGeneralDesc": "общее",
   "paRugbyCompetitive": "регби",
-  "paRugbyCompetitiveDesc": "юнион, команда, соревновательный",
-  "paRugbyNonCompetitive": "контактный регби",
+  "paRugbyCompetitiveDesc": "регби-юнион, командная игра, соревновательный",
+  "paRugbyNonCompetitive": "тач-регби",
   "paRugbyNonCompetitiveDesc": "тач-регби, несоревновательный",
   "paRunningGeneral": "бег",
   "paRunningGeneralDesc": "общее",
@@ -825,7 +825,7 @@
   "paWateraerobicsCalisthenicsDesc": "аквааэробика, водная калистеника",
   "paWrestling": "борьба",
   "paWrestlingDesc": "общее",
-  "palActiveDescriptionLabel": "В основном стоя или ходьба на работе и активный отдых",
+  "palActiveDescriptionLabel": "В основном стоя или в движении на работе и активный отдых",
   "palActiveLabel": "Активный",
   "palLowActiveDescriptionLabel": "напр., сидя или стоя на работе и лёгкий отдых",
   "palLowLActiveLabel": "Слабоактивный",
@@ -833,7 +833,7 @@
   "palSedentaryLabel": "Сидячий образ жизни",
   "palVeryActiveDescriptionLabel": "В основном ходьба, бег или переноска тяжестей на работе и активный отдых",
   "palVeryActiveLabel": "Очень активный",
-  "pasteCodeHint": "Вставьте сюда код общего приёма пищи",
+  "pasteCodeHint": "Вставьте сюда код приёма пищи, которым с вами поделились",
   "pasteCodeLabel": "Вставить код",
   "per100gmlLabel": "На 100 г/мл",
   "perServingLabel": "На порцию",
@@ -876,7 +876,7 @@
   "quickAddProteinHint": "Белки (г, необязательно)",
   "quickAddSubmitLabel": "Добавить",
   "quickAddTitleHint": "Название",
-  "readLabel": "Я прочитал(а) и принимаю политику конфиденциальности.",
+  "readLabel": "Принимаю политику конфиденциальности",
   "recentlyAddedLabel": "Недавние",
   "recipeAddIngredientLabel": "Добавить ингредиент",
   "recipeDeleteConfirmContent": "Прошлые записи в дневнике с этим рецептом будут сохранены.",
@@ -888,7 +888,7 @@
   "recipeImageReplace": "Заменить фото",
   "recipeImageTakePhoto": "Сделать фото",
   "recipeIngredientAmountLabel": "Количество",
-  "recipeIngredientCountLabel": "{count} ингредиент(ов)",
+  "recipeIngredientCountLabel": "{count, plural, one{{count} ингредиент} few{{count} ингредиента} many{{count} ингредиентов} other{{count} ингредиента}}",
   "@recipeIngredientCountLabel": {
     "placeholders": {
       "count": {
@@ -899,7 +899,7 @@
   "recipeIngredientUnitLabel": "Единица",
   "recipeIngredientsLabel": "Ингредиенты",
   "recipeInvalidTotalWeightLabel": "Общий вес должен быть больше нуля",
-  "recipeLogCtaLabel": "Занести этот рецепт",
+  "recipeLogCtaLabel": "Записать рецепт в дневник",
   "recipeNameLabel": "Название рецепта",
   "recipeNameRequiredLabel": "Рецепту нужно название",
   "recipeNeedsIngredientsLabel": "Добавьте хотя бы один ингредиент",
@@ -907,10 +907,10 @@
   "recipeNutritionPer100Label": "На 100 г",
   "recipeNutritionPreviewLabel": "Пищевая ценность (всего)",
   "recipeSaveErrorLabel": "Не удалось сохранить рецепт.",
-  "recipeSaveForLaterDescription": "Включите, чтобы сохранить этот приём пищи в списке для использования в будущем. Оставьте выключенным для разового блюда.",
+  "recipeSaveForLaterDescription": "Включите, чтобы оставить этот приём пищи в сохранённых и пользоваться им снова. Если блюдо разовое, оставьте выключенным.",
   "recipeSaveForLaterLabel": "Сохранить на будущее",
   "recipeSaveLabel": "Сохранить рецепт",
-  "recipeServingsCountHelper": "Позволяет заносить этот рецепт по порциям вместо граммов.",
+  "recipeServingsCountHelper": "Позволяет записывать этот рецепт в дневник по порциям, а не в граммах.",
   "recipeServingsCountLabel": "Порций (необязательно)",
   "recipeTagsHelper": "Через запятую, напр. «завтрак, веган»",
   "recipeTagsLabel": "Теги",
@@ -957,7 +957,7 @@
   "settingsCaloriesTaperDescription": "Постепенно снижает дневной дефицит, чтобы последние килограммы давались легче.",
   "settingsCaloriesTaperLabel": "Корректировать норму калорий по мере приближения к цели",
   "settingsCustomMealsLabel": "Свои продукты",
-  "settingsDayStartDescription": "Выберите час, с которого начинается ваш день. Приёмы пищи и активности, занесённые до этого часа, засчитываются в предыдущий день — полезно, если вы работаете по ночам или едите поздно.",
+  "settingsDayStartDescription": "Выберите час, с которого начинается ваш день. Приёмы пищи и активности, записанные до этого часа, засчитываются в предыдущий день — полезно, если вы работаете по ночам или едите поздно.",
   "settingsDayStartHourLabel": "{hour}:00",
   "@settingsDayStartHourLabel": {
     "placeholders": {
@@ -980,15 +980,15 @@
       }
     }
   },
-  "settingsDisclaimerLabel": "Предупреждение",
+  "settingsDisclaimerLabel": "Отказ от ответственности",
   "settingsDistanceLabel": "Расстояние",
   "settingsEnergyUnitLabel": "Единица энергии",
-  "settingsFibreGoalDescription": "Дневная норма клетчатки в граммах. По умолчанию варьируется по возрасту и полу (от 21г до 38г).",
+  "settingsFibreGoalDescription": "Дневная норма клетчатки в граммах. По умолчанию зависит от возраста и пола (от 21 до 38 г).",
   "settingsFibreGoalLabel": "Норма клетчатки",
   "settingsImperialLabel": "Имперская (фунты, футы, унции)",
   "settingsKcalAdjustmentLabel": "Дневная корректировка ккал",
   "settingsKcalGoalInfoLabel": "Как рассчитывается ваша норма",
-  "settingsIronGoalDescription": "Дневная норма железа в миллиграммах. По умолчанию зависит от пола (8 мг мужчины, 18 мг женщины, 14 мг для остальных).",
+  "settingsIronGoalDescription": "Дневная норма железа в миллиграммах. По умолчанию зависит от пола (8 мг для мужчин, 18 мг для женщин, 14 мг для остальных).",
   "settingsIronGoalLabel": "Норма железа",
   "settingsCategoryAbout": "О приложении",
   "settingsCategoryAppearance": "Внешний вид",
@@ -999,7 +999,7 @@
   "settingsLabel": "Настройки",
   "settingsLanguageLabel": "Язык",
   "settingsMaterialYouTitle": "Использовать системные цвета",
-  "settingsMaterialYouSubtitle": "Подстроить под акцент обоев на Android 12 и новее.",
+  "settingsMaterialYouSubtitle": "Подстраивать акцент под обои на Android 12 и новее.",
   "settingsAccentColourTitle": "Акцентный цвет",
   "settingsAccentSubtitleMaterialYou": "Material You",
   "settingsAccentSubtitleCustom": "Свой",
@@ -1012,9 +1012,9 @@
   "settingsAccentHueTitle": "Акцентный цвет",
   "settingsAccentHueDisabledHint": "Отключите системные цвета, чтобы выбрать свой акцент.",
   "settingsAccentHueReset": "Сбросить",
-  "settingsMacroSplitLabel": "Распределение макросов",
+  "settingsMacroSplitLabel": "Распределение БЖУ",
   "settingsLicensesLabel": "Лицензии",
-  "settingsMagnesiumGoalDescription": "Дневная норма магния в миллиграммах. По умолчанию зависит от пола (400 мг мужчины, 310 мг женщины, 355 мг для остальных).",
+  "settingsMagnesiumGoalDescription": "Дневная норма магния в миллиграммах. По умолчанию зависит от пола (400 мг для мужчин, 310 мг для женщин, 355 мг для остальных).",
   "settingsMagnesiumGoalLabel": "Норма магния",
   "settingsMassLabel": "Масса",
   "settingsMetricLabel": "Метрическая (кг, см, мл)",
@@ -1041,12 +1041,12 @@
   "settingsPotassiumGoalDescription": "Дневная норма калия в миллиграммах. По умолчанию — 3500 мг.",
   "settingsPotassiumGoalLabel": "Норма калия",
   "settingsPrivacySettings": "Настройки конфиденциальности",
-  "settingsDemoPrivacyNote": "Отчёты о сбоях недоступны при просмотре демо-данных. Сначала настройте свой профиль.",
+  "settingsDemoPrivacyNote": "Отчёты о сбоях недоступны при просмотре демонстрационных данных. Сначала настройте свой профиль.",
   "settingsReportErrorLabel": "Сообщить об ошибке",
   "settingsSaturatedFatGoalDescription": "Дневной лимит насыщенных жиров в граммах. По умолчанию — 20 г.",
   "settingsSaturatedFatGoalLabel": "Норма насыщенных жиров",
   "settingsShowActivityTracking": "Показывать отслеживание активности",
-  "settingsShowMealMacros": "Показывать макросы приёма пищи",
+  "settingsShowMealMacros": "Показывать БЖУ приёма пищи",
   "settingsShowMicronutrientsLabel": "Показывать микронутриенты",
   "settingsSodiumGoalDescription": "Дневной лимит натрия в миллиграммах. По умолчанию — 2300 мг.",
   "settingsSodiumGoalLabel": "Норма натрия",
@@ -1064,7 +1064,7 @@
   "settingsHeightUnitsLabel": "Единицы роста",
   "settingsBodyWeightUnitLabel": "Единица веса тела",
   "settingsFoodUnitsMetric": "Метрическая (г, кг, мл, л)",
-  "settingsFoodUnitsImperial": "Имперская (фунты, унции, жидк.унц.)",
+  "settingsFoodUnitsImperial": "Имперская (фунты, унции, жидк. унц.)",
   "settingsHeightUnitsMetric": "Метрическая (мм, см, м)",
   "settingsHeightUnitsImperial": "Имперская (футы, дюймы)",
   "settingsVitaminB12GoalDescription": "Дневная норма витамина B12 в микрограммах. По умолчанию — 2,4 мкг.",
@@ -1076,7 +1076,7 @@
   "shareCodeLabel": "Поделиться кодом",
   "shareMealLabel": "Поделиться приёмом пищи",
   "shareRecipeLabel": "Поделиться рецептом",
-  "snackExample": "напр. яблоко, мороженое, шоколад ...",
+  "snackExample": "напр. яблоко, мороженое, шоколад…",
   "snackLabel": "Перекус",
   "sodiumLabel": "натрий",
   "sourcesActivityDescription": "Калории, сожжённые во время активности, оцениваются как МЕТ × масса тела (кг) × продолжительность (часы), по значениям из «Сборника физических активностей для взрослых».",
@@ -1086,16 +1086,16 @@
   "sourcesEnergyDescription": "Дневные нормы калорий, базовый обмен веществ и коэффициенты физической активности используют уравнения Института медицины. Источник: Institute of Medicine (2005). Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids, глава 5 и таблица 5-5.",
   "sourcesEnergyTitle": "Потребности в энергии (TDEE, BMR и уровень активности)",
   "sourcesIconTooltip": "Посмотреть источники",
-  "sourcesMacrosDescription": "Распределение по умолчанию (60% углеводов, 25% жиров, 15% белков) находится в пределах диапазонов потребления, опубликованных ВОЗ. Можно изменить в Настройках → Расчёты. Источник: WHO Technical Report Series 916 (2003), Diet, Nutrition and the Prevention of Chronic Diseases.",
+  "sourcesMacrosDescription": "Распределение по умолчанию (60% углеводов, 25% жиров, 15% белков) находится в пределах диапазонов потребления, опубликованных ВОЗ. Изменить его можно в разделе «Настройки → Расчёты». Источник: WHO Technical Report Series 916 (2003), Diet, Nutrition and the Prevention of Chronic Diseases.",
   "sourcesMacrosTitle": "Распределение макронутриентов",
-  "sourcesNonBinaryDescription": "Исследования расхода энергии исторически использовали бинарные категории пола, поэтому единой проверенной формулы TDEE для небинарных людей не существует. Поэтому OpenNutriTracker позволяет выбрать усреднённый, эстроген-типичный или тестостерон-типичный ориентир в Настройках → Расчёты. Если точное число действительно важно для вашего лечения, обратитесь к врачу, знакомому с вашим гормональным статусом.",
+  "sourcesNonBinaryDescription": "Исследования расхода энергии исторически опирались на бинарные категории пола, поэтому единой проверенной формулы TDEE для небинарных людей не существует. Вместо неё в OpenNutriTracker можно выбрать усреднённый ориентир либо ориентир, типичный для эстрогенного или тестостеронного гормонального фона, в разделе «Настройки → Расчёты». Если точное число действительно важно для вашего лечения, обратитесь к врачу, знакомому с вашим гормональным статусом.",
   "sourcesNutrientReferenceTitle": "Рекомендуемые нормы потребления нутриентов",
   "sourcesNutrientReferenceDescription": "Дневные нормы, показанные на панели нутриентов дневника, взяты из сводки рекомендуемых норм потребления Института медицины, охватывающей нормы по каждому нутриенту для взрослых.",
   "sourcesNonBinaryTitle": "Оценка калорий для небинарных людей",
   "sourcesOpenSourceLabel": "Посмотреть источник",
   "sourcesScreenIntro": "OpenNutriTracker использует проверенные, рецензируемые методики для каждого показанного расчёта. Ссылки ниже ведут на первоисточники, чтобы вы могли сами проверить любое число.",
   "sugarLabel": "сахар",
-  "suppliedLabel": "предоставлено",
+  "suppliedLabel": "потреблено",
   "transFatLabel": "трансжиры",
   "unitLabel": "Единица",
   "vitaminALabel": "витамин A",
@@ -1104,7 +1104,7 @@
   "vitaminCLabel": "витамин C",
   "vitaminDLabel": "витамин D",
   "warningLabel": "Предупреждение",
-  "weeklyWeightGoalKgPerWeek": "{rate} кг/неделю",
+  "weeklyWeightGoalKgPerWeek": "{rate} кг/нед.",
   "@weeklyWeightGoalKgPerWeek": {
     "placeholders": {
       "rate": {
@@ -1113,7 +1113,7 @@
     }
   },
   "weeklyWeightGoalLabel": "Недельный темп",
-  "weeklyWeightGoalLbsPerWeek": "{rate} фунт/неделю",
+  "weeklyWeightGoalLbsPerWeek": "{rate} фунт/нед.",
   "@weeklyWeightGoalLbsPerWeek": {
     "placeholders": {
       "rate": {
@@ -1123,13 +1123,13 @@
   },
   "weeklyWeightGoalNoneLabel": "Не задан",
   "weightHistoryAddEntry": "Добавить запись",
-  "weightHistoryChartEmptyState": "Занесите хотя бы два дня, чтобы увидеть тенденцию.",
+  "weightHistoryChartEmptyState": "Запишите вес хотя бы за два дня, чтобы увидеть тенденцию.",
   "weightHistoryDateLabel": "Дата",
   "weightHistoryNoEntries": "Показаний веса пока нет. Добавьте первое, чтобы начать отслеживать тенденцию.",
   "weightHistoryNoteLabel": "Заметка (необязательно)",
   "weightHistoryWeightLabel": "Вес",
   "weightLabel": "Вес",
-  "yearsLabel": "{age} лет",
+  "yearsLabel": "{age, plural, one{{age} год} few{{age} года} many{{age} лет} other{{age} года}}",
   "@yearsLabel": {
     "placeholders": {
       "age": {
@@ -1145,11 +1145,11 @@
       }
     }
   },
-  "logWaterDialogTitle": "Занести приём воды",
+  "logWaterDialogTitle": "Записать приём воды",
   "logWaterNothingToUndoLabel": "Нечего отменять",
   "logWaterUndoLabel": "Отменить последнее",
   "mlLabel": "мл",
-  "settingsWaterGoalDescription": "Используется чипом воды на главном экране.",
+  "settingsWaterGoalDescription": "Используется в индикаторе воды на главном экране.",
   "settingsWaterGoalLabel": "Дневная норма воды",
   "waterChipLabel": "{current} / {goal} мл",
   "@waterChipLabel": {
@@ -1167,7 +1167,7 @@
   "fastingTitle": "Таймер голодания",
   "fastingSubtitle": "Простой таймер для отслеживания времени между приёмами пищи. Без серий, без целей — просто часы.",
   "fastingWarningTitle": "Перед началом",
-  "fastingWarningBody": "Отслеживание времени голодания может быть полезным для одних людей и тревожным для других, особенно для тех, у кого в прошлом были расстройства пищевого поведения. Если это про вас, пожалуйста, позаботьтесь о себе в первую очередь. Поддержка доступна от BEAT (Великобритания) и NEDA (США).",
+  "fastingWarningBody": "Отслеживание времени голодания может быть полезным для одних людей и тревожным для других, особенно для тех, у кого в прошлом были расстройства пищевого поведения. Если это про вас, пожалуйста, позаботьтесь о себе в первую очередь. Поддержку можно получить в BEAT (Великобритания) и NEDA (США).",
   "fastingWarningDecline": "Это не для меня",
   "fastingWarningAccept": "Понимаю, включить таймер",
   "fastingPresetCustom": "Свой",
@@ -1195,15 +1195,15 @@
       }
     }
   },
-  "hoursLabel": "часы",
+  "hoursLabel": "ч",
   "dialogCloseLabel": "Закрыть",
-  "customMealsRowMoreTooltip": "Ещё действия",
+  "customMealsRowMoreTooltip": "Другие действия",
   "customMealsMergeAction": "Объединить с другим своим продуктом",
   "customMealsMergePickerTitle": "Выберите свой продукт для объединения",
   "customMealsMergeChooseSurvivorTitle": "Какой из них останется?",
   "customMealsMergeContinueAction": "Продолжить",
   "customMealsMergeConfirmTitle": "Объединить свои продукты?",
-  "customMealsMergeConfirmContent": "Это заменит все записи с {loser} на {winner} и удалит {loser} из ваших своих продуктов. Отменить это нельзя.",
+  "customMealsMergeConfirmContent": "Это заменит {loser} на {winner} во всех записях и удалит {loser} из списка ваших продуктов. Отменить это нельзя.",
   "@customMealsMergeConfirmContent": {
     "placeholders": {
       "loser": {
@@ -1223,7 +1223,7 @@
       }
     }
   },
-  "customMealsMergeSuccessSnackbarOther": "Объединено — у {winner} теперь {count} записей.",
+  "customMealsMergeSuccessSnackbarOther": "Объединено — записей у {winner} теперь {count}.",
   "@customMealsMergeSuccessSnackbarOther": {
     "placeholders": {
       "count": {
@@ -1282,7 +1282,7 @@
       }
     }
   },
-  "calorieWidgetDescription": "Съеденные сегодня килокалории и Ваша цель.",
+  "calorieWidgetDescription": "Съеденные сегодня калории и ваша цель.",
   "@calorieWidgetDescription": {
     "description": "Subtitle of the calorie widget in the iOS widget gallery."
   },
@@ -1299,40 +1299,40 @@
   "@calorieWidgetOpenAppHint": {
     "description": "Calorie widget placeholder, shown until the app has written today's figures."
   },
-  "dataCollectionLabel": "Отправьте отчет о вылете, чтобы помочь исправить ошибки. Журнал еды или данные о весе не будут включены.",
+  "dataCollectionLabel": "Отправлять отчёты о сбоях, чтобы помочь исправлять ошибки. Дневник питания и данные о весе в них не включаются.",
   "policyChangeNoticeTitle": "Мы обновили политику конфиденциальности",
-  "policyChangeNoticeBody": "Ничто в работе приложения не изменилось. Что изменилось, так это то, как много мы Вам говорим.\n\nСервисы, которые всегда получали ваши поисквые запросы, теперь явно названы. Существует новый раздел, охватывающий данные о здоровье, для импорта тренировок, который Вы можете включить. И теперь мы раскрываем приблизительное местоположение, которое наши сервера записывают вместе с запросом и держат в течение 24 часов.\n\nВаш дневник остается на вашем устройстве, как всегда.",
+  "policyChangeNoticeBody": "Ничто в работе приложения не изменилось. Изменилось другое: теперь мы рассказываем вам об этом подробнее.\n\nСервисы, которые и раньше получали ваши поисковые запросы, теперь названы прямо. Появился новый раздел о данных о здоровье — он относится к импорту тренировок, который можно включить. А ещё мы раскрываем примерное местоположение, которое серверная часть поиска продуктов записывает вместе с запросом и хранит 24 часа.\n\nВаш дневник, как и раньше, остаётся на вашем устройстве.",
   "policyChangeNoticeReadAction": "Прочитать политику",
   "policyChangeNoticeDismissAction": "Понятно",
   "disclaimerAcknowledgeLabel": "Я понимаю",
   "errorLoadingFavourites": "Ошибка при загрузке избранного",
-  "exportImportErrorUnreadableLabel": "Не удалось прочитать выбранный файл. Выберите .zip бэкап, который экспортировал OpenNutriTracker.",
+  "exportImportErrorUnreadableLabel": "Не удалось прочитать выбранный файл. Выберите .zip-файл резервной копии, экспортированный OpenNutriTracker.",
   "exportImportErrorWriteFailedLabel": "Не удалось сохранить файл по выбранному пути. Попробуйте другую папку.",
   "favouriteAddTooltip": "Добавить в избранное",
   "favouriteRemoveTooltip": "Убрать из избранного",
-  "favouritesEmptySubtitle": "Нажмите на звезду на любом продукте или еде, чтобы сохранить здесь, под рукой.",
+  "favouritesEmptySubtitle": "Нажмите на звезду у любого продукта или приёма пищи, чтобы сохранить его здесь и быстро добавлять в дневник.",
   "favouritesEmptyTitle": "Пока в избранном пусто",
   "favouritesLabel": "Избранное",
-  "sharedMealUnnamedLabel": "Продукт без имени",
+  "sharedMealUnnamedLabel": "Продукт без названия",
   "minuteShortLabel": "мин",
   "@minuteShortLabel": {
     "description": "Short unit after a duration of activity in minutes, e.g. '30 min'."
   },
-  "noResultsSubtitle": "Продукты по поиску не найдены. Попробуйте другое название, отсканируйте штрих-код или создайте свой.",
+  "noResultsSubtitle": "Продукты по такому запросу не найдены. Попробуйте другое название, отсканируйте штрихкод или создайте свой.",
   "noResultsScanBarcode": "Сканировать штрихкод",
   "noResultsCreateCustomFood": "Создать свой продукт",
   "noResultsSearchAll": "Поиск везде",
   "partialResultsNotice": "Один из источников данных не ответил. Некоторые результаты могут отсутствовать.",
-  "partialResultsAllSourcesDownNotice": "Ни один онлайн источник данных не ответил. Показаны только сохраненные продукты.",
-  "onboardingAdultEquationNotice": "Цели калорий рассчитаны с помощью уравнений для взрослых. В возрасте до 19, проконсультируйтесь с врачом или диетологом.",
+  "partialResultsAllSourcesDownNotice": "Ни один онлайн-источник не ответил. Показаны только сохранённые продукты.",
+  "onboardingAdultEquationNotice": "Норма калорий рассчитана по уравнениям для взрослых. Если вам меньше 19 лет, проверьте результат у врача или диетолога.",
   "onboardingBlockedActivitySnack": "Выберите уровень вашей активности, чтобы продолжить",
   "onboardingBlockedBodySnack": "Введите корректные рост и вес, чтобы продолжить",
   "onboardingBlockedDemoPolicySnack": "Примите политику конфиденциальности, чтобы попробовать демо",
-  "onboardingBlockedGoalSnack": "Выберите целевой вес, чтобы продолжить",
+  "onboardingBlockedGoalSnack": "Выберите цель по весу, чтобы продолжить",
   "onboardingBlockedOverviewSnack": "Некоторые детали отсутствуют. Вернитесь и завершите предыдущие шаги.",
-  "onboardingBlockedPolicySnack": "Прмите политику конфеденциальности, чтобы продолжить",
-  "onboardingBlockedProfileSnack": "Введите пол и дату рождения, чтобы продолжить",
-  "onboardingFoodSourcesEnabledCount": "{enabled} из {total} включены",
+  "onboardingBlockedPolicySnack": "Примите политику конфиденциальности, чтобы продолжить",
+  "onboardingBlockedProfileSnack": "Выберите пол и введите дату рождения, чтобы продолжить",
+  "onboardingFoodSourcesEnabledCount": "{enabled} из {total} включено",
   "@onboardingFoodSourcesEnabledCount": {
     "placeholders": {
       "enabled": {
@@ -1354,7 +1354,7 @@
       }
     }
   },
-  "onboardingGoalSuggestionTarget": "На основе введенного целевого веса.",
+  "onboardingGoalSuggestionTarget": "На основе введённого целевого веса.",
   "onboardingHealthyRangeLabel": "Здоровый диапазон для {height}: {range}",
   "@onboardingHealthyRangeLabel": {
     "placeholders": {
@@ -1366,9 +1366,9 @@
       }
     }
   },
-  "onboardingHealthyRangeSource": "ВОЗ, ИМТ 18.5–24.9",
+  "onboardingHealthyRangeSource": "ВОЗ, ИМТ 18,5–24,9",
   "onboardingImplausibleChange": "Изменить",
-  "onboardingImplausibleHeightBody": "{value} необычный рост. Оставить?",
+  "onboardingImplausibleHeightBody": "{value} — необычный рост. Оставить?",
   "@onboardingImplausibleHeightBody": {
     "placeholders": {
       "value": {
@@ -1378,7 +1378,7 @@
   },
   "onboardingImplausibleKeep": "Оставить",
   "onboardingImplausibleTitle": "Перепроверьте значение",
-  "onboardingImplausibleWeightBody": "{value} необычный вес. Оставить?",
+  "onboardingImplausibleWeightBody": "{value} — необычный вес. Оставить?",
   "@onboardingImplausibleWeightBody": {
     "placeholders": {
       "value": {
@@ -1389,17 +1389,17 @@
   "paEllipticalTrainer": "эллиптический тренажёр",
   "paRowingMachine": "гребный тренажёр",
   "paYoga": "йога",
-  "recipeTotalWeightCalculatedHelper": "По умолчанию — сумма ингредиентов. Жидкости приблизительно считаются как 1 мл ≈ 1 г.",
-  "recipeTotalWeightManualHelper": "Введено вручную, поэтому изменение ингредиентов не изменит его.",
+  "recipeTotalWeightCalculatedHelper": "Рассчитано по ингредиентам. Жидкости приблизительно считаются как 1 мл ≈ 1 г.",
+  "recipeTotalWeightManualHelper": "Задано вручную, поэтому не изменится при смене ингредиентов.",
   "recipeTotalWeightUseIngredientTotalButton": "Использовать суммарный вес ингредиентов",
-  "sendCrashReports": "Отправить отчет о вылете",
-  "settingsKjAdjustmentLabel": "Ежедневная корректировка кДж",
-  "settingsDefaultToRawFoodUnitsLabel": "По умолчанию использовать вес или объем, а не порции",
-  "settingsDefaultToRawFoodUnitsSubtitle": "Когда продукт имеет порции, записывать вес или объем. Вы всё ещё можете выбрать порции в меню единиц измерения.",
-  "bulkAddTitle": "Добавить несколько пунктов",
-  "bulkAddInputHint": "2 яйца, 100 г тостов, черный кофе",
+  "sendCrashReports": "Отправлять отчёты о сбоях",
+  "settingsKjAdjustmentLabel": "Дневная корректировка кДж",
+  "settingsDefaultToRawFoodUnitsLabel": "По умолчанию использовать вес или объём, а не порции",
+  "settingsDefaultToRawFoodUnitsSubtitle": "Если у продукта есть порция, записывать вес или объём. Порцию по-прежнему можно выбрать в списке единиц.",
+  "bulkAddTitle": "Добавить несколько позиций",
+  "bulkAddInputHint": "2 яйца, 100 г тоста, чёрный кофе",
   "bulkAddParseLabel": "Найти продукты",
-  "bulkAddSubmitLabel": "Записать {count} позиций",
+  "bulkAddSubmitLabel": "{count, plural, one{Записать {count} позицию} few{Записать {count} позиции} many{Записать {count} позиций} other{Записать {count} позиции}}",
   "@bulkAddSubmitLabel": {
     "placeholders": {
       "count": {
@@ -1418,7 +1418,7 @@
       }
     }
   },
-  "bulkAddErrorQuantityTooSmall": "Позиция {number}: количесто должно быть больше 0",
+  "bulkAddErrorQuantityTooSmall": "Позиция {number}: количество должно быть больше 0",
   "@bulkAddErrorQuantityTooSmall": {
     "placeholders": {
       "number": {
@@ -1447,18 +1447,18 @@
       }
     }
   },
-  "settingsAiAssistLabel": "ИИ помощник",
+  "settingsAiAssistLabel": "ИИ-помощник",
   "settingsAiAssistNotConfiguredLabel": "Выключен — нет ключа",
-  "settingsAiAssistOnLabel": "Включен",
-  "settingsAiAssistPausedLabel": "Приостановлен — ключ сохранен",
-  "settingsAiAssistEnabledLabel": "Использовать ИИ помощника",
-  "bulkAddPhotoKeyRejectedLabel": "Ваш API ключ был отклонён. Проверьте его в Настройках.",
+  "settingsAiAssistOnLabel": "Включён",
+  "settingsAiAssistPausedLabel": "Приостановлен — ключ сохранён",
+  "settingsAiAssistEnabledLabel": "Использовать ИИ-помощника",
+  "bulkAddPhotoKeyRejectedLabel": "Ваш API-ключ отклонён. Проверьте его в настройках.",
   "bulkAddPhotoCameraFailedLabel": "Не удалось открыть камеру. Проверьте разрешение на камеру и попробуйте ещё раз.",
   "bulkAddPhotoUnreadableLabel": "Не удалось использовать это изображение. Попробуйте другое фото.",
   "bulkAddPhotoUnsupportedLabel": "Эта модель не может распознавать фотографии. Выберите другую в Настройках или введите позиции вручную.",
   "bulkAddPhotoFailedLabel": "Не удалось распознать фото. Проверьте соединение и попробуйте ещё раз.",
-  "bulkAddPhotoNoCreditLabel": "Не удалось оплатить запрос: на Вашей учетной записи закончился баланс. Пополните у провайдера или введите позиции вручную.",
-  "bulkAddPhotoNoFoodLabel": "Не удалось распознать еду на фото. Попробуйте другое фото или введите позиции вручную.",
+  "bulkAddPhotoNoCreditLabel": "Не удалось оплатить запрос: на вашем аккаунте у провайдера закончился баланс. Пополните баланс у провайдера или введите позиции вручную.",
+  "bulkAddPhotoNoFoodLabel": "На фото не найдено продуктов. Попробуйте другое фото или введите позиции вручную.",
   "settingsHealthSyncSubtitle": "Импорт тренировок",
   "healthSyncAutoImportLabel": "Автоматически импортировать тренировки из {platform}",
   "@healthSyncAutoImportLabel": {
@@ -1476,7 +1476,7 @@
       }
     }
   },
-  "healthSyncSuggestedLabel": "Предложено для Вас: {percent}%",
+  "healthSyncSuggestedLabel": "Предложено для вас: {percent}%",
   "@healthSyncSuggestedLabel": {
     "placeholders": {
       "percent": {
@@ -1510,7 +1510,7 @@
       }
     }
   },
-  "healthSyncDisclosureBody": "OpenNutriTracker будет видеть Ваши завершенные тренировки в {platform} — их тип, когда они проходили, как долго они длились и сколько энергозатрат они зафиксировали.\n\nТренировки записаны в Вашем дневнике как активности, которые можно редактировать и удалять, а энергозатраты этих тренировок поднимают цель по калориям в этот день на ту часть, которую Вы выберете.",
+  "healthSyncDisclosureBody": "OpenNutriTracker будет читать ваши завершённые тренировки из {platform}: их тип, время, длительность и сообщаемые затраты энергии.\n\nТренировки добавляются в дневник как активности, которые можно редактировать и удалять, а затраты энергии повышают цель по калориям на этот день на выбранную вами долю.",
   "@healthSyncDisclosureBody": {
     "placeholders": {
       "platform": {
@@ -1518,7 +1518,7 @@
       }
     }
   },
-  "healthSyncDisclosureBodyFatAddendum": "OpenNutriTracker также сможет видеть последний отчет о проценте жира, который есть в {platform}. Этот процент жира будет использован, чтобы предложить эту долю.",
+  "healthSyncDisclosureBodyFatAddendum": "OpenNutriTracker также будет читать из {platform} последнее значение процента жира в организме. Оно используется, чтобы предложить эту долю.",
   "@healthSyncDisclosureBodyFatAddendum": {
     "placeholders": {
       "platform": {
@@ -1526,7 +1526,7 @@
       }
     }
   },
-  "healthSyncDisclosureFooter": "Ничего не записывается в {platform} и ничего никуда не отправляется — все остается на устройстве.\n\nВы можете отключить это в любое время, что остановит доступ к информации.",
+  "healthSyncDisclosureFooter": "Ничего не записывается обратно в {platform} и никуда не отправляется — всё остаётся на этом устройстве.\n\nЭто можно отключить в любое время, и чтение данных сразу прекратится.",
   "@healthSyncDisclosureFooter": {
     "placeholders": {
       "platform": {
@@ -1535,10 +1535,10 @@
     }
   },
   "healthSyncDisclosureContinueAction": "Продолжить",
-  "healthSyncUnavailableLabel": "Данные о состоянии здоровья на этом устройстве отсутствуют. Для импорта тренировок необходимы Health Connect на Android или Apple Health на iOS.",
-  "sharedMealUnavailableLabel": "Недоступно — этот элемент будет пропущен.",
+  "healthSyncUnavailableLabel": "Данные о здоровье недоступны на этом устройстве. Для импорта тренировок нужны Health Connect на Android или Apple Health на iOS.",
+  "sharedMealUnavailableLabel": "Недоступно — эта позиция будет пропущена.",
   "sharedMealTotalLabel": "Итого",
-  "sharedMealPartialTotalLabel": "Итого (неполный)",
+  "sharedMealPartialTotalLabel": "Итого (неполные данные)",
   "onboardingGoalSuggestedBadge": "Предлагаем",
   "onboardingHealthyRangeApply": "Использовать {weight}",
   "@onboardingHealthyRangeApply": {
@@ -1550,35 +1550,35 @@
   },
   "paCalisthenicsVigorous": "калистеника (интенсивная)",
   "paCircuitTraining": "круговая тренировка",
-  "paCalisthenicsVigorousDesc": "интенсивная нагрузка (прим.: отжимания, приседания, подтягивания, прыжки, берпи)",
+  "paCalisthenicsVigorousDesc": "интенсивная нагрузка (напр., отжимания, скручивания, подтягивания, прыжки «звёздочка», берпи)",
   "paCircuitTrainingDesc": "включая упражнения с гирей, некоторые аэробные упражнения с минимальным отдыхом, высокая интенсивность",
-  "settingsDeleteAllDataConfirmContent": "Это удаляет ваш профиль, питание, деятельность, историю веса и сеансы голодания только для текущего профиля. Он также удаляет любой ключ провайдера ИИ и адрес сервера, которые разделены каждым профилем на этом устройстве. Общее содержание (таможенные приемы, рецепты, шаблоны деятельности) и Open Food Facts и каталоги USDA Food Data Central не затрагиваются. Это нельзя отменить.",
+  "settingsDeleteAllDataConfirmContent": "Будут удалены профиль, приёмы пищи, активности, история веса и сессии голодания, но только для текущего профиля. Также будут удалены ключ провайдера ИИ и адрес сервера — они общие для всех профилей на этом устройстве. Общие данные (свои продукты, рецепты, шаблоны активностей), а также каталоги Open Food Facts и USDA Food Data Central не затрагиваются. Отменить это нельзя.",
   "aiAssistExperimentalLabel": "Экспериментальный",
   "bulkAddModelHintKeyLabel": "С собственным API-ключом",
   "aiAssistProviderOwnServerLabel": "Ваш собственный сервер",
   "aiAssistEndpointFieldLabel": "Адрес сервера",
   "aiAssistModelFieldLabel": "Название модели",
   "aiAssistModelRequiredLabel": "Назовите модель, которую должен использовать этот сервер.",
-  "aiAssistEndpointPublicPlaintextLabel": "Этот адрес является публичным и незашифрованным, поэтому запросы на него отклоняются. Используйте https, или частный адрес.",
-  "aiAssistProbeSectionLabel": "Проверка установки",
+  "aiAssistEndpointPublicPlaintextLabel": "Этот адрес публичный и незашифрованный, поэтому запросы к нему отклоняются. Используйте https или частный адрес.",
+  "aiAssistProbeSectionLabel": "Проверка настройки",
   "aiAssistProbePhotoLabel": "Фотографии",
   "aiAssistPickModelLabel": "Выберите модель",
-  "paStairTreadmillErgometer": "Тренажер лестница",
+  "paStairTreadmillErgometer": "лестничный эргометр",
   "paYogaDesc": "общая, хатха",
-  "suggestedLabel": "Предлагаем",
+  "suggestedLabel": "Предложено",
   "bulkAddIncludeLabel": "Добавить",
-  "bulkAddCheckAmountLabel": "Проверьте единицы для этого количества",
-  "aiAssistExperimentalNote": "Эта функция может быть изменена или удалена, и предлагаемые провайдеры и модели тоже могут измениться.",
+  "bulkAddCheckAmountLabel": "Проверьте единицу измерения для этого количества",
+  "aiAssistExperimentalNote": "Эта функция может измениться или исчезнуть, а вместе с ней — список провайдеров и моделей.",
   "aiConsentTitle": "Прежде чем включить",
-  "bulkAddModelHintLabel": "Модель может прочесть это для Вас",
-  "aiConsentChangeProviderNote": "Вы можете изменить провайдера позже. Условия каждого провайдера отображаются в Настройках, и ничего из того, что вы вводите или фотографируете, не отправляется до тех пор, пока вы не используете эту функцию.",
-  "aiConsentOwnServerCheckNote": "Сохранение адреса вашего сервера также спрашивает, какие модели он предлагает, и запускает одну проверку настройки — фиксированную строку-пример и пример фотографии от нас, никогда из вашего.",
+  "bulkAddModelHintLabel": "Модель может прочитать это за вас",
+  "aiConsentChangeProviderNote": "Провайдера можно сменить позже. Условия каждого провайдера показаны в настройках. Ничто из того, что вы вводите или фотографируете, не отправляется, пока вы не начнёте пользоваться функцией.",
+  "aiConsentOwnServerCheckNote": "При сохранении адреса сервера приложение также запрашивает у него список доступных моделей и выполняет одну проверку настройки: на фиксированной строке-примере и нашем образце фото, но никогда на ваших данных.",
   "aiConsentAgreeLabel": "Я ПОНИМАЮ",
-  "aiAssistDisclosureCommon": "Ваш дневник и ваш профиль никогда не отправляются. Пищевая ценность всегда приходят из баз данных продуктов, никогда не из модели. Ключ хранится только на этом устройстве: OpenNutriTracker никогда не видит его и не платит за его использование.",
-  "aiAssistDisclosureAnthropic": "С сохраненным ключом текст, который вы вводите на экране добавления нескольких элементов и любая фотография, которую вы выбираете распознать там, отправляется в Anthropic. Фотографии отправляются для этого одного запроса и никогда не сохраняются.",
-  "aiAssistDisclosureOpenRouter": "С сохраненным ключом текст, который вы вводите на экране добавления нескольких элементов и любая фотография, которую вы выбираете распознать там, отправляется в OpenRouter, которая перенаправляет их провайдеру, предоставляющему услуги выбранной модели. OpenRouter также перенаправляет данные аккаунта этому провайдеру с каждым запросом, это не может быть отключено. OpenRouter не держит содержание запроса ни для чего, кроме маршрутизации, обнаружения недобросовестного использования, соблюдения безопасности, выставления счетов и проверки на соответствие законодательству. Поставщик модели обрабатывает и сохраняет Вашу информацию по своей политике конфиденциальности.",
-  "aiAssistDisclosureOpenAI": "С сохраненным ключом текст, который вы вводите на экране добавления нескольких элементов и любая фотография, которую вы выбираете распознать там, отправляется в OpenAI. OpenAI сохраняет отправляемое им в течение 30 дней, чтобы мониторить на недобросовестное использование и дольше, если того требует закон или если это необходимо, чтобы защитить их сервисы или совместителей от вреда.",
-  "aiAssistDisclosureOwnServerSecure": "С сохраненным адресом текст, который вы вводите на экране добавления нескольких элементов и любая фотография, которую вы выбираете распознать там, отправляется на {host} — сервер, который содержите Вы. Ни одна третья сторона не получает Ваш запрос, данный проект не имеет связи с сервером и не может обещать ничего о том, что он сохраняет. Соединение зашифровано.",
+  "aiAssistDisclosureCommon": "Ваш дневник и ваш профиль никогда не отправляются. Пищевая ценность всегда берётся из баз данных продуктов, а не от модели. Ключ хранится только на этом устройстве: OpenNutriTracker его не видит и не оплачивает его использование.",
+  "aiAssistDisclosureAnthropic": "С сохранённым ключом текст, который вы вводите на экране добавления нескольких позиций, и любое фото, которое вы выбираете для распознавания, отправляются в Anthropic. Фото отправляется только для этого запроса и никогда не сохраняется.",
+  "aiAssistDisclosureOpenRouter": "С сохранённым ключом текст, который вы вводите на экране добавления нескольких позиций, и любое фото, которое вы выбираете для распознавания, отправляются в OpenRouter, а он передаёт их провайдеру выбранной модели. С каждым запросом OpenRouter также передаёт этому провайдеру данные аккаунта, и это нельзя отключить. OpenRouter не хранит содержимое запроса дольше, чем нужно для маршрутизации, кроме случаев, когда этого требуют защита от злоупотреблений, безопасность, выставление счетов или соблюдение закона. Поставщик, обслуживающий вашу модель, хранит полученное по собственной политике.",
+  "aiAssistDisclosureOpenAI": "С сохранённым ключом текст, который вы вводите на экране добавления нескольких позиций, и любое фото, которое вы выбираете для распознавания, отправляются в OpenAI. OpenAI хранит отправленное до 30 дней для выявления злоупотреблений, а дольше — если этого требует закон или это разумно необходимо для защиты своих сервисов или третьих лиц от вреда.",
+  "aiAssistDisclosureOwnServerSecure": "С сохранённым адресом текст, который вы вводите на экране добавления нескольких позиций, и любое фото, которое вы выбираете для распознавания, отправляются на {host} — сервер, который вы запускаете сами. Третьи лица их не получают, а проект никак не связан с этим сервером и не может ничего гарантировать о том, что тот хранит. Соединение зашифровано.",
   "@aiAssistDisclosureOwnServerSecure": {
     "placeholders": {
       "host": {
@@ -1586,7 +1586,7 @@
       }
     }
   },
-  "aiAssistDisclosureOwnServerPlaintext": "С сохраненным адресом текст, который вы вводите на экране добавления нескольких элементов и любая фотография, которую вы выбираете распознать там, отправляется на {host} — сервер, который содержите Вы. Ни одна третья сторона не получает Ваш запрос, данный проект не имеет связи с сервером и не может обещать ничего о том, что он сохраняет. Этот адрес — простой HTTP, так что соединение не зашифровано: все в сети могут читать трафик между этим телефоном и сервером.",
+  "aiAssistDisclosureOwnServerPlaintext": "С сохранённым адресом текст, который вы вводите на экране добавления нескольких позиций, и любое фото, которое вы выбираете для распознавания, отправляются на {host} — сервер, который вы запускаете сами. Третьи лица их не получают, а проект никак не связан с этим сервером и не может ничего гарантировать о том, что тот хранит. Адрес использует простой HTTP, поэтому соединение не зашифровано: всё, что находится в сети между этим телефоном и сервером, может прочитать отправляемые данные.",
   "@aiAssistDisclosureOwnServerPlaintext": {
     "placeholders": {
       "host": {
@@ -1596,9 +1596,9 @@
   },
   "aiAssistEndpointInvalidLabel": "Введите адрес, начинающийся с http:// или https://",
   "aiAssistProbeCheckLabel": "Проверить этот сервер",
-  "aiAssistProbeNoAnswerLabel": "Проверили — ответа не вернулось, поэтому ничего не узнали об этом сервере. Попробуйте снова, когда он доступен.",
+  "aiAssistProbeNoAnswerLabel": "Проверено — ответа не пришло, поэтому об этом сервере ничего не удалось узнать. Попробуйте снова, когда он будет включён и доступен.",
   "aiAssistLoadModelsLabel": "Загрузить модели",
-  "aiAssistModelsUnreachableLabel": "Невозможно достичь {host}. Он может быть выключен, в другой сети или за VPN — вместо этого введите имя модели.",
+  "aiAssistModelsUnreachableLabel": "Не удалось связаться с {host}. Возможно, сервер выключен, находится в другой сети или за VPN — введите название модели вручную.",
   "@aiAssistModelsUnreachableLabel": {
     "placeholders": {
       "host": {
@@ -1606,7 +1606,7 @@
       }
     }
   },
-  "aiAssistModelsEmptyLabel": "{host} ответил, и не предоставил список моделей. Введите название модели вручную.",
+  "aiAssistModelsEmptyLabel": "От {host} получен ответ, но список моделей пуст. Введите название модели вручную.",
   "@aiAssistModelsEmptyLabel": {
     "placeholders": {
       "host": {
@@ -1614,7 +1614,7 @@
       }
     }
   },
-  "aiAssistModelsRejectedLabel": "{host} ответил, но не списком моделей. Проверьте адрес или введите название модели вручную.",
+  "aiAssistModelsRejectedLabel": "От {host} получен ответ, но это не список моделей. Проверьте адрес или введите название модели вручную.",
   "@aiAssistModelsRejectedLabel": {
     "placeholders": {
       "host": {
@@ -1634,8 +1634,8 @@
     }
   },
   "aiAssistModelCheapestLabel": "Самая дешёвая в списке",
-  "aiAssistNoKeyForProviderLabel": "Нет сохраненного ключа для этого провайдера.",
-  "aiAssistKeyFieldLabel": "API ключ {provider}",
+  "aiAssistNoKeyForProviderLabel": "Нет сохранённого ключа для этого провайдера.",
+  "aiAssistKeyFieldLabel": "API-ключ {provider}",
   "@aiAssistKeyFieldLabel": {
     "placeholders": {
       "provider": {
@@ -1643,8 +1643,8 @@
       }
     }
   },
-  "aiAssistKeySavedLabel": "Ключ сохранен",
-  "bulkAddModelKeyRejectedLabel": "ИИ не сработал: ваш API ключ был отклонен.",
+  "aiAssistKeySavedLabel": "Ключ сохранён",
+  "bulkAddModelKeyRejectedLabel": "ИИ не сработал: ваш API-ключ отклонён.",
   "bulkAddModelUnsupportedLabel": "ИИ не сработал: не удалось использовать выбранную модель.",
   "bulkAddModelNoCreditLabel": "ИИ не сработал: на вашем аккаунте у провайдера исчерпан баланс.",
   "bulkAddModelInsecureServerLabel": "ИИ не сработал: этот адрес является публичным и незашифрованным.",
@@ -1659,8 +1659,8 @@
   },
   "bulkAddWaitModelLoadingLabel": "Ваш сервер может загружать свою модель. Первый запрос после простоя может занять минуту или две, это нормально.",
   "bulkAddPhotoDisclosureCommon": "OpenNutriTracker не хранит копию фото, и она никогда не экспортируется.",
-  "bulkAddPhotoDisclosureAnthropic": "Фото отправляется Antrhopic, чтобы идентифицировать продукты на нём.",
-  "bulkAddPhotoDisclosureOpenRouter": "Фото отправляется в OpenRouter, который передает его {provider} для идентификации продуктов на нём.",
+  "bulkAddPhotoDisclosureAnthropic": "Фото отправляется в Anthropic, чтобы определить продукты на нём.",
+  "bulkAddPhotoDisclosureOpenRouter": "Фото отправляется в OpenRouter, а он передаёт его {provider}, чтобы определить продукты на нём.",
   "@bulkAddPhotoDisclosureOpenRouter": {
     "placeholders": {
       "provider": {
@@ -1668,8 +1668,8 @@
       }
     }
   },
-  "bulkAddPhotoDisclosureOpenAI": "Фото отправляется в OpenAI для идентификации продуктов на нем. OpenAI держит его до 30 дней для мониторинга за злоупотреблениями, и дольше, если закон требует этого или оно необходимо для защиты их сервисов или третьей стороны от вреда.",
-  "bulkAddPhotoDisclosureOwnServer": "Фотография отправляется на {host}, чтобы идентифицировать продукты на ней.",
+  "bulkAddPhotoDisclosureOpenAI": "Фото отправляется в OpenAI, чтобы определить продукты на нём. OpenAI хранит его до 30 дней для выявления злоупотреблений, а дольше — если этого требует закон или это разумно необходимо для защиты своих сервисов или третьих лиц от вреда.",
+  "bulkAddPhotoDisclosureOwnServer": "Фото отправляется на {host}, чтобы определить продукты на нём.",
   "@bulkAddPhotoDisclosureOwnServer": {
     "placeholders": {
       "host": {
@@ -1677,8 +1677,8 @@
       }
     }
   },
-  "bulkAddReviewTitle": "Просмотреть элементы",
-  "bulkAddToListLabel": "Добавить {count} элементов",
+  "bulkAddReviewTitle": "Проверка позиций",
+  "bulkAddToListLabel": "{count, plural, one{Добавить {count} позицию} few{Добавить {count} позиции} many{Добавить {count} позиций} other{Добавить {count} позиции}}",
   "@bulkAddToListLabel": {
     "placeholders": {
       "count": {
@@ -1686,15 +1686,54 @@
       }
     }
   },
-  "logTrayLogFailedLabel": "Не удалось записать эти позции. Попробуйте ещё раз.",
+  "logTrayLogFailedLabel": "Не удалось записать эти позиции. Попробуйте ещё раз.",
   "aiAssistModelRecommendedLabel": "Рекомендовано",
-  "aiAssistModelCheaperLabel": "Дешевле и слабее на некачественных фотографиях",
+  "aiAssistModelCheaperLabel": "Дешевле, но хуже справляется с фото плохого качества",
   "aiAssistRemoveKeyLabel": "Удалить ключ",
-  "bulkAddPhotoUnavailableLabel": "Включите помощь ИИ в настройках для чтения фотографий",
+  "bulkAddPhotoUnavailableLabel": "Чтобы распознавать фото, включите ИИ-помощника в настройках",
   "bulkAddYourPhotoLabel": "Ваше фото",
   "addToListLabel": "Добавить в список",
   "logTrayRemoveLabel": "Удалить из списка",
   "logTrayAddedLabel": "Добавлено в список",
   "bulkAddWaitCancelLabel": "Отмена",
-  "logTrayClearLabel": "Очистить"
+  "sharedMealParseLabel": "Прочитать код",
+  "sharedMealInvalidCodeLabel": "Введите корректный код общего приёма пищи.",
+  "missingProductInfoFields": "Не хватает: {fields}",
+  "paTrackField1": "лёгкая атлетика (метания)",
+  "paTrackField2": "лёгкая атлетика (прыжки и метание копья)",
+  "paTrackField3": "лёгкая атлетика (барьерный бег)",
+  "bulkAddNoMatchLabel": "Не удалось подобрать продукт для этой позиции",
+  "bulkAddUncertainLabel": "Проверьте, тот ли это продукт",
+  "bulkAddChooseFoodLabel": "Выбрать другой продукт",
+  "bulkAddSearchFailedLabel": "Не удалось выполнить поиск по этим продуктам",
+  "aiAssistProbeRunningLabel": "Проверяем этот сервер. Две проверки идут одна за другой, поэтому это может занять до {minutes, plural, one{{minutes} минуты} few{{minutes} минут} many{{minutes} минут} other{{minutes} минуты}}. Можно закрыть экран — ответ будет здесь, когда вы вернётесь.",
+  "aiAssistProbeTextLabel": "Текстовое описание",
+  "aiAssistProbePassedLabel": "Проверено: сервер ответил списком позиций.",
+  "aiAssistProbeUnknownLabel": "Ещё не проверено.",
+  "aiAssistProbeTextFailedLabel": "Проверено: модель не вернула ни одной позиции. Текст приёма пищи по-прежнему разбирает встроенный офлайн-анализатор, а проверку можно повторить.",
+  "aiAssistProbePhotoFailedLabel": "Проверено: по фотографии модель не вернула ни одной позиции, поэтому распознавание фото для этого сервера недоступно.",
+  "aiAssistModelMoreItemsLabel": "Находит больше позиций на фото",
+  "bulkAddReadByModelLabel": "Распознано ИИ — проверьте каждую строку",
+  "bulkAddPhotoLabel": "Распознать по фото",
+  "bulkAddReadFromPhotoLabel": "Распознано по фото — проверьте каждый продукт и количество",
+  "addMealSnapMealLabel": "Сфотографировать",
+  "addMealDescribeLabel": "Описать",
+  "bulkAddUpdateMatchesLabel": "Обновить совпадения",
+  "bulkAddRetakeLabel": "Переснять",
+  "logTrayTitle": "К записи · {count}",
+  "healthSyncKcalMultiplierLabel": "Зачёт калорий за тренировку",
+  "healthSyncKcalMultiplierSubtitle": "Обычно организм компенсирует нагрузку: в остальное время дня он сжигает меньше калорий. При 100% в дневную цель засчитываются все калории тренировки.",
+  "healthSyncImportedCountLabel": "{count, plural, =0{Новых тренировок нет} one{Импортирована {count} тренировка} few{Импортировано {count} тренировки} many{Импортировано {count} тренировок} other{Импортировано {count} тренировки}}",
+  "sourcesEnergyCompensationTitle": "Зачёт калорий за тренировку",
+  "sourcesEnergyCompensationDescription": "Импортированным тренировкам засчитывается меньше энергии, чем сообщает ваше устройство. Люди компенсируют нагрузку: в остальное время дня они сжигают меньше калорий — в среднем примерно на 28%, а при более высоком проценте жира в организме ещё меньше. Предлагаемый зачёт основан на этих исследованиях, и вы можете изменить его в разделе «Настройки → Синхронизация данных о здоровье». Саму энергию сообщает приложение или устройство, записавшее тренировку; она не рассчитывается по формуле MET, которую использует приложение.",
+  "storageRecoveryTitle": "Не удалось безопасно открыть локальные данные",
+  "storageRecoveryMessage": "Файлы с вашими данными не изменены. Попробуйте ещё раз. Если проблема не исчезнет, обратитесь в поддержку, прежде чем очищать данные приложения или переустанавливать его.",
+  "storageRecoveryErrorCode": "Код ошибки: {code}",
+  "editMealMacrosExceedBaseQuantityLabel": "Сумма белков, жиров и углеводов ({total} г) превышает базовое количество ({base} г)",
+  "editMealKcalTooHighLabel": "Значение ккал выглядит слишком высоким для {quantity} г/мл",
+  "unsplashPhotoCreditLabel": "Фото: {name} / Unsplash",
+  "trendsWeeksToGoalCountLabel": "{count, plural, one{{count} неделя до цели} few{{count} недели до цели} many{{count} недель до цели} other{{count} недели до цели}}",
+  "durationHoursMinutesShort": "{hours} ч {minutes} мин",
+  "durationMinutesShort": "{minutes} мин",
+  "trendsRangeDaysShort": "{days} д"
 }

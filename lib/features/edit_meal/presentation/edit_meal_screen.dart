@@ -791,16 +791,20 @@ class _EditMealScreenState extends State<EditMealScreen> {
           final totalMacros = enteredCarbs + enteredFat + enteredProtein;
           if (totalMacros > baseQty * 1.05) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    'Total macros (${totalMacros.toStringAsFixed(1)}g) exceed base quantity (${baseQty.toStringAsFixed(0)}g)')));
+                content: Text(S
+                    .of(context)
+                    .editMealMacrosExceedBaseQuantityLabel(
+                        totalMacros.toStringAsFixed(1),
+                        baseQty.toStringAsFixed(0)))));
             return;
           }
         }
 
         if (enteredKcal != null && enteredKcal > baseQty * 9) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  'Kcal value seems too high for ${baseQty.toStringAsFixed(0)}g/ml')));
+              content: Text(S
+                  .of(context)
+                  .editMealKcalTooHighLabel(baseQty.toStringAsFixed(0)))));
           return;
         }
 

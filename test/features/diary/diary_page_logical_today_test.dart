@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:opennutritracker/core/domain/entity/app_theme_entity.dart';
 import 'package:opennutritracker/core/domain/entity/config_entity.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
@@ -72,6 +73,10 @@ class _FakeMealDetailBloc extends Fake implements MealDetailBloc {}
 class _FakeActivityDetailBloc extends Fake implements ActivityDetailBloc {}
 
 void main() {
+  // The production app gets date symbols from GlobalMaterialLocalizations;
+  // these tests only mount the app's own delegate.
+  setUpAll(() => initializeDateFormatting('en'));
+
   final locator = GetIt.instance;
   late _Config config;
   late DiaryBloc diaryBloc;

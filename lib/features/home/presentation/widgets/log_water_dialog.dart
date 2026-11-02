@@ -73,7 +73,7 @@ class _LogWaterDialogState extends State<LogWaterDialog> {
               min: 0,
               max: LogWaterDialog.sliderMaxMl.toDouble(),
               divisions: LogWaterDialog.sliderDivisions,
-              label: '${_selectedMl.round()} ml',
+              label: '${_selectedMl.round()} ${S.of(context).milliliterUnit}',
               onChanged: (value) {
                 setState(() => _selectedMl = value);
               },

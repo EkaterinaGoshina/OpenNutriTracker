@@ -30,6 +30,7 @@ class OffCountry {
     'HU': 'en:hungary',
     'TR': 'en:turkey',
     'UA': 'en:ukraine',
+    'RU': 'en:russia',
     'SE': 'en:sweden',
     'NO': 'en:norway',
     'DK': 'en:denmark',

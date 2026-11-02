@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/profile_entity.dart';
@@ -113,6 +114,10 @@ Future<void> _pumpOmadDay(
 }
 
 void main() {
+  // The production app gets date symbols from GlobalMaterialLocalizations;
+  // these tests only mount the app's own delegate.
+  setUpAll(() => initializeDateFormatting('en'));
+
   setUpAll(() {
     final locator = GetIt.instance;
     locator.registerFactory<MealDetailBloc>(_FakeMealDetailBloc.new);

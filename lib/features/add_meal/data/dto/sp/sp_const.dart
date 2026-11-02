@@ -170,10 +170,11 @@ class SPConst {
         return 'uk';
       case SupportedLanguage.hu:
       case SupportedLanguage.es:
-        // food_translation has no Hungarian or Spanish rows yet. Returning
+      case SupportedLanguage.ru:
+        // food_translation has no Hungarian, Spanish or Russian rows yet. Returning
         // the code would cost every search in these languages a
         // guaranteed-empty translation RPC before the English one, plus an
-        // empty portion-label request, for no result. Flip to 'hu' / 'es'
+        // empty portion-label request, for no result. Flip to 'hu' / 'es' / 'ru'
         // once the backend carries the rows.
         return null;
     }

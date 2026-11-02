@@ -112,9 +112,15 @@ class _RangeSelector extends StatelessWidget {
         child: SegmentedButton<int>(
           showSelectedIcon: false,
           segments: [
-            const ButtonSegment(value: 7, label: Text('7d')),
-            const ButtonSegment(value: 30, label: Text('30d')),
-            const ButtonSegment(value: 90, label: Text('90d')),
+            ButtonSegment(
+                value: 7,
+                label: Text(S.of(context).trendsRangeDaysShort(7))),
+            ButtonSegment(
+                value: 30,
+                label: Text(S.of(context).trendsRangeDaysShort(30))),
+            ButtonSegment(
+                value: 90,
+                label: Text(S.of(context).trendsRangeDaysShort(90))),
             // 0 is the "All" sentinel; the bloc resolves it to the full span.
             ButtonSegment(value: 0, label: Text(S.of(context).allItemsLabel)),
           ],
@@ -499,7 +505,7 @@ class _MacrosTrendCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis),
                 ),
                 const SizedBox(width: Dimens.spacing8),
-                Text('${intake.toInt()} / ${goal.toInt()} g',
+                Text('${intake.toInt()} / ${goal.toInt()} ${S.of(context).gramUnit}',
                     style: text.bodySmall?.copyWith(color: palette.textStrong, fontWeight: FontWeight.w700)),
               ],
             ),
@@ -611,8 +617,8 @@ class _WeightCard extends StatelessWidget {
     }
     var label = '$rateStr${S.of(context).trendsPerWeekSuffix}';
     if (projection.weeksToTarget != null) {
-      label += ' · ~${projection.weeksToTarget} '
-          '${S.of(context).trendsWeeksToGoalLabel}';
+      label += ' · ~'
+          '${S.of(context).trendsWeeksToGoalCountLabel(projection.weeksToTarget!)}';
     }
     return label;
   }

@@ -200,6 +200,32 @@ void main() {
       );
     });
 
+    test('Russian locale returns product_name_ru when present', () {
+      final product = _buildProduct(
+        product_name: 'Default Name - testValue',
+        product_name_en: 'English Name - testValue',
+        product_name_ru: 'Русское название - testValue',
+      );
+
+      expect(
+        product.getLocaleName(SupportedLanguage.ru),
+        equals('Русское название - testValue'),
+      );
+    });
+
+    test('Russian locale falls through to English when the name is absent', () {
+      final product = _buildProduct(
+        product_name: 'Default Name - testValue',
+        product_name_en: 'English Name - testValue',
+        product_name_ru: null,
+      );
+
+      expect(
+        product.getLocaleName(SupportedLanguage.ru),
+        equals('English Name - testValue'),
+      );
+    });
+
     test('Case 14: Hungarian locale falls through to English when the name '
         'is absent', () {
       final product = _buildProduct(
@@ -246,6 +272,11 @@ void main() {
     test('maps a Hungarian device locale, with or without a region', () {
       expect(SupportedLanguage.fromCode('hu_HU'), SupportedLanguage.hu);
       expect(SupportedLanguage.fromCode('hu'), SupportedLanguage.hu);
+    });
+
+    test('maps a Russian device locale, with or without a region', () {
+      expect(SupportedLanguage.fromCode('ru_RU'), SupportedLanguage.ru);
+      expect(SupportedLanguage.fromCode('ru'), SupportedLanguage.ru);
     });
 
     test('maps a Spanish device locale, with or without a region', () {
@@ -379,6 +410,7 @@ OFFProductDTO _buildProduct({
   String? product_name_uk,
   String? product_name_hu,
   String? product_name_es,
+  String? product_name_ru,
 }) {
   return OFFProductDTO(
     code: '123',
@@ -392,6 +424,7 @@ OFFProductDTO _buildProduct({
     product_name_uk: product_name_uk,
     product_name_hu: product_name_hu,
     product_name_es: product_name_es,
+    product_name_ru: product_name_ru,
     brands: null,
     image_front_thumb_url: null,
     image_front_url: null,

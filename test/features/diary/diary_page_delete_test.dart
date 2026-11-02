@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/intake_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/recipe_data_source.dart';
@@ -127,6 +128,10 @@ TrackedDayDBO _row(DateTime day, {required double goal, double kcal = 0}) =>
     );
 
 void main() {
+  // The production app gets date symbols from GlobalMaterialLocalizations;
+  // these tests only mount the app's own delegate.
+  setUpAll(() => initializeDateFormatting('en'));
+
   final locator = GetIt.instance;
   var boxTag = 0;
 

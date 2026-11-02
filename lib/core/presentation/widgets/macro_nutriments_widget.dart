@@ -113,7 +113,7 @@ class _MacroRing extends StatelessWidget {
               children: [
                 Text(
                   '${intake.isFinite ? intake.toInt() : 0}/'
-                  '${goal.isFinite ? goal.toInt() : 0} g',
+                  '${goal.isFinite ? goal.toInt() : 0} ${S.of(context).gramUnit}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.titleSmall?.copyWith(

@@ -51,6 +51,7 @@ void main() {
         SupportedLanguage.uk,
         SupportedLanguage.hu,
         SupportedLanguage.es,
+        SupportedLanguage.ru,
       ]) {
         expect(
           product().getLocaleName(language),

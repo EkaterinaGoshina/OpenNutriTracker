@@ -35,7 +35,7 @@ class _FastingHomeChipView extends StatelessWidget {
         if (state is! FastingActive) {
           return const SizedBox.shrink();
         }
-        final remaining = _formatHoursMinutes(state.remaining);
+        final remaining = _formatHoursMinutes(context, state.remaining);
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final palette = isDark ? AppPalette.dark : AppPalette.light;
         final accent = Theme.of(context).colorScheme.primary;
@@ -93,10 +93,11 @@ class _FastingHomeChipView extends StatelessWidget {
   }
 
   // Minutes resolution on the chip — seconds would twitch every tick.
-  String _formatHoursMinutes(Duration d) {
+  String _formatHoursMinutes(BuildContext context, Duration d) {
     final h = d.inHours;
     final m = d.inMinutes.remainder(60);
-    if (h == 0) return '${m}m';
-    return '${h}h ${m}m';
+    final s = S.of(context);
+    if (h == 0) return s.durationMinutesShort(m);
+    return s.durationHoursMinutesShort(h, m);
   }
 }
