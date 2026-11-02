@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:ui' show Locale, PlatformDispatcher;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show basicLocaleListResolution;
 import 'package:opennutritracker/core/l10n/app_locales.dart';
+import 'package:opennutritracker/core/utils/platform_info.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 /// The locale the app is being read in, for code that runs outside the
@@ -41,7 +41,7 @@ class AppLocale {
 
   static String get _systemLocaleName {
     final preferred = preferredLocales();
-    if (preferred.isEmpty) return Platform.localeName;
+    if (preferred.isEmpty) return PlatformInfo.localeName;
     return basicLocaleListResolution(
       preferred,
       appLocales(S.supportedLocales),

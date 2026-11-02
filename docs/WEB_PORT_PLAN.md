@@ -46,12 +46,12 @@
 
 ## Шаги
 
-1. [ ] Создать fork на личном аккаунте GitHub, переключить `origin` на него, оригинал оставить как `upstream`.
-2. [ ] Установить Flutter 3.44.6 (в `~/development/flutter`).
-3. [ ] Создать `.env` из `.env.example`, запустить `just install` и `just build` (кодогенерация).
-4. [ ] `flutter create --platforms web .`, первая пробная сборка, собрать список ошибок компилятора.
-5. [ ] Убрать `dart:io` из общего кода: ввести абстракции для файлов и платформы.
-6. [ ] Хранилище: Hive в вебе, решение по шифрованию.
+1. [x] Создать fork на личном аккаунте GitHub, переключить `origin` на него, оригинал оставить как `upstream`.
+2. [x] Установить Flutter 3.44.6 (в `~/development/flutter`).
+3. [x] Создать `.env` из `.env.example`, запустить `just install` и `just build` (кодогенерация).
+4. [x] `flutter create --platforms web .`, первая пробная сборка, собрать список ошибок компилятора.
+5. [~] Убрать `dart:io` из общего кода: ввести абстракции для файлов и платформы.
+6. [~] Хранилище: Hive в вебе, решение по шифрованию.
 7. [ ] Фото, экспорт и импорт через браузерные API.
 8. [ ] Отключить на вебе: health, виджет, уведомления, системный язык.
 9. [ ] Проверить CORS для Open Food Facts, Supabase и AI-провайдеров.
@@ -61,3 +61,30 @@
 ## Альтернатива, которую не выбираем
 
 Переписать на React или Vue: потребуется заново написать весь UI и логику, это 80 тыс. строк и несколько месяцев. Имеет смысл только при потребности в SEO или другой команде без опыта во Flutter.
+
+## Журнал
+
+### Первая сборка (шаги 1–4)
+
+- Flutter 3.44.6 стоит в `~/development/flutter`, веб включён.
+- `flutter pub get`, `build_runner` и `flutter analyze` проходят без ошибок.
+- `flutter create --platforms web .` добавил папку `web/`. Шаблонный `test/widget_test.dart` удалён. `pubspec.lock` после `create` обновился сам, мы вернули его к версии оригинала.
+- `flutter build web` собирается. Предупреждение про Wasm: `meal_entity.dart:571`, проверка `is int` / `is double`. Мешает только сборке в Wasm, для обычной JS-сборки не критично.
+- Тесты: 3327 проходят, 1 падает: `plaintext_destination_guard_test` («zoned link-local literal»). Он падает и на чистом коде оригинала, к порту не относится.
+- Для проверки в браузере нужен `.env` из шаблона (с заглушками). В `.gitignore` он уже есть.
+
+### Первый запуск в браузере (шаг 5–6, начало)
+
+Сначала белый экран: `MissingPluginException` для `path_provider.getApplicationDocumentsDirectory`. Его вызывала `_hasExistingEncryptedHiveData()` в `secure_app_storage_provider.dart`, проверка «есть ли уже зашифрованные файлы Hive» через обход папки. В вебе она теперь спрашивает IndexedDB: `Hive.boxExists('ProfileBox')`.
+
+Для `Platform.isAndroid`, `isIOS`, `localeName` (8 файлов) добавлен `lib/core/utils/platform_info.dart`. На нативных платформах он возвращает то же, что `Platform`, в вебе не бросает `UnsupportedError`.
+
+После этих двух правок приложение стартует и показывает экран приветствия (onboarding). В консоли остаются некритичные `MissingPluginException`, которые приложение само перехватывает:
+
+- `getApplicationLocale` (канал `com.opennutritracker/locale`, смена языка Android);
+- `getWidgetData` (`home_widget`, виджет iOS);
+- «unknown error when fetching the script», источник ещё не выяснен.
+
+### Что ещё не проверено в браузере
+
+Прохождение onboarding и демо-режим, сохранение в IndexedDB после перезагрузки, поиск еды (CORS у Open Food Facts и Supabase), камера и сканер, фото, экспорт и импорт, AI-функции. Известные места, где в вебе будет падать при использовании: `getTemporaryDirectory` (4 файла), `getApplicationSupportDirectory` (кэш картинок), `File(...)` (25 файлов), `gzip` из `dart:io` (3 файла), `InternetAddress` и DNS-проверка в `plaintext_destination_guard.dart`.

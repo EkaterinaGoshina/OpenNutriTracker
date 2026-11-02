@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'dart:math' show max;
 
 import 'package:health/health.dart';
@@ -7,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:opennutritracker/core/data/data_source/health/external_workout.dart';
 import 'package:opennutritracker/core/data/data_source/health/health_connect_workout_reader.dart';
 import 'package:opennutritracker/core/data/data_source/health/health_service.dart';
+import 'package:opennutritracker/core/utils/platform_info.dart';
 
 /// Which platform's health store rules apply.
 ///
@@ -19,8 +19,8 @@ enum HealthTargetPlatform {
   unsupported;
 
   static HealthTargetPlatform get current {
-    if (Platform.isAndroid) return HealthTargetPlatform.android;
-    if (Platform.isIOS) return HealthTargetPlatform.ios;
+    if (PlatformInfo.isAndroid) return HealthTargetPlatform.android;
+    if (PlatformInfo.isIOS) return HealthTargetPlatform.ios;
     return HealthTargetPlatform.unsupported;
   }
 }

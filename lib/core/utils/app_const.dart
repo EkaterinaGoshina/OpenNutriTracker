@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'package:opennutritracker/core/utils/platform_info.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AppConst {
@@ -15,9 +15,9 @@ class AppConst {
   }
 
   static String getPlatformName() {
-    if (Platform.isAndroid) {
+    if (PlatformInfo.isAndroid) {
       return platformNameAndroid;
-    } else if (Platform.isIOS) {
+    } else if (PlatformInfo.isIOS) {
       return platformNameIOS;
     } else {
       return "";

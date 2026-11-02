@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:opennutritracker/core/utils/platform_info.dart';
 import 'package:opennutritracker/core/utils/widget/calorie_widget_labels.dart';
 import 'package:opennutritracker/core/utils/widget/calorie_widget_snapshot.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -46,7 +46,7 @@ class HomeWidgetCalorieStore implements CalorieWidgetStore {
   HomeWidgetCalorieStore({
     @visibleForTesting bool? isIOS,
     @visibleForTesting Future<String> Function()? bundleId,
-  }) : _isIOS = isIOS ?? Platform.isIOS,
+  }) : _isIOS = isIOS ?? PlatformInfo.isIOS,
        _bundleId = bundleId ?? _platformBundleId;
 
   static Future<String> _platformBundleId() async =>
