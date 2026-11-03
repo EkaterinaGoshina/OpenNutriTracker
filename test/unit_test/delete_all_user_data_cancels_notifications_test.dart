@@ -7,7 +7,6 @@ import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/app_theme_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/config_dbo.dart';
-import 'package:opennutritracker/core/data/dbo/fasting_session_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/favourite_meal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
@@ -15,7 +14,6 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
-import 'package:opennutritracker/core/data/dbo/water_intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/weight_log_dbo.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_all_user_data_usecase.dart';
@@ -126,8 +124,6 @@ void main() {
         userBox: userBox = await Hive.openBox<UserDBO>('delete_all_user'),
         trackedDayBox: await Hive.openBox<TrackedDayDBO>('delete_all_days'),
         weightLogBox: await Hive.openBox<WeightLogDBO>('delete_all_weight'),
-        waterIntakeBox: await Hive.openBox<WaterIntakeDBO>('delete_all_water'),
-        fastingBox: await Hive.openBox<FastingSessionDBO>('delete_all_fast'),
         favouriteMealBox:
             await Hive.openBox<FavouriteMealDBO>('delete_all_favourites'),
       );

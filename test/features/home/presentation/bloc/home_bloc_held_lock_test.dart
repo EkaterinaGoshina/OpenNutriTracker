@@ -19,17 +19,14 @@ import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/add_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/delete_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_activity_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/update_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/update_user_activity_usecase.dart';
 import 'package:opennutritracker/core/utils/calc/day_boundary_calc.dart';
@@ -59,12 +56,6 @@ class _FakeUpdateUserActivity extends Fake
     implements UpdateUserActivityUsecase {}
 
 class _FakeGetUser extends Fake implements GetUserUsecase {}
-
-class _FakeGetWaterIntake extends Fake implements GetWaterIntakeUsecase {}
-
-class _FakeAddWaterIntake extends Fake implements AddWaterIntakeUsecase {}
-
-class _FakeDeleteWaterIntake extends Fake implements DeleteWaterIntakeUsecase {}
 
 class _FakeDiaryBloc extends Fake implements DiaryBloc {
   @override
@@ -167,9 +158,6 @@ void main() {
       _FakeGetMacroGoal(),
       _FakeUpdateUserActivity(),
       _FakeGetUser(),
-      _FakeGetWaterIntake(),
-      _FakeAddWaterIntake(),
-      _FakeDeleteWaterIntake(),
     );
   });
 

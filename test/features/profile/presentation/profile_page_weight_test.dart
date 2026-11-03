@@ -109,7 +109,6 @@ void main() {
         userEntity: user,
         bodyWeightUnit: BodyWeightUnit.kg,
         usesImperialHeightUnits: false,
-        effectiveWaterGoalMl: 2000,
       ),
     );
     fakeAddWeightLogUsecase = _FakeAddWeightLogUsecase();

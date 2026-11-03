@@ -23,8 +23,6 @@ class TrendsLoaded extends TrendsState {
   final List<WeightLogEntity> weight; // full weight history, windowed in the UI
   final BodyWeightUnit bodyWeightUnit;
   final double? targetWeightKg; // user's #119 target, for the chart reference
-  final Map<DateTime, int> waterByDay; // ml logged per calendar day
-  final int waterGoalMl;
 
   const TrendsLoaded({
     required this.rangeDays,
@@ -34,8 +32,6 @@ class TrendsLoaded extends TrendsState {
     required this.weight,
     required this.bodyWeightUnit,
     required this.targetWeightKg,
-    required this.waterByDay,
-    required this.waterGoalMl,
   });
 
   @override
@@ -47,8 +43,6 @@ class TrendsLoaded extends TrendsState {
         weight,
         bodyWeightUnit,
         targetWeightKg,
-        waterByDay,
-        waterGoalMl,
       ];
 }
 

@@ -13,7 +13,7 @@
 //   the female 19 to 30 row, with this comment as the trail of breadcrumbs
 //   for whoever picks the work up.
 // * Non-binary users are routed through `CaloriesProfileEntity`, mirroring
-//   the existing dispatch convention used by `ConfigEntity` for water goals.
+//   the dispatch convention the TDEE calculation uses.
 //   `estrogenTypical` resolves to the female row, `testosteroneTypical` to
 //   the male row, and `averaged` (or null, since the field is nullable)
 //   returns the midpoint of the two binary rows so iron, magnesium and

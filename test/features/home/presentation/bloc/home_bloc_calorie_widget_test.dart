@@ -9,20 +9,16 @@ import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_entity.dart';
-import 'package:opennutritracker/core/domain/entity/water_intake_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/add_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/delete_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_activity_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/update_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/update_user_activity_usecase.dart';
 import 'package:opennutritracker/core/utils/calc/day_boundary_calc.dart';
@@ -76,13 +72,6 @@ class _NoActivities extends Fake implements GetUserActivityUsecase {
   Future<List<UserActivityEntity>> getTodayUserActivity({
     int dayStartOffsetHours = 0,
     int dayStartOffsetMinutes = 0,
-  }) async => [];
-}
-
-class _NoWater extends Fake implements GetWaterIntakeUsecase {
-  @override
-  Future<List<WaterIntakeEntity>> getTodayEntries({
-    required int dayStartOffsetTotalMinutes,
   }) async => [];
 }
 
@@ -172,9 +161,6 @@ void main() {
       _MacroGoal(),
       _UnusedUpdateUserActivityUsecase(),
       _User(),
-      _NoWater(),
-      _UnusedAddWaterIntakeUsecase(),
-      _UnusedDeleteWaterIntakeUsecase(),
       calorieWidgetStore: store,
     );
     addTearDown(bloc.close);
@@ -242,6 +228,3 @@ class _UnusedAddTrackedDayUsecase extends Fake implements AddTrackedDayUsecase {
 
 class _UnusedUpdateUserActivityUsecase extends Fake implements UpdateUserActivityUsecase {}
 
-class _UnusedAddWaterIntakeUsecase extends Fake implements AddWaterIntakeUsecase {}
-
-class _UnusedDeleteWaterIntakeUsecase extends Fake implements DeleteWaterIntakeUsecase {}

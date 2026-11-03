@@ -142,7 +142,7 @@ class DailyReminderScheduler {
       });
 
   /// Switches reminders off and cancels every notification the app has
-  /// scheduled, fasting included — for delete-all, which must not race a
+  /// scheduled — for delete-all, which must not race a
   /// refresh that already read "enabled". The cancel is attempted even if
   /// saving "off" failed; either failure is rethrown.
   Future<void> stopAll() => _serialized(() async {

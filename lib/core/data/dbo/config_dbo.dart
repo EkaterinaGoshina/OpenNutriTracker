@@ -70,17 +70,9 @@ class ConfigDBO extends HiveObject {
   // value see a 4:00 boundary, unchanged.
   @HiveField(23)
   int? dayStartOffsetMinutes;
-  // #32: configurable daily water goal in millilitres. Null means use the
-  // default (2000 ml), so existing configs without a stored value keep
-  // working without a migration.
-  @HiveField(24)
-  int? dailyWaterGoalMl;
-  // #84: persisted acknowledgement of the disordered-eating sensitivity
-  // warning shown the first time the fasting screen is opened. Once true,
-  // the warning dialog stays suppressed. Nullable so existing configs
-  // (and never-opened users) keep being treated as "not yet acknowledged".
-  @HiveField(25)
-  bool? fastingWarningAcknowledged;
+  // HiveField(24) and (25) held the daily water goal and the fasting warning
+  // acknowledgement. Both features are gone; the indexes must not be reused,
+  // so that old stored values are never read as something else.
   // #415: opt-in Material You dynamic colour scheme. Null means the user
   // has not made a deliberate choice yet, which the UI treats as "on" — the
   // wallpaper-derived palette only actually appears on Android 12+, and on
@@ -234,8 +226,6 @@ class ConfigDBO extends HiveObject {
     this.diarySortPreferences,
     this.nutrientPanelVisibility,
     this.dayStartOffsetMinutes,
-    this.dailyWaterGoalMl,
-    this.fastingWarningAcknowledged,
     this.useMaterialYou,
     this.accentColor,
     this.scannerPortraitLock,

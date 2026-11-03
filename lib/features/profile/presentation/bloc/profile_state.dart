@@ -22,18 +22,12 @@ class ProfileLoadedState extends ProfileState {
   // chosen independently of the food unit preference.
   final BodyWeightUnit bodyWeightUnit;
   final bool usesImperialHeightUnits;
-  // #32: resolved daily water goal in millilitres, with the user's
-  // override applied (or the gendered seed if none is stored yet). The
-  // profile entry subtitle shows this so the user sees the value the
-  // home chip is using without opening the dialog.
-  final int effectiveWaterGoalMl;
 
   const ProfileLoadedState({
     required this.userBMI,
     required this.userEntity,
     required this.bodyWeightUnit,
     required this.usesImperialHeightUnits,
-    required this.effectiveWaterGoalMl,
   });
 
   @override
@@ -42,6 +36,5 @@ class ProfileLoadedState extends ProfileState {
         userEntity,
         bodyWeightUnit,
         usesImperialHeightUnits,
-        effectiveWaterGoalMl,
       ];
 }

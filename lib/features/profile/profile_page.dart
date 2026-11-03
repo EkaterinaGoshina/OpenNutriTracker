@@ -30,10 +30,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_weekl
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_target_weight_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
-import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
-import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:opennutritracker/features/settings/settings_screen.dart';
-import 'package:opennutritracker/features/settings/presentation/widgets/water_goal_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -75,7 +72,6 @@ class _ProfilePageState extends State<ProfilePage> {
             state.userEntity,
             state.bodyWeightUnit,
             state.usesImperialHeightUnits,
-            state.effectiveWaterGoalMl,
           );
         } else {
           return _getLoadingContent();
@@ -94,7 +90,6 @@ class _ProfilePageState extends State<ProfilePage> {
     UserEntity user,
     BodyWeightUnit bodyWeightUnit,
     bool usesImperialHeightUnits,
-    int effectiveWaterGoalMl,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final palette = isDark ? AppPalette.dark : AppPalette.light;
@@ -232,34 +227,6 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () => Navigator.of(
                 context,
               ).pushNamed(NavigationOptions.weightHistoryRoute),
-            ),
-            _ProfileTile(
-              identifier: 'profile-fasting-entry',
-              palette: palette,
-              icon: Icons.timer_rounded,
-              title: S.of(context).profileFastingEntry,
-              showChevron: true,
-              onTap: () =>
-                  Navigator.of(context).pushNamed(NavigationOptions.fastingRoute),
-            ),
-          ],
-        ),
-        const SizedBox(height: Dimens.spacing24),
-        SectionHeader(
-          label: S.of(context).settingsWaterGoalLabel,
-          palette: palette,
-        ),
-        const SizedBox(height: Dimens.spacing12),
-        SectionGroup(
-          palette: palette,
-          tiles: [
-            _ProfileTile(
-              identifier: 'profile-water-goal',
-              palette: palette,
-              icon: Icons.water_drop_rounded,
-              title: S.of(context).settingsWaterGoalLabel,
-              subtitle: '$effectiveWaterGoalMl ${S.of(context).mlLabel}',
-              onTap: () => _showWaterGoalDialog(context),
             ),
           ],
         ),
@@ -585,16 +552,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     await _profileBloc.updateUser(userEntity);
-  }
-
-  void _showWaterGoalDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => WaterGoalDialog(
-        settingsBloc: locator<SettingsBloc>(),
-        homeBloc: locator<HomeBloc>(),
-      ),
-    );
   }
 
   Future<void> _showCaloriesProfileDialog(

@@ -7,12 +7,10 @@ import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
-import 'package:opennutritracker/core/domain/entity/water_intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/weight_log_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_tracked_day_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_weight_log_usecase.dart';
 import 'package:opennutritracker/features/trends/presentation/bloc/trends_bloc.dart';
 
@@ -100,17 +98,6 @@ class _FakeGetConfigUsecase implements GetConfigUsecase {
       super.noSuchMethod(invocation);
 }
 
-class _FakeGetWaterIntakeUsecase implements GetWaterIntakeUsecase {
-  List<WaterIntakeEntity> result = [];
-
-  @override
-  Future<List<WaterIntakeEntity>> getAllEntries() async => result;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
-}
-
 WeightLogEntity _wl(DateTime date, double kg) =>
     WeightLogEntity(date: date, weightKg: kg);
 
@@ -130,7 +117,6 @@ void main() {
     late _FakeGetWeightLogUsecase weightLog;
     late _FakeGetUserUsecase user;
     late _FakeGetConfigUsecase config;
-    late _FakeGetWaterIntakeUsecase water;
     late TrendsBloc bloc;
 
     setUp(() {
@@ -138,8 +124,7 @@ void main() {
       weightLog = _FakeGetWeightLogUsecase();
       user = _FakeGetUserUsecase();
       config = _FakeGetConfigUsecase();
-      water = _FakeGetWaterIntakeUsecase();
-      bloc = TrendsBloc(trackedDay, weightLog, user, config, water);
+      bloc = TrendsBloc(trackedDay, weightLog, user, config);
     });
 
     tearDown(() async {

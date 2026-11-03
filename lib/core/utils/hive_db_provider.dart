@@ -6,14 +6,12 @@ import 'package:opennutritracker/core/data/data_source/custom_activity_template_
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/config_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/favourite_meal_dbo.dart';
-import 'package:opennutritracker/core/data/dbo/fasting_session_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/meal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/profile_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
-import 'package:opennutritracker/core/data/dbo/water_intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/weight_log_dbo.dart';
 import 'package:opennutritracker/core/utils/hive_storage_integrity_exception.dart';
 import 'package:opennutritracker/hive_registrar.g.dart';
@@ -25,7 +23,7 @@ import 'package:opennutritracker/hive_registrar.g.dart';
 /// app-wide settings (theme, language, units, notifications, ...), and the
 /// reusable content libraries (custom meals, recipes, activity templates).
 /// The **per-profile** ones are each profile's own private data — the meal,
-/// activity, weight, water and fasting logs, tracked-day totals, the user's
+/// activity and weight logs, tracked-day totals, the user's
 /// body stats, their favourites, and the personal nutrition goals in
 /// ConfigBox.
 ///
@@ -54,14 +52,6 @@ class HiveDBProvider extends ChangeNotifier {
   // #70 follow-up: saved Custom activity templates (name + typical kcal).
   static const customActivityTemplateBoxName = 'CustomActivityTemplateBox';
   static const weightLogBoxName = 'WeightLogBox';
-  // #32: per-entry water intake log keyed by uuid; one row per sip so the
-  // dialog's "undo last" can roll a single entry back without losing the
-  // rest of the day.
-  static const waterIntakeBoxName = 'WaterIntakeBox';
-  // #84: persisted fasting sessions, one record per start. The data layer
-  // intentionally keeps cancelled and completed sessions side by side with no
-  // success/failure label on the record — see `FastingSessionDBO`.
-  static const fastingBoxName = 'FastingBox';
   // #1307: the foods and meals the user starred. Per-profile — it is the
   // list of what *this* person usually eats, unlike the shared custom-meal
   // and recipe libraries it may point into.
@@ -87,8 +77,6 @@ class HiveDBProvider extends ChangeNotifier {
     userBoxName,
     trackedDayBoxName,
     weightLogBoxName,
-    waterIntakeBoxName,
-    fastingBoxName,
     favouriteMealBoxName,
   ];
 
@@ -115,8 +103,6 @@ class HiveDBProvider extends ChangeNotifier {
   Box<UserDBO>? _userBox;
   Box<TrackedDayDBO>? _trackedDayBox;
   Box<WeightLogDBO>? _weightLogBox;
-  Box<WaterIntakeDBO>? _waterIntakeBox;
-  Box<FastingSessionDBO>? _fastingBox;
   Box<FavouriteMealDBO>? _favouriteMealBox;
 
   late final HiveAesCipher _cipher;
@@ -135,10 +121,6 @@ class HiveDBProvider extends ChangeNotifier {
       _requireBox(_trackedDayBox, trackedDayBoxName);
   Box<WeightLogDBO> get weightLogBox =>
       _requireBox(_weightLogBox, weightLogBoxName);
-  Box<WaterIntakeDBO> get waterIntakeBox =>
-      _requireBox(_waterIntakeBox, waterIntakeBoxName);
-  Box<FastingSessionDBO> get fastingBox =>
-      _requireBox(_fastingBox, fastingBoxName);
   Box<FavouriteMealDBO> get favouriteMealBox =>
       _requireBox(_favouriteMealBox, favouriteMealBoxName);
 
@@ -234,10 +216,6 @@ class HiveDBProvider extends ChangeNotifier {
     _weightLogBox = await _openEncryptedBox(
       boxNameFor(weightLogBoxName, suffix),
     );
-    _waterIntakeBox = await _openEncryptedBox(
-      boxNameFor(waterIntakeBoxName, suffix),
-    );
-    _fastingBox = await _openEncryptedBox(boxNameFor(fastingBoxName, suffix));
     _favouriteMealBox = await _openEncryptedBox(
       boxNameFor(favouriteMealBoxName, suffix),
     );
@@ -251,8 +229,6 @@ class HiveDBProvider extends ChangeNotifier {
       if (_userBox != null) _userBox!.close(),
       if (_trackedDayBox != null) _trackedDayBox!.close(),
       if (_weightLogBox != null) _weightLogBox!.close(),
-      if (_waterIntakeBox != null) _waterIntakeBox!.close(),
-      if (_fastingBox != null) _fastingBox!.close(),
       if (_favouriteMealBox != null) _favouriteMealBox!.close(),
     ]);
     _configBox = null;
@@ -261,8 +237,6 @@ class HiveDBProvider extends ChangeNotifier {
     _userBox = null;
     _trackedDayBox = null;
     _weightLogBox = null;
-    _waterIntakeBox = null;
-    _fastingBox = null;
     _favouriteMealBox = null;
   }
 

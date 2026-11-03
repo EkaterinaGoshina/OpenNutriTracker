@@ -132,6 +132,8 @@ Map<String, dynamic> _goalsJson() => {
     'dinner': 30,
     'snack': 10,
   },
+  // A backup from before the water goal was removed still carries it; the
+  // reader ignores the key.
   'dailyWaterGoalMl': 2600,
 };
 
@@ -337,7 +339,6 @@ void main() {
       'dinner': 30,
       'snack': 10,
     });
-    await config.setConfigDailyWaterGoalMl(3100);
   }
 
   Future<Map<String, Object?>> goals() async {
@@ -348,7 +349,6 @@ void main() {
       'proteinGoalPct': c.userProteinGoalPct,
       'fatGoalPct': c.userFatGoalPct,
       'mealKcalSharesPct': c.mealKcalSharesPct,
-      'dailyWaterGoalMl': c.dailyWaterGoalMl,
     };
   }
 
@@ -428,7 +428,6 @@ void main() {
           'carbGoalPct': null,
           'proteinGoalPct': null,
           'fatGoalPct': null,
-          'dailyWaterGoalMl': null,
         }),
       });
 
@@ -439,7 +438,6 @@ void main() {
       expect(restored['carbGoalPct'], isNull);
       expect(restored['proteinGoalPct'], isNull);
       expect(restored['fatGoalPct'], isNull);
-      expect(restored['dailyWaterGoalMl'], isNull);
     },
   );
 
@@ -519,14 +517,6 @@ void main() {
           'snack': 10,
         },
       }),
-      'water goal out of range': jsonEncode({
-        ..._goalsJson(),
-        'dailyWaterGoalMl': 50,
-      }),
-      'water goal not a whole number': jsonEncode({
-        ..._goalsJson(),
-        'dailyWaterGoalMl': 2600.5,
-      }),
     };
     final intake = jsonEncode([
       {
@@ -562,7 +552,6 @@ void main() {
 
       expect(await importJson(), isTrue);
       expect(intakeBox.length, 1);
-      expect((await goals())['dailyWaterGoalMl'], 2600);
     });
 
     cases.forEach((name, content) {
@@ -704,8 +693,7 @@ void main() {
         ..userCarbGoalPct = 0.6
         ..userProteinGoalPct = 0.6
         ..userFatGoalPct = 0.6
-        ..mealKcalSharesPct = {'breakfast': 100}
-        ..dailyWaterGoalMl = 20;
+        ..mealKcalSharesPct = {'breakfast': 100};
 
       final backup = GoalSettingsBackup.fromConfigDBO(stored);
       final reread = GoalSettingsBackup.fromJson(
@@ -717,7 +705,6 @@ void main() {
       expect(reread.proteinGoalPct, isNull);
       expect(reread.fatGoalPct, isNull);
       expect(reread.mealKcalSharesPct, isNull);
-      expect(reread.dailyWaterGoalMl, isNull);
     });
 
     test('writes a non-finite stored kcal adjustment or macro as null, so '
@@ -754,7 +741,6 @@ void main() {
         'proteinGoalPct',
         'fatGoalPct',
         'mealKcalSharesPct',
-        'dailyWaterGoalMl',
       });
     });
   });

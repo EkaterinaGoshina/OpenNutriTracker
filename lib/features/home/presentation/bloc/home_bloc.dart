@@ -7,12 +7,8 @@ import 'package:opennutritracker/core/domain/entity/config_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
-import 'package:opennutritracker/core/domain/entity/water_intake_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/add_water_intake_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/delete_water_intake_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
@@ -51,9 +47,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetMacroGoalUsecase _getMacroGoalUsecase;
   final UpdateUserActivityUsecase _updateUserActivityUsecase;
   final GetUserUsecase _getUserUsecase;
-  final GetWaterIntakeUsecase _getWaterIntakeUsecase;
-  final AddWaterIntakeUsecase _addWaterIntakeUsecase;
-  final DeleteWaterIntakeUsecase _deleteWaterIntakeUsecase;
   final CalorieWidgetStore _calorieWidgetStore;
 
   DateTime currentDay = DateTime.now();
@@ -70,10 +63,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     this._getKcalGoalUsecase,
     this._getMacroGoalUsecase,
     this._updateUserActivityUsecase,
-    this._getUserUsecase,
-    this._getWaterIntakeUsecase,
-    this._addWaterIntakeUsecase,
-    this._deleteWaterIntakeUsecase, {
+    this._getUserUsecase, {
     CalorieWidgetStore? calorieWidgetStore,
   }) : _calorieWidgetStore = calorieWidgetStore ?? HomeWidgetCalorieStore(),
        super(HomeInitial()) {
@@ -167,13 +157,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .toList()
           .sum;
 
-      final waterIntakes = await _getWaterIntakeUsecase.getTodayEntries(
-        dayStartOffsetTotalMinutes: configData.dayStartOffsetTotalMinutes,
-      );
-      final totalWaterMl = waterIntakes
-          .map((entry) => entry.amountMl)
-          .fold<int>(0, (sum, ml) => sum + ml);
-
       final user = await _getUserUsecase.getUserData();
       final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal(
         userEntity: user,
@@ -248,12 +231,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               configData.mealKcalSharesPct[ConfigEntity.mealKeySnack] ?? 0,
           userGender: user.gender,
           userCaloriesProfile: user.caloriesProfile,
-          waterMlToday: totalWaterMl,
-          waterGoalMl: configData.effectiveDailyWaterGoalMl(
-            user.gender,
-            caloriesProfile: user.caloriesProfile,
-          ),
-          waterIntakes: waterIntakes,
         ),
       );
       await _publishCalorieWidget(
@@ -470,35 +447,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _updateDiaryPage(DateTime day) async {
     locator<DiaryBloc>().add(const LoadDiaryYearEvent());
     locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-  }
-
-  /// Logs a single water intake entry and reloads the home view so the
-  /// chip updates immediately. The dialog itself only owns the slider
-  /// value; persistence and recomputation flow back through the bloc.
-  Future<void> addWaterIntake(int amountMl) async {
-    if (amountMl <= 0) return;
-    final entry = WaterIntakeEntity(
-      id: 'water-${DateTime.now().microsecondsSinceEpoch}',
-      dateTime: DateTime.now(),
-      amountMl: amountMl,
-    );
-    await _addWaterIntakeUsecase.addEntry(entry);
-    add(const LoadItemsEvent());
-  }
-
-  /// Rolls back the most recent water entry for the configured logical
-  /// day. Returns whether anything was deleted, so the dialog can react
-  /// without re-reading state.
-  Future<bool> undoLastWaterIntake() async {
-    final config = await _getConfigUsecase.getConfig();
-    final entries = await _getWaterIntakeUsecase.getTodayEntries(
-      dayStartOffsetTotalMinutes: config.dayStartOffsetTotalMinutes,
-    );
-    if (entries.isEmpty) return false;
-    entries.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    await _deleteWaterIntakeUsecase.deleteEntry(entries.last.id);
-    add(const LoadItemsEvent());
-    return true;
   }
 
   /// #139: tracked-day deltas (calories, macros) must land on the

@@ -245,20 +245,19 @@ keeps its own goals. Those older builds ignore the file when they meet it.
     "lunch": 35,
     "dinner": 30,
     "snack": 10
-  },
-  "dailyWaterGoalMl": 2600          // 100..10000
+  }
 }
 ```
 
 `null`, or a missing key, means the app default — no kcal adjustment, the
-60 / 15 / 25 carbs / protein / fat split, the 30 / 40 / 20 / 10 meal shares,
-the water goal seeded from the profile — and importing it puts that goal back
+60 / 15 / 25 carbs / protein / fat split, and the 30 / 40 / 20 / 10 meal shares — and importing it puts that goal back
 to the default. A file with a value outside the ranges above, or a number
 that is not finite, is rejected, and
 the whole zip with it, before anything on the device changes. The tolerances
 allow for rounding in older builds. `version` goes up only for a change an
 older build would misread; a build that meets a newer version skips this file
-and imports the rest. Unknown keys are ignored.
+and imports the rest. Unknown keys are ignored, which includes the
+`dailyWaterGoalMl` that earlier builds wrote.
 
 Only goals that belong to a profile are in the file:
 

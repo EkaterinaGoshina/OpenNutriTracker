@@ -211,15 +211,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     await _addConfigUsecase.setConfigKcalAdjustment(kcalAdjustment);
   }
 
-  Future<int?> getDailyWaterGoalMl() async {
-    final config = await _getConfigUsecase.getConfig();
-    return config.dailyWaterGoalMl;
-  }
-
-  Future<void> setDailyWaterGoalMl(int goalMl) async {
-    await _addConfigUsecase.setConfigDailyWaterGoalMl(goalMl);
-  }
-
   Future<void> setMacroGoals(
     double carbGoalPct,
     double proteinGoalPct,

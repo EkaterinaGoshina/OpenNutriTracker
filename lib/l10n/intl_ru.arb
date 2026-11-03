@@ -266,7 +266,7 @@
   "dailyKjAdjustmentLabel": "Дневная корректировка кДж:",
   "deleteAllLabel": "Удалить все",
   "settingsDeleteAllDataLabel": "Сбросить данные профиля",
-  "settingsDeleteAllDataSubtitle": "Профиль, приёмы пищи, активности, история веса и сессии голодания",
+  "settingsDeleteAllDataSubtitle": "Профиль, приёмы пищи, активности и история веса",
   "settingsDeleteAllDataConfirmTitle": "Сбросить данные профиля?",
   "settingsDeleteAllDataConfirmAction": "Сбросить профиль",
   "lowKcalWarningTitle": "Эта дневная норма довольно низкая",
@@ -393,7 +393,6 @@
   "trendsBestStreakLabel": "лучший результат",
   "trendsPerWeekSuffix": "/нед",
   "trendsWeeksToGoalLabel": "недель до цели",
-  "trendsWaterLabel": "Вода",
   "importAction": "Импорт",
   "importActivityConfirmContent": "Эти активности будут добавлены на сегодня.",
   "importActivityConfirmTitle": "Импортировать активности ({count})?",
@@ -1151,64 +1150,8 @@
       }
     }
   },
-  "logWaterAmountLabel": "Добавить {amount} мл",
-  "@logWaterAmountLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "int"
-      }
-    }
-  },
-  "logWaterDialogTitle": "Записать приём воды",
-  "logWaterNothingToUndoLabel": "Нечего отменять",
-  "logWaterUndoLabel": "Отменить последнее",
   "mlLabel": "мл",
-  "settingsWaterGoalDescription": "Используется в индикаторе воды на главном экране.",
-  "settingsWaterGoalLabel": "Дневная норма воды",
-  "waterChipLabel": "{current} / {goal} мл",
-  "@waterChipLabel": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
   "zincLabel": "цинк",
-  "profileFastingEntry": "Таймер голодания",
-  "fastingTitle": "Таймер голодания",
-  "fastingSubtitle": "Простой таймер для отслеживания времени между приёмами пищи. Без серий, без целей — просто часы.",
-  "fastingWarningTitle": "Перед началом",
-  "fastingWarningBody": "Отслеживание времени голодания может быть полезным для одних людей и тревожным для других, особенно для тех, у кого в прошлом были расстройства пищевого поведения. Если это про вас, пожалуйста, позаботьтесь о себе в первую очередь. Поддержку можно получить в BEAT (Великобритания) и NEDA (США).",
-  "fastingWarningDecline": "Это не для меня",
-  "fastingWarningAccept": "Понимаю, включить таймер",
-  "fastingPresetCustom": "Свой",
-  "fastingStart": "Начать таймер",
-  "fastingCancel": "Завершить голодание",
-  "fastingCancelConfirmTitle": "Завершить голодание сейчас?",
-  "fastingCancelConfirmBody": "Это закроет текущую сессию.",
-  "fastingComplete": "Сессия завершена",
-  "fastingLinkBeat": "BEAT (Великобритания)",
-  "fastingLinkNeda": "NEDA (США)",
-  "fastingElapsedLabel": "Прошло",
-  "fastingRemainingValue": "осталось {value}",
-  "@fastingRemainingValue": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "fastingTargetValue": "Цель: {value}",
-  "@fastingTargetValue": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "hoursLabel": "ч",
   "dialogCloseLabel": "Закрыть",
   "customMealsRowMoreTooltip": "Другие действия",
@@ -1248,18 +1191,6 @@
       }
     }
   },
-  "fastingHomeChipBody": "Голодание · осталось {remaining}",
-  "@fastingHomeChipBody": {
-    "placeholders": {
-      "remaining": {
-        "type": "String"
-      }
-    }
-  },
-  "fastingNotificationChannelName": "Таймер голодания",
-  "fastingNotificationChannelDescription": "Разовые уведомления по достижении цели сессии голодания.",
-  "fastingNotificationCompleteTitle": "Сессия голодания завершена",
-  "fastingNotificationCompleteBody": "Вы достигли целевого времени.",
   "profileImageLabel": "Добавить фото",
   "profileImageReplace": "Изменить фото",
   "profileImageRemove": "Удалить фото",
@@ -1566,7 +1497,7 @@
   "paCircuitTraining": "круговая тренировка",
   "paCalisthenicsVigorousDesc": "интенсивная нагрузка (напр., отжимания, скручивания, подтягивания, прыжки «звёздочка», берпи)",
   "paCircuitTrainingDesc": "включая упражнения с гирей, некоторые аэробные упражнения с минимальным отдыхом, высокая интенсивность",
-  "settingsDeleteAllDataConfirmContent": "Будут удалены профиль, приёмы пищи, активности, история веса и сессии голодания, но только для текущего профиля. Также будут удалены ключ провайдера ИИ и адрес сервера — они общие для всех профилей на этом устройстве. Общие данные (свои продукты, рецепты, шаблоны активностей), а также каталоги Open Food Facts и USDA Food Data Central не затрагиваются. Отменить это нельзя.",
+  "settingsDeleteAllDataConfirmContent": "Будут удалены профиль, приёмы пищи, активности и история веса, но только для текущего профиля. Также будут удалены ключ провайдера ИИ и адрес сервера — они общие для всех профилей на этом устройстве. Общие данные (свои продукты, рецепты, шаблоны активностей), а также каталоги Open Food Facts и USDA Food Data Central не затрагиваются. Отменить это нельзя.",
   "aiAssistExperimentalLabel": "Экспериментальный",
   "bulkAddModelHintKeyLabel": "С собственным API-ключом",
   "aiAssistProviderOwnServerLabel": "Ваш собственный сервер",

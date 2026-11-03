@@ -12,8 +12,7 @@ import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 ///   various view toggles), so it stays consistent whichever profile is
 ///   active;
 /// - the **per-profile** [HiveDBProvider.configBox] holds the personal
-///   nutrition goals (kcal adjustment, macro split, per-meal kcal shares and
-///   the daily water goal) plus the health-import settings (opt-in flag,
+///   nutrition goals (kcal adjustment, macro split, and per-meal kcal shares) plus the health-import settings (opt-in flag,
 ///   calorie-credit multiplier, import watermark), which differ from one
 ///   profile to the next. The health settings belong here because the
 ///   activity box they write into is itself per-profile
@@ -57,7 +56,6 @@ class ConfigDataSource {
       merged.userProteinGoalPct = profile.userProteinGoalPct;
       merged.userFatGoalPct = profile.userFatGoalPct;
       merged.mealKcalSharesPct = profile.mealKcalSharesPct;
-      merged.dailyWaterGoalMl = profile.dailyWaterGoalMl;
       merged.healthImportEnabled = profile.healthImportEnabled;
       merged.healthWorkoutKcalMultiplier = profile.healthWorkoutKcalMultiplier;
       merged.healthLastImportAt = profile.healthLastImportAt;
@@ -74,7 +72,6 @@ class ConfigDataSource {
       merged.userProteinGoalPct = null;
       merged.userFatGoalPct = null;
       merged.mealKcalSharesPct = null;
-      merged.dailyWaterGoalMl = null;
       merged.healthImportEnabled = null;
       merged.healthWorkoutKcalMultiplier = null;
       merged.healthLastImportAt = null;
@@ -339,10 +336,6 @@ class ConfigDataSource {
     await _update((c) => c.trackedDaysOffsetMinutes = minutes);
   }
 
-  Future<void> setConfigDailyWaterGoalMl(int goalMl) async {
-    await _update((c) => c.dailyWaterGoalMl = goalMl);
-  }
-
   /// Replaces every per-profile goal at once, as a restore from a backup
   /// does (#1363). One write, so the goals cannot end up half restored. A
   /// null clears that override and the app falls back to its default.
@@ -352,7 +345,6 @@ class ConfigDataSource {
     required double? proteinGoalPct,
     required double? fatGoalPct,
     required Map<String, int>? mealKcalSharesPct,
-    required int? dailyWaterGoalMl,
   }) async {
     await _update((c) {
       c.userKcalAdjustment = kcalAdjustment;
@@ -362,12 +354,7 @@ class ConfigDataSource {
       c.mealKcalSharesPct = mealKcalSharesPct == null
           ? null
           : Map<String, int>.from(mealKcalSharesPct);
-      c.dailyWaterGoalMl = dailyWaterGoalMl;
     });
-  }
-
-  Future<void> setFastingWarningAcknowledged(bool acknowledged) async {
-    await _update((c) => c.fastingWarningAcknowledged = acknowledged);
   }
 
   Future<void> setIsDemoData(bool isDemoData) async {

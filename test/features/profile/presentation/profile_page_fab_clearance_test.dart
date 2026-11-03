@@ -90,7 +90,6 @@ void main() {
             UserEntityFixtures.youngSedentaryMaleWantingToMaintainWeight,
         bodyWeightUnit: BodyWeightUnit.kg,
         usesImperialHeightUnits: false,
-        effectiveWaterGoalMl: 2000,
       ),
     );
     locator.registerSingleton<ProfileBloc>(profileBloc);

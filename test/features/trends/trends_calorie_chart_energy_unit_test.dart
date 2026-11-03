@@ -7,7 +7,6 @@ import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_tracked_day_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_weight_log_usecase.dart';
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
 import 'package:opennutritracker/core/utils/energy_unit_provider.dart';
@@ -28,9 +27,6 @@ class _FakeGetUserUsecase extends Fake implements GetUserUsecase {}
 
 class _FakeGetConfigUsecase extends Fake implements GetConfigUsecase {}
 
-class _FakeGetWaterIntakeUsecase extends Fake
-    implements GetWaterIntakeUsecase {}
-
 /// A TrendsBloc pinned to one loaded state: the page's LoadTrendsEvent is
 /// ignored so the test controls exactly what the chart plots.
 class _SeededTrendsBloc extends TrendsBloc {
@@ -40,7 +36,6 @@ class _SeededTrendsBloc extends TrendsBloc {
         _FakeGetWeightLogUsecase(),
         _FakeGetUserUsecase(),
         _FakeGetConfigUsecase(),
-        _FakeGetWaterIntakeUsecase(),
       ) {
     emit(seeded);
   }
@@ -68,8 +63,6 @@ TrendsLoaded _loadedToday() {
     weight: const [],
     bodyWeightUnit: BodyWeightUnit.kg,
     targetWeightKg: null,
-    waterByDay: const {},
-    waterGoalMl: 0,
   );
 }
 

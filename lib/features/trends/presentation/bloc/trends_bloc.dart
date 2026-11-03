@@ -6,7 +6,6 @@ import 'package:opennutritracker/core/domain/entity/weight_log_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_tracked_day_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/get_water_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_weight_log_usecase.dart';
 import 'package:opennutritracker/core/utils/calc/calendar_day_calc.dart';
 
@@ -18,7 +17,6 @@ class TrendsBloc extends Bloc<TrendsEvent, TrendsState> {
   final GetWeightLogUsecase _getWeightLogUsecase;
   final GetUserUsecase _getUserUsecase;
   final GetConfigUsecase _getConfigUsecase;
-  final GetWaterIntakeUsecase _getWaterIntakeUsecase;
 
   /// The range of the last [LoadTrendsEvent], so a [RefreshTrendsEvent]
   /// keeps the chip the user picked. Null until the page first loads.
@@ -29,7 +27,6 @@ class TrendsBloc extends Bloc<TrendsEvent, TrendsState> {
     this._getWeightLogUsecase,
     this._getUserUsecase,
     this._getConfigUsecase,
-    this._getWaterIntakeUsecase,
   ) : super(const TrendsInitial()) {
     on<RefreshTrendsEvent>((event, emit) {
       final rangeDays = _rangeDays;
@@ -67,16 +64,8 @@ class TrendsBloc extends Bloc<TrendsEvent, TrendsState> {
         final user = await _getUserUsecase.getUserData();
         final config = await _getConfigUsecase.getConfig();
 
-        // Water totalled per calendar day; the card fills missing days with 0.
-        final waterEntries = await _getWaterIntakeUsecase.getAllEntries();
-        final waterByDay = <DateTime, int>{};
-        for (final e in waterEntries) {
-          final d = DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day);
-          waterByDay[d] = (waterByDay[d] ?? 0) + e.amountMl;
-        }
-
         // For a fixed chip the window is the chip; for "All" it stretches back
-        // to exactly the earliest data point (across days, weight, and water)
+        // to exactly the earliest data point (across days and weight)
         // so the charts begin at the first entry rather than padding empty
         // days in front of it. A 2-day floor keeps a single entry renderable.
         int windowDays;
@@ -92,9 +81,6 @@ class TrendsBloc extends Bloc<TrendsEvent, TrendsState> {
           }
           for (final w in weight) {
             consider(DateTime(w.date.year, w.date.month, w.date.day));
-          }
-          for (final k in waterByDay.keys) {
-            consider(k);
           }
           // Calendar days, not elapsed 24-hour spans: across a spring-forward
           // `difference().inDays` comes out one short and the window would
@@ -115,11 +101,6 @@ class TrendsBloc extends Bloc<TrendsEvent, TrendsState> {
           weight: weight,
           bodyWeightUnit: config.bodyWeightUnit,
           targetWeightKg: user.targetWeightKg,
-          waterByDay: waterByDay,
-          waterGoalMl: config.effectiveDailyWaterGoalMl(
-            user.gender,
-            caloriesProfile: user.caloriesProfile,
-          ),
         ));
       } catch (e) {
         emit(TrendsFailed(e.toString()));

@@ -27,7 +27,7 @@ class ExportImportBloc extends Bloc<ExportImportEvent, ExportImportState> {
   static const customActivityTemplateJsonFileName =
       'custom_activity_templates.json';
   // #1363: the profile's goal settings (kcal adjustment, macro split,
-  // per-meal shares, water goal).
+  // per-meal shares).
   static const goalSettingsJsonFileName = 'goal_settings.json';
   // #1307: the active profile's starred foods and meals.
   static const favouriteJsonFileName = 'user_favourites.json';

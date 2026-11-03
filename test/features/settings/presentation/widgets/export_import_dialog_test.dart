@@ -99,8 +99,6 @@ void main() {
         weight: [],
         bodyWeightUnit: BodyWeightUnit.kg,
         targetWeightKg: null,
-        waterByDay: {},
-        waterGoalMl: 2000,
       ),
     );
 

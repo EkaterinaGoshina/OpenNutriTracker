@@ -66,7 +66,7 @@ class WeightTrendChart extends StatelessWidget {
     final now = clock();
     final today = DateTime(now.year, now.month, now.day);
     // windowDays calendar days ending today (today sits at the right edge),
-    // matching how the calorie/water charts window their range. Built with
+    // matching how the calorie charts window their range. Built with
     // the y/m/d constructor, not `subtract(Duration)`: a Duration is fixed
     // 24-hour spans, so with an autumn fall-back inside the window it lands
     // an hour past local midnight and drops that day's entry (#1207).

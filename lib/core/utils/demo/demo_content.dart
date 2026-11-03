@@ -11,7 +11,6 @@ import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/physical_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_ingredient_entity.dart';
-import 'package:opennutritracker/core/domain/entity/water_intake_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_custom_activity_template_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/save_recipe_usecase.dart';
 import 'package:opennutritracker/core/utils/demo/unsplash_attribution.dart';
@@ -38,7 +37,7 @@ const demoRngSeed = 1337;
 /// The current-streak guarantee and all day-to-day randomisation (which
 /// foods/portions/times are picked) read off this single fixed-seed
 /// generator, so the data looks organically noisy (no obvious repeating
-/// cycle in the calorie/water graphs) while still being reproducible
+/// cycle in the calorie graphs) while still being reproducible
 /// across runs — handy for a dev tool where you want the same fixture
 /// every time you reseed, not a new random one.
 var demoRng = Random(demoRngSeed);
@@ -624,22 +623,6 @@ const _dancingLight = PhysicalActivityEntity(
   PhysicalActivityTypeEntity.dancing,
 );
 const demoActivityPool = [_runningVigorous, _bicyclingModerate, _dancingLight];
-
-/// 2-4 glasses of randomised size — a fixed "500 + 500 + 300-600" pattern
-/// repeating every few days made the Trends water graph look mechanical;
-/// real logging is noisier (and some days people just log less).
-List<WaterIntakeEntity> buildDailyWater(DateTime day) {
-  final glassCount = 2 + demoRng.nextInt(3);
-  final hours = [8, 11, 15, 18, 21];
-  return [
-    for (var i = 0; i < glassCount; i++)
-      WaterIntakeEntity(
-        id: IdGenerator.getUniqueID(),
-        dateTime: jitteredTime(day, hours[i]),
-        amountMl: 200 + demoRng.nextInt(5) * 100, // 200-600 ml
-      ),
-  ];
-}
 
 MealNutrimentsEntity _emptyRecipeNutriments() => MealNutrimentsEntity.empty();
 

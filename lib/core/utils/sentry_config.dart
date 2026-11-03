@@ -15,8 +15,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// runs. `LoggerConfig` pipes the whole application log through `debugPrint`
 /// at `Level.ALL`, which means every log line would become a breadcrumb
 /// riding along on the next event of any kind: the food search terms the user
-/// typed, the barcodes they scanned, their water and weight entries, the names
-/// of their custom activities.
+/// typed, the barcodes they scanned, their weight entries, the names of
+/// their custom activities.
 ///
 /// The consent they gave says the opposite — "No food log, weight, or personal
 /// data is included" — so the breadcrumbs are turned off at the source.

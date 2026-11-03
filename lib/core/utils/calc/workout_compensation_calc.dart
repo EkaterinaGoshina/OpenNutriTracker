@@ -128,8 +128,7 @@ class WorkoutCompensationCalc {
   }
 
   /// Non-binary users fall back to the same `CaloriesProfileEntity` they pick
-  /// for TDEE, so a user only states their reference body chemistry once —
-  /// mirrors `ConfigEntity.seedWaterGoalForGender`.
+  /// for TDEE, so a user only states their reference body chemistry once.
   static double _bodyFatP10For(UserEntity user) => switch (user.gender) {
     UserGenderEntity.male => maleBodyFatP10,
     UserGenderEntity.female => femaleBodyFatP10,

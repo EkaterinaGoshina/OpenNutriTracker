@@ -165,7 +165,7 @@ class _ExportImportDialogState extends State<ExportImportDialog> {
     _diaryBloc.add(const LoadDiaryYearEvent());
     _calendarDayBloc.add(RefreshCalendarDayEvent());
     // A restore can replace the goal settings (#1363): the Settings
-    // dialogs, the Profile water goal and Trends' goal lines read them
+    // dialogs and Trends' goal lines read them
     // from blocs that keep their loaded state until told to reload.
     locator<SettingsBloc>().add(LoadSettingsEvent());
     locator<ProfileBloc>().add(LoadProfileEvent());
