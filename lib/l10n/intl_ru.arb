@@ -14,11 +14,13 @@
       }
     }
   },
+  "dashboardEatenOfGoal": "Съедено {eaten} из {goal} {unit}",
   "foodSourcesAlwaysEnabledLabel": "Всегда включено",
   "foodSourcesHelpText": "Результаты поиска берутся из этих баз продуктов. Open Food Facts обеспечивает поиск продуктов, в том числе по штрихкоду, и всегда включён.",
   "kitchenAllDishes": "Все блюда",
   "kitchenCreateDish": "Создать блюдо",
-  "kitchenEatButton": "Съесть",
+  "kitchenDeleteConfirmTitle": "Удалить блюдо?",
+  "kitchenEatButton": "Ам",
   "kitchenEmptyHint": "Здесь появятся ваши блюда. Создайте одно и записывайте порции в два касания.",
   "kitchenKcalPer100": "{energy} на 100 г",
   "@kitchenKcalPer100": {

@@ -76,9 +76,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     final displaySupplied = usesKilojoules
         ? UnitCalc.kcalToKj(widget.totalKcalSupplied)
         : widget.totalKcalSupplied;
-    final displayBurned = usesKilojoules
-        ? UnitCalc.kcalToKj(widget.totalKcalBurned)
-        : widget.totalKcalBurned;
+    final displayGoal = usesKilojoules
+        ? UnitCalc.kcalToKj(widget.totalKcalDaily)
+        : widget.totalKcalDaily;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final palette = isDark ? AppPalette.dark : AppPalette.light;
@@ -95,32 +95,6 @@ class _DashboardWidgetState extends State<DashboardWidget> {
             padding: const EdgeInsets.fromLTRB(Dimens.spacing24, Dimens.spacing20, Dimens.spacing24, Dimens.spacing24),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    // Two equal halves; each stat pins itself to its card
-                    // edge via its own cross-axis alignment. A Spacer next
-                    // to loose-fit Flexible children would leave the spare
-                    // width at the row end and pull "burned" off the edge.
-                    Expanded(
-                      child: _MiniStat(
-                        icon: Icons.arrow_downward_rounded,
-                        value: '${displaySupplied.round()}',
-                        label: S.of(context).suppliedLabel,
-                        color: palette.proteinColor,
-                      ),
-                    ),
-                    Expanded(
-                      child: _MiniStat(
-                        icon: Icons.local_fire_department_rounded,
-                        value: '${displayBurned.round()}',
-                        label: S.of(context).burnedLabel,
-                        color: palette.carbsColor,
-                        trailing: true,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Dimens.spacing16),
                 Semantics(
                   identifier: 'home-kcal-gauge',
                   label: '${displayValue.round()} $kcalLabelText',
@@ -141,8 +115,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                       behavior: HitTestBehavior.opaque,
                       onTap: _openKcalGoalInfoScreen,
                       child: CircularPercentIndicator(
-                        radius: 90,
-                        lineWidth: 16,
+                        radius: 72,
+                        lineWidth: 14,
                         percent: gaugeValue.clamp(0.0, 1.0),
                         animation: true,
                         // The dashboard's first-ever build of a session (a
@@ -176,42 +150,56 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                     ),
                   ),
                 ),
+                const SizedBox(height: Dimens.spacing16),
+                Text(
+                  S.of(context).dashboardEatenOfGoal(
+                    displaySupplied.round(),
+                    displayGoal.round(),
+                    usesKilojoules ? S.of(context).kjLabel : S.of(context).kcalLabel,
+                  ),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                // Macros share the calorie card: one summary surface for the
+                // day instead of a card per nutrient.
+                const SizedBox(height: Dimens.spacing24),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _MacroColumn(
+                        label: S.of(context).carbsLabel,
+                        intake: widget.totalCarbsIntake,
+                        goal: widget.totalCarbsGoal,
+                        color: palette.carbs,
+                        palette: palette,
+                      ),
+                    ),
+                    const SizedBox(width: Dimens.spacing16),
+                    Expanded(
+                      child: _MacroColumn(
+                        label: S.of(context).fatLabel,
+                        intake: widget.totalFatsIntake,
+                        goal: widget.totalFatsGoal,
+                        color: palette.fat,
+                        palette: palette,
+                      ),
+                    ),
+                    const SizedBox(width: Dimens.spacing16),
+                    Expanded(
+                      child: _MacroColumn(
+                        label: S.of(context).proteinLabel,
+                        intake: widget.totalProteinsIntake,
+                        goal: widget.totalProteinsGoal,
+                        color: palette.protein,
+                        palette: palette,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: Dimens.spacing12),
-          Row(
-            children: [
-              Expanded(
-                child: _MacroTile(
-                  label: S.of(context).carbsLabel,
-                  intake: widget.totalCarbsIntake,
-                  goal: widget.totalCarbsGoal,
-                  color: palette.carbs,
-                  palette: palette,
-                ),
-              ),
-              const SizedBox(width: Dimens.spacing12),
-              Expanded(
-                child: _MacroTile(
-                  label: S.of(context).fatLabel,
-                  intake: widget.totalFatsIntake,
-                  goal: widget.totalFatsGoal,
-                  color: palette.fat,
-                  palette: palette,
-                ),
-              ),
-              const SizedBox(width: Dimens.spacing12),
-              Expanded(
-                child: _MacroTile(
-                  label: S.of(context).proteinLabel,
-                  intake: widget.totalProteinsIntake,
-                  goal: widget.totalProteinsGoal,
-                  color: palette.protein,
-                  palette: palette,
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -219,50 +207,14 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 }
 
-class _MiniStat extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  final Color color;
-  final bool trailing;
-
-  const _MiniStat({
-    required this.icon,
-    required this.value,
-    required this.label,
-    required this.color,
-    this.trailing = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: trailing ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.16), shape: BoxShape.circle),
-          child: Icon(icon, color: color, size: 20),
-        ),
-        const SizedBox(height: 6),
-        Text(value,
-            maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.titleMedium),
-        Text(label,
-            maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.labelSmall),
-      ],
-    );
-  }
-}
-
-class _MacroTile extends StatelessWidget {
+class _MacroColumn extends StatelessWidget {
   final String label;
   final double intake;
   final double goal;
   final Color color;
   final AppPalette palette;
 
-  const _MacroTile({
+  const _MacroColumn({
     required this.label,
     required this.intake,
     required this.goal,
@@ -274,36 +226,32 @@ class _MacroTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final pct = (goal <= 0) ? 0.0 : (intake / goal).clamp(0.0, 1.0);
-    return AppCard(
-      borderRadius: Dimens.radiusM,
-      padding: const EdgeInsets.fromLTRB(Dimens.spacing16, Dimens.spacing16, Dimens.spacing16, Dimens.spacing16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(width: 9, height: 9, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-              const SizedBox(width: 6),
-              Flexible(child: Text(label, style: textTheme.labelMedium)),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(width: 9, height: 9, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+            const SizedBox(width: 6),
+            Flexible(child: Text(label, style: textTheme.labelMedium)),
+          ],
+        ),
+        const SizedBox(height: Dimens.spacing8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: LinearProgressIndicator(
+            value: pct,
+            minHeight: 8,
+            backgroundColor: palette.surfaceMuted,
+            valueColor: AlwaysStoppedAnimation(color),
           ),
-          const SizedBox(height: Dimens.spacing12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: pct,
-              minHeight: 8,
-              backgroundColor: palette.surfaceMuted,
-              valueColor: AlwaysStoppedAnimation(color),
-            ),
-          ),
-          const SizedBox(height: Dimens.spacing12),
-          Text(
-            '${intake.toInt()}/${goal.toInt()} ${S.of(context).gramUnit}',
-            style: textTheme.bodySmall?.copyWith(color: palette.textStrong, fontWeight: FontWeight.w700),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: Dimens.spacing8),
+        Text(
+          '${intake.toInt()}/${goal.toInt()} ${S.of(context).gramUnit}',
+          style: textTheme.bodySmall?.copyWith(color: palette.textStrong, fontWeight: FontWeight.w700),
+        ),
+      ],
     );
   }
 }

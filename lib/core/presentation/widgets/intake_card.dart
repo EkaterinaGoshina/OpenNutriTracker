@@ -78,8 +78,12 @@ class IntakeCard extends StatelessWidget {
             padding: const EdgeInsets.all(Dimens.spacing12),
             child: Row(
               children: [
-                _Thumbnail(intake: intake, palette: palette),
-                const SizedBox(width: Dimens.spacing12),
+                // A meal with no photo gets no stand-in icon: the same glyph
+                // on every row only takes the name's room.
+                if (_Thumbnail.hasImage(intake)) ...[
+                  _Thumbnail(intake: intake, palette: palette),
+                  const SizedBox(width: Dimens.spacing12),
+                ],
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -161,6 +165,9 @@ class _Thumbnail extends StatelessWidget {
   final AppPalette palette;
 
   const _Thumbnail({required this.intake, required this.palette});
+
+  static bool hasImage(IntakeEntity intake) =>
+      intake.meal.localImagePath != null || intake.meal.mainImageUrl != null;
 
   @override
   Widget build(BuildContext context) {

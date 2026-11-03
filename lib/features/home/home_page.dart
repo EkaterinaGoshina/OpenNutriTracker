@@ -27,7 +27,6 @@ import 'package:opennutritracker/features/home/presentation/widgets/dashboard_wi
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/kitchen_card.dart';
 import 'package:opennutritracker/core/domain/entity/body_weight_unit_entity.dart';
-import 'package:opennutritracker/features/home/presentation/widgets/quick_weight_widget.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class HomePage extends StatefulWidget {
@@ -169,26 +168,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       children: [
         ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                Dimens.spacing16,
-                Dimens.spacing16,
-                Dimens.spacing16,
-                Dimens.spacing4,
-              ),
-              // Wrap rather than Row so the two chips drop onto a second line
-              // at large text scale instead of overflowing off the edge.
-              child: Wrap(
-                spacing: Dimens.spacing12,
-                runSpacing: Dimens.spacing8,
-                children: [
-                  QuickWeightWidget(
-                    weightKg: userWeightKg,
-                    bodyWeightUnit: bodyWeightUnit,
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: Dimens.spacing8),
             DashboardWidget(
               totalKcalDaily: totalKcalDaily,
@@ -236,6 +215,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ))
               IntakeVerticalList(
                 day: DateTime.now(),
+                compact: true,
                 title: S.of(context).breakfastLabel,
                 listIcon: IntakeTypeEntity.breakfast.getIconData(),
                 addMealType: AddMealType.breakfastType,
@@ -253,6 +233,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ))
               IntakeVerticalList(
                 day: DateTime.now(),
+                compact: true,
                 title: S.of(context).lunchLabel,
                 listIcon: IntakeTypeEntity.lunch.getIconData(),
                 addMealType: AddMealType.lunchType,
@@ -270,6 +251,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ))
               IntakeVerticalList(
                 day: DateTime.now(),
+                compact: true,
                 title: S.of(context).dinnerLabel,
                 addMealType: AddMealType.dinnerType,
                 listIcon: IntakeTypeEntity.dinner.getIconData(),
@@ -287,6 +269,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ))
               IntakeVerticalList(
                 day: DateTime.now(),
+                compact: true,
                 title: S.of(context).snackLabel,
                 listIcon: IntakeTypeEntity.snack.getIconData(),
                 addMealType: AddMealType.snackType,

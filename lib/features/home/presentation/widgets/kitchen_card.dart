@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
+import 'package:opennutritracker/core/domain/usecase/delete_recipe_usecase.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
-import 'package:opennutritracker/core/utils/energy_display.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/kitchen_eat_sheet.dart';
@@ -20,7 +20,7 @@ class KitchenCard extends StatefulWidget {
 
   /// How many dishes the card lists; the rest are one tap away under
   /// "All dishes".
-  static const maxDishes = 4;
+  static const maxDishes = 2;
 
   @override
   State<KitchenCard> createState() => _KitchenCardState();
@@ -28,6 +28,10 @@ class KitchenCard extends StatefulWidget {
 
 class _KitchenCardState extends State<KitchenCard> {
   late final RecipesBloc _bloc;
+
+  /// Dishes swiped away and deleted, hidden at once: a [Dismissible] must be
+  /// gone from the tree the frame it is dismissed, before the bloc reloads.
+  final Set<String> _deletedIds = {};
 
   @override
   void initState() {
@@ -38,6 +42,32 @@ class _KitchenCardState extends State<KitchenCard> {
   Future<void> _open(String routeName, {Object? arguments}) async {
     await Navigator.of(context).pushNamed(routeName, arguments: arguments);
     if (mounted) _bloc.add(const LoadRecipesEvent());
+  }
+
+  /// Asks before deleting; the deletion itself happens only on a yes, so a
+  /// cancelled swipe springs the row back.
+  Future<bool> _confirmDelete(RecipeEntity dish) async {
+    final s = S.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(s.kitchenDeleteConfirmTitle),
+        content: Text(s.recipeDeleteConfirmContent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(s.dialogCancelLabel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(s.dialogDeleteLabel),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return false;
+    await locator<DeleteRecipeUseCase>().delete(dish.id);
+    return true;
   }
 
   @override
@@ -62,6 +92,8 @@ class _KitchenCardState extends State<KitchenCard> {
           builder: (context, state) {
             final dishes = state is RecipesLoaded
                 ? state.recipes
+                      .where((d) => !_deletedIds.contains(d.id))
+                      .toList()
                 : const <RecipeEntity>[];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -123,19 +155,48 @@ class _KitchenCardState extends State<KitchenCard> {
                   )
                 else
                   for (final dish in dishes.take(KitchenCard.maxDishes))
-                    _DishRow(
-                      dish: dish,
-                      onOpen: () => _open(
-                        NavigationOptions.recipeDetailRoute,
-                        arguments: RecipeDetailArguments(recipeId: dish.id),
+                    Dismissible(
+                      key: ValueKey(dish.id),
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (_) => _confirmDelete(dish),
+                      onDismissed: (_) {
+                        setState(() => _deletedIds.add(dish.id));
+                        _bloc.add(const LoadRecipesEvent());
+                      },
+                      background: const _DeleteBackground(),
+                      child: _DishRow(
+                        dish: dish,
+                        onOpen: () => _open(
+                          NavigationOptions.recipeDetailRoute,
+                          arguments: RecipeDetailArguments(recipeId: dish.id),
+                        ),
+                        onEat: () => showKitchenEatSheet(context, dish),
                       ),
-                      onEat: () => showKitchenEatSheet(context, dish),
                     ),
               ],
             );
           },
         ),
       ),
+    );
+  }
+}
+
+/// What shows behind a dish row as it is swiped left.
+class _DeleteBackground extends StatelessWidget {
+  const _DeleteBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: Dimens.spacing24),
+      decoration: BoxDecoration(
+        color: colors.errorContainer,
+        borderRadius: Dimens.borderRadiusM,
+      ),
+      child: Icon(Icons.delete_outline_rounded, color: colors.onErrorContainer),
     );
   }
 }
@@ -153,10 +214,7 @@ class _DishRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final palette = isDark ? AppPalette.dark : AppPalette.light;
     final textTheme = Theme.of(context).textTheme;
-    final kcalPer100 = dish.aggregatedNutrimentsPer100.energyKcal100 ?? 0;
     return InkWell(
       borderRadius: Dimens.borderRadiusM,
       onTap: onOpen,
@@ -165,31 +223,13 @@ class _DishRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    dish.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    S
-                        .of(context)
-                        .kitchenKcalPer100(
-                          EnergyDisplay.formatWithUnit(context, kcalPer100),
-                        ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: palette.textMuted,
-                    ),
-                  ),
-                ],
+              child: Text(
+                dish.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(width: Dimens.spacing8),
@@ -197,6 +237,13 @@ class _DishRow extends StatelessWidget {
               identifier: 'home-kitchen-eat',
               child: FilledButton.tonal(
                 onPressed: onEat,
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  minimumSize: const Size(56, 36),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Dimens.spacing16,
+                  ),
+                ),
                 child: Text(S.of(context).kitchenEatButton),
               ),
             ),

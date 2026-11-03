@@ -63,6 +63,11 @@ class IntakeVerticalList extends StatefulWidget {
   /// When null, the sort menu is hidden.
   final ValueChanged<DiarySortType>? onSortTypeChanged;
 
+  /// The lighter section Home uses: a one-line kcal summary, the add button
+  /// in the header instead of a full-width row under the entries, and the
+  /// whole section as the drop target so an empty one still takes a meal.
+  final bool compact;
+
   const IntakeVerticalList({
     super.key,
     required this.day,
@@ -81,6 +86,7 @@ class IntakeVerticalList extends StatefulWidget {
     this.mealKcalTarget,
     this.sortType,
     this.onSortTypeChanged,
+    this.compact = false,
   });
 
   /// Whether a meal section is rendered on Home and in the Diary. A 0 % share
@@ -144,7 +150,7 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
               EnergyDisplay.formatValue(context, widget.mealKcalTarget!),
             )
         : EnergyDisplay.formatWithUnit(context, totalKcal);
-    if (widget.showMealMacros && totalKcal > 0) {
+    if (!widget.compact && widget.showMealMacros && totalKcal > 0) {
       return '$kcalLine\n'
           '${totalCarbsGram.toInt()} ${S.of(context).carbsLabelShort}  '
           '${totalFatsGram.toInt()} ${S.of(context).fatLabelShort}  '
@@ -159,7 +165,7 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
     final palette = isDark ? AppPalette.dark : AppPalette.light;
     final accent = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
-    return Column(
+    final section = Column(
       children: [
         Container(
           padding: const EdgeInsets.fromLTRB(
@@ -197,7 +203,7 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
                 Flexible(
                   child: Text(
                     _buildHeaderSummary(context),
-                    maxLines: 2,
+                    maxLines: widget.compact ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium?.copyWith(
                       color: palette.textMuted,
@@ -209,6 +215,16 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
                 ),
               if (widget.onSortTypeChanged != null && totalKcal > 0)
                 _buildSortMenu(context),
+              if (widget.compact)
+                Semantics(
+                  identifier: 'add-meal-placeholder',
+                  container: true,
+                  child: IconButton(
+                    tooltip: S.of(context).addLabel,
+                    icon: Icon(Icons.add_rounded, color: accent),
+                    onPressed: () => _onPlaceholderCardTapped(context),
+                  ),
+                ),
               Semantics(
                   identifier: 'intake-section-menu',
                   // Tight bounds: without this the node inherits the flex
@@ -340,6 +356,9 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
             ],
           ),
         ),
+        if (widget.compact)
+          ..._buildIntakeCards(palette)
+        else
         DragTarget<IntakeEntity>(
           onAcceptWithDetails: (intake) {
             _onItemDropped(intake.data);
@@ -347,55 +366,7 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
           builder: (context, candidateData, rejectedData) {
             return Column(
               children: [
-                for (final intakeEntity in widget.intakeList)
-                  LongPressDraggable<IntakeEntity>(
-                    key: ValueKey(intakeEntity.id),
-                    data: intakeEntity,
-                    onDragStarted: () => widget.onItemDragCallback?.call(true),
-                    onDragEnd: (_) => widget.onItemDragCallback?.call(false),
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Opacity(
-                          opacity: 0.85,
-                          child: IntakeCard(
-                            key: ValueKey('fb-${intakeEntity.id}'),
-                            intake: intakeEntity,
-                            firstListElement: false,
-                            usesImperialUnits: widget.usesImperialUnits,
-                            sortType: widget.sortType,
-                          ),
-                        ),
-                      ),
-                    ),
-                    childWhenDragging: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.spacing16,
-                        vertical: Dimens.spacing4,
-                      ),
-                      child: Container(
-                        height: 76,
-                        decoration: BoxDecoration(
-                          color: palette.surfaceMuted,
-                          borderRadius: Dimens.borderRadiusM,
-                          border: Border.all(
-                            color: palette.border,
-                            width: Dimens.hairline,
-                          ),
-                        ),
-                      ),
-                    ),
-                    child: IntakeCard(
-                      key: ValueKey(intakeEntity.id),
-                      intake: intakeEntity,
-                      onItemLongPressed: widget.onItemLongPressedCallback,
-                      onItemTapped: widget.onItemTappedCallback,
-                      firstListElement: false,
-                      usesImperialUnits: widget.usesImperialUnits,
-                      sortType: widget.sortType,
-                    ),
-                  ),
+                ..._buildIntakeCards(palette),
                 PlaceholderCard(
                   day: widget.day,
                   onTap: () => _onPlaceholderCardTapped(context),
@@ -408,6 +379,65 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
         ),
       ],
     );
+    if (!widget.compact) return section;
+    return DragTarget<IntakeEntity>(
+      onAcceptWithDetails: (intake) => _onItemDropped(intake.data),
+      builder: (context, candidateData, rejectedData) => section,
+    );
+  }
+
+  List<Widget> _buildIntakeCards(AppPalette palette) {
+    return [
+      for (final intakeEntity in widget.intakeList)
+        LongPressDraggable<IntakeEntity>(
+          key: ValueKey(intakeEntity.id),
+          data: intakeEntity,
+          onDragStarted: () => widget.onItemDragCallback?.call(true),
+          onDragEnd: (_) => widget.onItemDragCallback?.call(false),
+          feedback: Material(
+            color: Colors.transparent,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Opacity(
+                opacity: 0.85,
+                child: IntakeCard(
+                  key: ValueKey('fb-${intakeEntity.id}'),
+                  intake: intakeEntity,
+                  firstListElement: false,
+                  usesImperialUnits: widget.usesImperialUnits,
+                  sortType: widget.sortType,
+                ),
+              ),
+            ),
+          ),
+          childWhenDragging: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Dimens.spacing16,
+              vertical: Dimens.spacing4,
+            ),
+            child: Container(
+              height: 76,
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                borderRadius: Dimens.borderRadiusM,
+                border: Border.all(
+                  color: palette.border,
+                  width: Dimens.hairline,
+                ),
+              ),
+            ),
+          ),
+          child: IntakeCard(
+            key: ValueKey(intakeEntity.id),
+            intake: intakeEntity,
+            onItemLongPressed: widget.onItemLongPressedCallback,
+            onItemTapped: widget.onItemTappedCallback,
+            firstListElement: false,
+            usesImperialUnits: widget.usesImperialUnits,
+            sortType: widget.sortType,
+          ),
+        ),
+    ];
   }
 
   Widget _buildSortMenu(BuildContext context) {
