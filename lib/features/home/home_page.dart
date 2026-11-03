@@ -6,7 +6,6 @@ import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/entity/calories_profile_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
-import 'package:opennutritracker/core/presentation/widgets/empty_hint.dart';
 import 'package:opennutritracker/core/presentation/widgets/low_kcal_warning_card.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/calc/calorie_goal_calc.dart';
@@ -26,8 +25,8 @@ import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dar
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/dashboard_widget.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
+import 'package:opennutritracker/features/home/presentation/widgets/kitchen_card.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/fasting_home_chip.dart';
-import 'package:opennutritracker/features/home/presentation/widgets/quick_water_widget.dart';
 import 'package:opennutritracker/core/domain/entity/body_weight_unit_entity.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/quick_weight_widget.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -192,10 +191,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     weightKg: userWeightKg,
                     bodyWeightUnit: bodyWeightUnit,
                   ),
-                  QuickWaterWidget(
-                    waterMlToday: waterMlToday,
-                    waterGoalMl: waterGoalMl,
-                  ),
                 ],
               ),
             ),
@@ -213,17 +208,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               totalFatsGoal: totalFatsGoal,
               totalProteinsGoal: totalProteinsGoal,
             ),
-            // Day-one / empty-day guidance: when nothing is logged yet, point
-            // the way to the centre + rather than leaving a silent dashboard.
-            if (breakfastIntakeList.isEmpty &&
-                lunchIntakeList.isEmpty &&
-                dinnerIntakeList.isEmpty &&
-                snackIntakeList.isEmpty &&
-                userActivities.isEmpty)
-              EmptyHint(
-                icon: Icons.add_circle_outline_rounded,
-                title: S.of(context).homeFirstMealHint,
-              ),
+            // The kitchen sits where the empty-day hint used to: dishes to
+            // make, open and eat, and its own empty text points at creating
+            // the first one.
+            const KitchenCard(),
             if (CalorieGoalCalc.isBelowRecommendedDailyKcalFloor(
               goalKcal: totalKcalDaily,
               gender: userGender,

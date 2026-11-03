@@ -59,7 +59,7 @@ class SettingsLoadedState extends SettingsState {
     this.usesImperialFoodUnits = false,
     this.usesImperialHeightUnits = false,
     this.bodyWeightUnit = BodyWeightUnit.kg,
-    this.showActivityTracking = true,
+    this.showActivityTracking = false,
     this.showMealMacros = true,
     this.notificationsEnabled = false,
     this.notificationHour = 8,

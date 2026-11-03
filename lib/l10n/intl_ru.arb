@@ -16,6 +16,19 @@
   },
   "foodSourcesAlwaysEnabledLabel": "Всегда включено",
   "foodSourcesHelpText": "Результаты поиска берутся из этих баз продуктов. Open Food Facts обеспечивает поиск продуктов, в том числе по штрихкоду, и всегда включён.",
+  "kitchenAllDishes": "Все блюда",
+  "kitchenCreateDish": "Создать блюдо",
+  "kitchenEatButton": "Съесть",
+  "kitchenEmptyHint": "Здесь появятся ваши блюда. Создайте одно и записывайте порции в два касания.",
+  "kitchenKcalPer100": "{energy} на 100 г",
+  "@kitchenKcalPer100": {
+    "placeholders": {
+      "energy": {
+        "type": "String"
+      }
+    }
+  },
+  "kitchenTitle": "Кухня",
   "machineTranslatedNameHint": "Название переведено автоматически",
   "measureUnitBar": "{count, plural, one{батончик} few{батончика} many{батончиков} other{батончика}}",
   "@measureUnitBar": {
@@ -897,6 +910,7 @@
     }
   },
   "recipeIngredientUnitLabel": "Единица",
+  "recipeIngredientsDoneLabel": "Готово",
   "recipeIngredientsLabel": "Ингредиенты",
   "recipeInvalidTotalWeightLabel": "Общий вес должен быть больше нуля",
   "recipeLogCtaLabel": "Записать рецепт в дневник",
@@ -910,7 +924,6 @@
   "recipeSaveForLaterDescription": "Включите, чтобы оставить этот приём пищи в сохранённых и пользоваться им снова. Если блюдо разовое, оставьте выключенным.",
   "recipeSaveForLaterLabel": "Сохранить на будущее",
   "recipeSaveLabel": "Сохранить рецепт",
-  "recipeIngredientsDoneLabel": "Готово",
   "recipeServingsCountHelper": "Позволяет записывать этот рецепт в дневник по порциям, а не в граммах.",
   "recipeServingsCountLabel": "Порций (необязательно)",
   "recipeTagsHelper": "Через запятую, напр. «завтрак, веган»",

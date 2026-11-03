@@ -196,6 +196,13 @@
       }
     }
   },
+  "@kitchenKcalPer100": {
+    "placeholders": {
+      "energy": {
+        "type": "String"
+      }
+    }
+  },
   "activityExample": "e.g. running, biking, yoga ...",
   "activityLabel": "Activity",
   "addItemLabel": "Add new Item:",
@@ -207,6 +214,12 @@
   "@additionalInfoLabelSource": {"placeholders": {"sourceName": {"type": "String"}}},
   "foodSourcesAlwaysEnabledLabel": "Always enabled",
   "foodSourcesHelpText": "Search results come from these food databases. Open Food Facts powers the product and barcode search and is always enabled.",
+  "kitchenAllDishes": "All dishes",
+  "kitchenCreateDish": "Create dish",
+  "kitchenEatButton": "Eat",
+  "kitchenEmptyHint": "Your dishes will appear here. Create one, then log a portion in two taps.",
+  "kitchenKcalPer100": "{energy} per 100 g",
+  "kitchenTitle": "Kitchen",
   "machineTranslatedNameHint": "Name translated automatically",
   "measureUnitBar": "{count, plural, one{bar} other{bars}}",
   "@measureUnitBar": {"placeholders": {"count": {"type": "num"}}},
@@ -972,6 +985,7 @@
   "recipeIngredientAmountLabel": "Amount",
   "recipeIngredientCountLabel": "{count} ingredient(s)",
   "recipeIngredientUnitLabel": "Unit",
+  "recipeIngredientsDoneLabel": "Done",
   "recipeIngredientsLabel": "Ingredients",
   "recipeInvalidTotalWeightLabel": "Total weight must be greater than zero",
   "recipeLogCtaLabel": "Log this Recipe",
@@ -985,7 +999,6 @@
   "recipeSaveForLaterDescription": "Turn this on to keep this meal in your saved list for next time. Leave it off for a one-off you won't eat again.",
   "recipeSaveForLaterLabel": "Save for next time",
   "recipeSaveLabel": "Save Recipe",
-  "recipeIngredientsDoneLabel": "Done",
   "recipeServingsCountHelper": "Lets you log this recipe by serving instead of grams.",
   "recipeServingsCountLabel": "Servings (optional)",
   "recipeTagsHelper": "Comma-separated, e.g. \"breakfast, vegan\"",

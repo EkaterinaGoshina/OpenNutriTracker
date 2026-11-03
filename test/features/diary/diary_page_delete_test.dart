@@ -180,6 +180,9 @@ void main() {
     );
     final configDataSource = ConfigDataSource(db);
     await configDataSource.initializeConfig();
+    // These tests delete activities, so the section has to be on; it is off by
+    // default.
+    await configDataSource.setConfigShowActivityTracking(true);
 
     final now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
