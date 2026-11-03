@@ -910,6 +910,7 @@
   "recipeSaveForLaterDescription": "Включите, чтобы оставить этот приём пищи в сохранённых и пользоваться им снова. Если блюдо разовое, оставьте выключенным.",
   "recipeSaveForLaterLabel": "Сохранить на будущее",
   "recipeSaveLabel": "Сохранить рецепт",
+  "recipeIngredientsDoneLabel": "Готово",
   "recipeServingsCountHelper": "Позволяет записывать этот рецепт в дневник по порциям, а не в граммах.",
   "recipeServingsCountLabel": "Порций (необязательно)",
   "recipeTagsHelper": "Через запятую, напр. «завтрак, веган»",

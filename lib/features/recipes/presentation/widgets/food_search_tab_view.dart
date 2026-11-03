@@ -28,11 +28,15 @@ class FoodSearchTabView extends StatefulWidget {
   // taps are forwarded here. The recipe builder uses this to push the
   // scanner in pick mode and feed the result back through [onMealSelected].
   final VoidCallback? onBarcodePressed;
+  // When non-null, an empty result offers to create the food instead of
+  // leaving the user at a dead end.
+  final VoidCallback? onCreateCustomFood;
 
   const FoodSearchTabView({
     super.key,
     required this.onMealSelected,
     this.onBarcodePressed,
+    this.onCreateCustomFood,
   });
 
   @override
@@ -137,14 +141,14 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
             return query.trim().length >= minQueryLength &&
                     state.query != query
                 ? _pendingSpinner
-                : const NoResultsWidget();
+                : NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
           }
           return ListView.builder(
             itemCount:
                 state.products.length + (state.remoteSourceEmpty ? 1 : 0),
             itemBuilder: (context, index) {
               if (index == state.products.length) {
-                return const NoResultsWidget();
+                return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
               }
               return _PickableMealCard(
                 meal: state.products[index],
@@ -185,12 +189,12 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
             return query.trim().length >= minQueryLength &&
                     state.query != query
                 ? _pendingSpinner
-                : const NoResultsWidget();
+                : NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
           }
           return ListView.builder(
             itemCount: state.food.length + (state.remoteSourceEmpty ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == state.food.length) return const NoResultsWidget();
+              if (index == state.food.length) return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
               return _PickableMealCard(
                 meal: state.food[index],
                 onTap: widget.onMealSelected,
@@ -231,7 +235,7 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
           );
         }
         if (state is RecentMealLoadedState) {
-          if (state.recentMeals.isEmpty) return const NoResultsWidget();
+          if (state.recentMeals.isEmpty) return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
           return ListView.builder(
             itemCount: state.recentMeals.length,
             itemBuilder: (context, index) => _PickableMealCard(

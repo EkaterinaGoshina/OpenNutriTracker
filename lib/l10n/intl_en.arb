@@ -985,6 +985,7 @@
   "recipeSaveForLaterDescription": "Turn this on to keep this meal in your saved list for next time. Leave it off for a one-off you won't eat again.",
   "recipeSaveForLaterLabel": "Save for next time",
   "recipeSaveLabel": "Save Recipe",
+  "recipeIngredientsDoneLabel": "Done",
   "recipeServingsCountHelper": "Lets you log this recipe by serving instead of grams.",
   "recipeServingsCountLabel": "Servings (optional)",
   "recipeTagsHelper": "Comma-separated, e.g. \"breakfast, vegan\"",

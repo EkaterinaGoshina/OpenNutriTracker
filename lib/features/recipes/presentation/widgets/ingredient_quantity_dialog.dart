@@ -67,11 +67,10 @@ class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
     super.dispose();
   }
 
-  String _defaultUnit(MealEntity meal) {
-    if (meal.hasServingValues) return 'serving';
-    if (meal.isLiquid) return 'ml';
-    return 'g';
-  }
+  // Weight first, even for a food that has a serving: an ingredient is
+  // measured out, and "150" read as 150 servings is a silent mistake. The
+  // serving stays one tap away in the dropdown.
+  String _defaultUnit(MealEntity meal) => meal.isLiquid ? 'ml' : 'g';
 
   List<DropdownMenuItem<String>> _unitItems(BuildContext context) {
     final items = <DropdownMenuItem<String>>[];

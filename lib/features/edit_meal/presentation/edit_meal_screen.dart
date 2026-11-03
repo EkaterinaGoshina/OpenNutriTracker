@@ -50,6 +50,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
   LogTray? _logTray;
 
   late bool _editOnly;
+  late bool _pickMode;
 
   late EditMealBloc _editMealBloc;
 
@@ -133,6 +134,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
     _intakeTypeEntity = args.intakeTypeEntity;
     _usesImperialUnits = args.usesImperialUnits;
     _editOnly = args.editOnly;
+    _pickMode = args.pickMode;
     _logTray = args.logTray;
 
     _nameTextController.text = _mealEntity.name ?? "";
@@ -593,7 +595,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
           const SizedBox(height: 16),
           _buildMicroField(_vitaminB12TextController, S.of(context).vitaminB12Label, 'µg', perQtyHelper),
         ],
-        if (!_editOnly) ...[
+        if (!_editOnly && !_pickMode) ...[
           const SizedBox(height: 24),
           _SaveForLaterField(
             value: _saveForLater,
@@ -922,7 +924,7 @@ class _EditMealScreenState extends State<EditMealScreen> {
       // Persist custom meal template (#267). Skipped for one-off entries
       // (#249) when the user has turned off "Save for next time" — the
       // intake itself is still logged below, but no template is kept.
-      final shouldPersistTemplate = _editOnly || _saveForLater;
+      final shouldPersistTemplate = _editOnly || _pickMode || _saveForLater;
       if (newMealEntity.source == MealSourceEntity.custom &&
           shouldPersistTemplate) {
         await _editMealBloc.saveCustomMeal(
@@ -932,7 +934,10 @@ class _EditMealScreenState extends State<EditMealScreen> {
       }
 
       if (!mounted) return;
-      if (_editOnly) {
+      if (_pickMode) {
+        // Created for a recipe: hand the food back to the picker that asked.
+        Navigator.of(context).pop(newMealEntity);
+      } else if (_editOnly) {
         Navigator.of(context).pop();
       } else {
         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -1100,6 +1105,11 @@ class EditMealScreenArguments {
   final bool usesImperialUnits;
   final bool editOnly;
 
+  /// Create a food and pop it back to the caller instead of opening the
+  /// detail screen. The food is always kept for next time. Used by the recipe
+  /// ingredient picker.
+  final bool pickMode;
+
   /// The add-food screen's "To log" list, handed on to the detail screen a
   /// new food opens in so that it adds there instead of logging.
   final LogTray? logTray;
@@ -1110,8 +1120,19 @@ class EditMealScreenArguments {
     this.intakeTypeEntity,
     this.usesImperialUnits, {
     this.editOnly = false,
+    this.pickMode = false,
     this.logTray,
   });
+
+  /// A new, empty food whose result goes back to the caller; the day and
+  /// meal type are never used on this path.
+  EditMealScreenArguments.pick({required this.usesImperialUnits})
+      : day = DateTime.now(),
+        mealEntity = MealEntity.empty(),
+        intakeTypeEntity = IntakeTypeEntity.snack,
+        editOnly = false,
+        pickMode = true,
+        logTray = null;
 }
 
 /// "Save for next time" toggle shown on the create-and-log path (#249).
