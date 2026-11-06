@@ -128,7 +128,7 @@ family_dishes   family_id, id (uuid блюда из приложения), creat
 ## Шаги
 
 1. [x] Миграции SQL в `supabase/migrations/`: `profiles`, `families`, `family_members`, `family_invites`, `is_family_member`, RPC, политики RLS. Проверены на PGlite ([supabase/README.md](../supabase/README.md)), на настоящем проекте ещё нет.
-2. [ ] Пользователь создаёт проект Supabase и применяет миграции.
+2. [x] Проект Supabase `opennutritracker` (`ygsqeedsclwypknfbzea`, Франкфурт) создан, все миграции применены, проверка безопасности пройдена, сценарий семьи и блюд проверен на настоящей базе.
 3. [x] Два клиента в `locator.dart`, необязательные ключи нашего проекта в `.env`. `AccountRepository`, `FamilyRepository`, разбор `?join=` (`lib/features/family/`).
 4. [ ] Экран логина, вступление по отложенному коду после входа, удаление `?join=` из адресной строки.
 5. [ ] UI семьи в профиле: создать, пригласить, список участников, выйти, удалить участника.

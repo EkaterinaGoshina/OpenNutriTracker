@@ -88,3 +88,7 @@
 ### Что ещё не проверено в браузере
 
 Прохождение onboarding и демо-режим, сохранение в IndexedDB после перезагрузки, поиск еды (CORS у Open Food Facts и Supabase), камера и сканер, фото, экспорт и импорт, AI-функции. Известные места, где в вебе будет падать при использовании: `getTemporaryDirectory` (4 файла), `getApplicationSupportDirectory` (кэш картинок), `File(...)` (25 файлов), `gzip` из `dart:io` (3 файла), `InternetAddress` и DNS-проверка в `plaintext_destination_guard.dart`.
+
+### CORS у Open Food Facts
+
+Из браузера поиск Open Food Facts не работает: `search.openfoodfacts.org/search` и `world.openfoodfacts.org/cgi/search.pl` не отдают `Access-Control-Allow-Origin`, и браузер блокирует ответ (проверено с `http://localhost:8090`). Поиску в вебе нужен прокси, его можно поставить в тот же Worker, что и `/api/photos/*`. Поиск по справочнику Supabase этой проблемы не имеет: у Supabase CORS открыт.

@@ -8,6 +8,7 @@
 |---|---|
 | `migrations/20261106120000_family.sql` | Таблицы `profiles`, `families`, `family_members`, `family_invites`, RPC, политики RLS |
 | `migrations/20261106130000_family_dishes.sql` | Таблица `family_dishes`, RPC сохранения и удаления блюд, политика RLS |
+| `migrations/20261106140000_hardening.sql` | Правки по Supabase Advisors: закрыт `rls_auto_enable()`, индексы на внешние ключи |
 | `tests/harness.mjs` | Применяет все миграции к Postgres в памяти (PGlite) и запускает запросы от лица разных пользователей |
 | `tests/family_test.mjs`, `tests/dishes_test.mjs` | Проверки RPC и прав для семей и для блюд |
 
@@ -42,6 +43,12 @@ cd supabase/tests && npm install && npm test
 ```
 
 Стенд подменяет схему `auth` Supabase минимальной заглушкой: таблица `auth.users`, функция `auth.uid()`, роли `anon` и `authenticated`. Он проверяет логику и права, но не заменяет прогон на настоящем проекте.
+
+## Рабочий проект
+
+`opennutritracker`, ref `ygsqeedsclwypknfbzea`, регион eu-central-1. Все миграции применены.
+
+Supabase Advisors после применения показывает 12 предупреждений «Signed-In Users Can Execute SECURITY DEFINER Function». Это наши RPC: они и задуманы как API для вошедших пользователей, и каждая сама проверяет вызывающего. Других предупреждений безопасности нет.
 
 ## Как применить к проекту Supabase
 
