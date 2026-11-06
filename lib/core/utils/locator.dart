@@ -108,6 +108,9 @@ import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
+import 'package:opennutritracker/features/family/data/account_repository.dart';
+import 'package:opennutritracker/features/family/data/family_repository.dart';
+import 'package:opennutritracker/features/family/domain/pending_family_invite.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -188,17 +191,40 @@ Future<void> initLocator() async {
     ),
   );
 
-  // Backend
-  await Supabase.initialize(
-    url: Env.supabaseProjectUrl,
-    publishableKey: Env.supabaseProjectAnonKey,
-    // In debug builds supabase_flutter attaches its own printer to the
-    // shared root log stream (hierarchical logging is off), duplicating
-    // every app log line in a second format. LoggerConfig already prints
-    // everything — including supabase records — once.
-    debug: false,
+  // Backend. Two Supabase projects (docs/WEB_ARCHITECTURE.md): the food
+  // database, read anonymously, and our own for accounts and families.
+  // `Supabase.initialize` persists the session and handles the sign-in
+  // redirect, so it belongs to the account project; the food database is a
+  // plain client. `SupabaseClient` in the locator stays the food database.
+  locator.registerLazySingleton<SupabaseClient>(
+    () => SupabaseClient(Env.supabaseProjectUrl, Env.supabaseProjectAnonKey),
   );
-  locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
+  final accountUrl = Env.accountSupabaseUrl;
+  final accountKey = Env.accountSupabasePublishableKey;
+  if (accountUrl != null &&
+      accountUrl.isNotEmpty &&
+      accountKey != null &&
+      accountKey.isNotEmpty) {
+    await Supabase.initialize(
+      url: accountUrl,
+      publishableKey: accountKey,
+      // In debug builds supabase_flutter attaches its own printer to the
+      // shared root log stream (hierarchical logging is off), duplicating
+      // every app log line in a second format. LoggerConfig already prints
+      // everything — including supabase records — once.
+      debug: false,
+    );
+    final accountClient = Supabase.instance.client;
+    locator.registerLazySingleton<AccountRepository>(
+      () => AccountRepository(accountClient.auth),
+    );
+    locator.registerLazySingleton<FamilyRepository>(
+      () => FamilyRepository(accountClient),
+    );
+    locator.registerSingleton<PendingFamilyInvite>(
+      PendingFamilyInvite(Uri.base),
+    );
+  }
 
   // Notification service (#312)
   locator.registerLazySingleton<NotificationService>(

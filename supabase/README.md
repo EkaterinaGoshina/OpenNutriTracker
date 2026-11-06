@@ -49,3 +49,21 @@ supabase db push
 ```
 
 После применения стоит открыть **Advisors → Security** в панели: предупреждений про RLS и `search_path` быть не должно.
+
+## Настройка входа
+
+В панели проекта:
+
+1. **Authentication → Sign In / Providers → Email**: включить. Подтверждение email можно оставить включённым: код из письма и есть подтверждение.
+2. **Authentication → Emails**: в шаблоны **Magic Link** и **Confirm signup** добавить `{{ .Token }}`. Первое письмо новому человеку уходит по шаблону Confirm signup, следующие — по Magic Link. Приложение просит ввести шестизначный код, а не переходить по ссылке.
+3. **Authentication → Sign In / Providers → Google**: включить и указать Client ID и Secret из Google Cloud Console. В Google Cloud в «Authorized redirect URIs» добавить `https://<ref>.supabase.co/auth/v1/callback`.
+4. **Authentication → URL Configuration**: в «Redirect URLs» добавить адрес веб-версии и `http://localhost:*` для разработки.
+
+Затем в `.env` приложения:
+
+```
+ACCOUNT_SUPABASE_URL="https://<ref>.supabase.co"
+ACCOUNT_SUPABASE_PUBLISHABLE_KEY="sb_publishable_..."
+```
+
+и пересобрать: `just build`.
