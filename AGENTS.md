@@ -8,6 +8,10 @@ OpenNutriTracker is a Flutter mobile app (iOS/Android) for nutritional tracking.
 
 Flutter version: **3.44.6** (managed via FVM; see `.fvmrc`)
 
+### This fork
+
+This checkout is a fork (`EkaterinaGoshina/OpenNutriTracker`, branch `webport`) adding a web build, accounts and shared family dishes. **Read [`docs/OVERVIEW.md`](docs/OVERVIEW.md) first**: what exists, its status, where it lives, which doc covers it. When you add, remove or change a feature or the architecture, update `docs/OVERVIEW.md` in the same commit.
+
 ## Code Review Rules
 
 Reviews are advisory and cannot block a merge. Most PRs come from outside contributors, often their first — write for that person. Cite `file:line`, phrase findings as observations, and raise at most five. Silence is a valid review.
