@@ -133,5 +133,5 @@ family_dishes   family_id, id (uuid блюда из приложения), creat
 4. [ ] Экран логина, вступление по отложенному коду после входа, удаление `?join=` из адресной строки.
 5. [ ] UI семьи в профиле: создать, пригласить, список участников, выйти, удалить участника.
 6. [~] `family_dishes`: миграция и RPC готовы и проверены на PGlite. Осталось: синхронизация «Кухни» в приложении, мягкое удаление локально.
-7. [ ] Worker: static assets, `/api/photos/*`, Cron Trigger, бакет R2. AI-прокси туда же.
+7. [~] Worker (`worker/`) выложен на https://opennutritracker.goshina.workers.dev: static assets и прокси Open Food Facts `/api/off/*`. Осталось: `/api/photos/*`, Cron Trigger, бакет R2, AI-прокси.
 8. [ ] Фото блюд через R2, локальная копия байтами в вебе.

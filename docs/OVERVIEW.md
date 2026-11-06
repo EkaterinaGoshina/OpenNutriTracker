@@ -21,7 +21,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Функция | Статус | Где |
 |---|---|---|
 | Дневник еды по приёмам пищи, календарь | ✅ | `features/diary`, `features/home` |
-| Поиск еды: Open Food Facts и справочник Supabase | ✅ на телефоне, 🟡 в вебе | `features/add_meal`. В вебе Open Food Facts блокируется CORS, справочнику нужен адрес в `.env` |
+| Поиск еды: Open Food Facts и справочник Supabase | ✅ на телефоне, 🟡 в вебе | `features/add_meal`. В вебе Open Food Facts идёт через прокси Worker'а (`/api/off`), справочнику нужен адрес в `.env` |
 | Сканер штрихкодов | ✅ | `features/scanner` |
 | AI: описать еду текстом или фото | ✅ | `features/add_meal`, [ai-architecture.md](ai-architecture.md) |
 | Свои продукты, избранное | ✅ | `features/add_meal`, `features/recipes` |
@@ -37,11 +37,12 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Демо-режим | ✅ | `core/utils/demo`, [demo-data.md](demo-data.md) |
 | Русский язык | ✅ fork | `lib/l10n/intl_ru.arb`, [ru-translation-guide.md](ru-translation-guide.md) |
 | Учёт воды, таймер голодания | ❌ убраны | коммит `e5734880` |
-| Веб-версия | 🟡 запускается, демо работает | [WEB_PORT_PLAN.md](WEB_PORT_PLAN.md) |
+| Веб-версия | 🟡 выложена на https://opennutritracker.goshina.workers.dev, демо и поиск работают | [WEB_PORT_PLAN.md](WEB_PORT_PLAN.md), `worker/` |
 | Аккаунт: вход по коду из письма, Google | 🟡 код готов, экранов нет | `features/family/data/account_repository.dart` |
 | Семья: создать, пригласить по коду, вступить, выйти | 🟡 сервер и код готовы, экранов нет | `features/family`, `supabase/` |
 | Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет | `supabase/migrations/20261106130000_family_dishes.sql` |
-| Фото блюд в R2, Cloudflare Worker | ⬜ | [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
+| Cloudflare Worker: сайт и прокси Open Food Facts | ✅ | `worker/src/index.js` |
+| Фото блюд в R2 | ⬜ | [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 
 ## Архитектура приложения
 
@@ -71,14 +72,15 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 
 Кратко: `profiles`, `families`, `family_members`, `family_invites`, `family_dishes`. Писать в них можно только через RPC (`create_family`, `join_family`, `save_family_dish` и др.), читать — только свою семью (RLS).
 
-Запланировано: Cloudflare Worker отдаёт веб-сборку и `/api/*` (подпись ссылок на фото в R2, прокси для AI и Open Food Facts).
+Cloudflare Worker (`worker/`, аккаунт Cloudflare пользователя) отдаёт веб-сборку из `build/web` и отвечает на `/api/*`. Сейчас там только `/api/off/<host><path>`: прокси для трёх адресов Open Food Facts, которые использует приложение (`OFFConst` в вебе строит URL на него). Запланировано: подпись ссылок на фото в R2, прокси для AI.
 
 ## Ветки, коммиты, сборка
 
 - Работа идёт в `webport`, push в `origin` по SSH.
 - Коммиты по [conventional commits](https://www.conventionalcommits.org/), без AI в соавторах ([AGENTS.md](../AGENTS.md), раздел Commits).
 - `.env` не в git. После правки `.env` нужен `dart run build_runner clean`, затем `dart run build_runner build`: иначе build_runner берёт значения из кэша.
-- Веб: `flutter build web`, локально раздаётся из `build/web` (`.claude/launch.json`).
+- Веб: `flutter build web`, затем `cd worker && npm run deploy` (нужен `npx wrangler login`). Адрес: https://opennutritracker.goshina.workers.dev. Локально: `npm run dev` в `worker/`, но локальный эмулятор не достаёт до Open Food Facts, поиск проверять на выложенной версии.
+- Тесты Worker'а: `cd worker && npm test`.
 
 ## Документы
 

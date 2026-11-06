@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class OFFConst {
   /// Proper name of the database, shown as the source chip on search
   /// result cards in every app language.
@@ -143,7 +145,7 @@ class OFFConst {
       _salPageTag: '1',
     };
 
-    return Uri.https(_salBaseUrl, _salSearchTag, queryParameters);
+    return _uri(_salBaseUrl, _salSearchTag, queryParameters);
   }
 
   /// Fallback word search against the classic API for when Search-a-licious
@@ -161,7 +163,7 @@ class OFFConst {
       _salPageTag: '1',
     };
 
-    return Uri.https(_offBaseUrl, _offLegacySearchPath, queryParameters);
+    return _uri(_offBaseUrl, _offLegacySearchPath, queryParameters);
   }
 
   static Uri getOffBarcodeSearchUri(String barcode) {
@@ -170,10 +172,28 @@ class OFFConst {
       _offJsonTag: _offJsonValue,
     };
 
-    return Uri.https(
-      _offBaseUrl,
-      '$_offProductSearchTag/$barcode',
-      queryParameters,
-    );
+    return _uri(_offBaseUrl, '$_offProductSearchTag/$barcode', queryParameters);
   }
+
+  /// Open Food Facts sends no CORS headers, so a browser refuses its
+  /// responses. The web build asks its own Worker instead, which forwards
+  /// these three endpoints (worker/src/index.js).
+  static Uri _uri(String host, String path, Map<String, String> query) => kIsWeb
+      ? webProxyUri(Uri.base, host, path, query)
+      : Uri.https(host, path, query);
+
+  /// `<origin>/api/off/<host><path>?<query>` on the page's own origin.
+  @visibleForTesting
+  static Uri webProxyUri(
+    Uri page,
+    String host,
+    String path,
+    Map<String, String> query,
+  ) => Uri(
+    scheme: page.scheme,
+    host: page.host,
+    port: page.hasPort ? page.port : null,
+    path: '/api/off/$host$path',
+    queryParameters: query,
+  );
 }

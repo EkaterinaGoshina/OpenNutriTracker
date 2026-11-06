@@ -54,9 +54,9 @@
 6. [~] Хранилище: Hive в вебе, решение по шифрованию.
 7. [ ] Фото, экспорт и импорт через браузерные API.
 8. [ ] Отключить на вебе: health, виджет, уведомления, системный язык.
-9. [ ] Проверить CORS для Open Food Facts, Supabase и AI-провайдеров.
+9. [~] CORS: Open Food Facts — через прокси Worker'а, работает. Supabase — открыт. AI-провайдеры — не проверены.
 10. [ ] Адаптивная вёрстка под десктоп.
-11. [ ] Прогнать тесты, настроить деплой (статический хостинг, HTTPS).
+11. [~] Деплой: Cloudflare Worker, https://opennutritracker.goshina.workers.dev. Без HTTPS приложение не стартует: по адресу в локальной сети (http) браузер не даёт WebCrypto, белый экран.
 
 ## Альтернатива, которую не выбираем
 
@@ -92,3 +92,11 @@
 ### CORS у Open Food Facts
 
 Из браузера поиск Open Food Facts не работает: `search.openfoodfacts.org/search` и `world.openfoodfacts.org/cgi/search.pl` не отдают `Access-Control-Allow-Origin`, и браузер блокирует ответ (проверено с `http://localhost:8090`). Поиску в вебе нужен прокси, его можно поставить в тот же Worker, что и `/api/photos/*`. Поиск по справочнику Supabase этой проблемы не имеет: у Supabase CORS открыт.
+
+### Выкладка на Cloudflare
+
+Worker `opennutritracker` отдаёт `build/web` и проксирует Open Food Facts (`worker/src/index.js`). Проверено на узком экране: демо, поиск «борщ» с картинками.
+
+- Основной поиск (`search.openfoodfacts.org/search`) и товар по штрихкоду через прокси отвечают. Запасной поиск `world.openfoodfacts.org/cgi/search.pl` серверам Cloudflare отдаёт 503 «Page temporarily unavailable», хотя с обычного компьютера отвечает. Он нужен только когда основной поиск лежит.
+- Локальный `wrangler dev` не может достучаться до Open Food Facts (внутренняя ошибка через 2 минуты), хотя `curl` с того же Mac работает. Прокси проверять на выложенной версии.
+- Справочник Supabase в вебе отвечает 405, пока в `.env` заглушка `PROJECT_URL`: приложение шлёт запрос на свой же сайт.
