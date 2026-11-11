@@ -111,6 +111,7 @@ import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_
 import 'package:opennutritracker/features/family/data/account_repository.dart';
 import 'package:opennutritracker/features/family/data/family_repository.dart';
 import 'package:opennutritracker/features/family/domain/pending_family_invite.dart';
+import 'package:opennutritracker/features/family/presentation/bloc/family_cubit.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -223,6 +224,9 @@ Future<void> initLocator() async {
     );
     locator.registerSingleton<PendingFamilyInvite>(
       PendingFamilyInvite(Uri.base),
+    );
+    locator.registerFactory<FamilyCubit>(
+      () => FamilyCubit(locator(), locator()),
     );
   }
 

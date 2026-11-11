@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opennutritracker/features/recipes/presentation/widgets/ingredient_quantity_dialog.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_ingredient_entity.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
@@ -62,7 +63,7 @@ class IngredientListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$amountStr ${ingredient.unit} · '
+                      '$amountStr ${ingredientUnitLabel(context, ingredient.unit)} · '
                       '${EnergyDisplay.formatWithUnit(context, contributionKcal)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

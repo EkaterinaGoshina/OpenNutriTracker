@@ -51,28 +51,33 @@ class AddIngredientEvent extends RecipeBuilderEvent {
   final MealEntity meal;
   final double amount;
   final String unit;
+  // Only for the 'pcs' unit: what one piece weighs, in grams.
+  final double? pieceWeightG;
   const AddIngredientEvent({
     required this.meal,
     required this.amount,
     required this.unit,
+    this.pieceWeightG,
   });
 
   @override
-  List<Object?> get props => [meal, amount, unit];
+  List<Object?> get props => [meal, amount, unit, pieceWeightG];
 }
 
 class UpdateIngredientEvent extends RecipeBuilderEvent {
   final int index;
   final double amount;
   final String unit;
+  final double? pieceWeightG;
   const UpdateIngredientEvent({
     required this.index,
     required this.amount,
     required this.unit,
+    this.pieceWeightG,
   });
 
   @override
-  List<Object?> get props => [index, amount, unit];
+  List<Object?> get props => [index, amount, unit, pieceWeightG];
 }
 
 class RemoveIngredientEvent extends RecipeBuilderEvent {

@@ -376,6 +376,9 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
       meal: ingredient.snapshotMeal,
       initialAmount: ingredient.amount,
       initialUnit: ingredient.unit,
+      initialPieceWeightG: ingredient.unit == 'pcs' && ingredient.amount > 0
+          ? ingredient.convertedAmountG / ingredient.amount
+          : null,
     );
     if (selection == null) return;
     _bloc.add(
@@ -383,6 +386,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
         index: index,
         amount: selection.amount,
         unit: selection.unit,
+        pieceWeightG: selection.pieceWeightG,
       ),
     );
   }

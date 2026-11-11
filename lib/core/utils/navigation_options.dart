@@ -24,4 +24,5 @@ class NavigationOptions {
   /// screen from outside the app — see `HealthRationaleService` (#927).
   static const healthSyncRoute = "healthSync";
   static const manageProfilesRoute = "manageProfiles";
+  static const familyRoute = "family";
 }

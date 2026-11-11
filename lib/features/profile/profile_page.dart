@@ -19,6 +19,7 @@ import 'package:opennutritracker/core/utils/bounds/validator.dart';
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:opennutritracker/features/family/presentation/bloc/family_cubit.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:opennutritracker/features/profile/presentation/utils/profile_display_format.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/bmi_overview.dart';
@@ -49,10 +50,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
   late ProfileBloc _profileBloc;
 
+  /// Only there when the build has an account backend configured; without it
+  /// the profile has no family section.
+  FamilyCubit? _family;
+
   @override
   void initState() {
     _profileBloc = locator<ProfileBloc>();
+    if (locator.isRegistered<FamilyCubit>()) {
+      _family = locator<FamilyCubit>()..load();
+    }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _family?.close();
+    super.dispose();
+  }
+
+  Future<void> _openFamily() async {
+    await Navigator.of(context).pushNamed(NavigationOptions.familyRoute);
+    if (mounted) _family?.load();
   }
 
   @override
@@ -306,6 +325,32 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
+        if (_family != null) ...[
+          const SizedBox(height: Dimens.spacing24),
+          SectionHeader(label: S.of(context).familyTitle, palette: palette),
+          const SizedBox(height: Dimens.spacing12),
+          BlocBuilder<FamilyCubit, FamilyState>(
+            bloc: _family,
+            builder: (context, family) => SectionGroup(
+              palette: palette,
+              tiles: [
+                _ProfileTile(
+                  identifier: 'profile-family',
+                  palette: palette,
+                  icon: Icons.groups_rounded,
+                  title: family.family?.name ?? S.of(context).familyIntroTitle,
+                  subtitle: family.family == null
+                      ? null
+                      : S.of(context).familyMembersCount(
+                          family.family!.members.length,
+                        ),
+                  showChevron: true,
+                  onTap: _openFamily,
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: Dimens.spacing24),
         // The full settings surface lives inline so You is the single home for
         // identity, goals and app preferences — but collapsed by default so the

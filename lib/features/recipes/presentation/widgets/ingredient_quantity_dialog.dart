@@ -8,7 +8,26 @@ import 'package:opennutritracker/generated/l10n.dart';
 class IngredientQuantitySelection {
   final double amount;
   final String unit;
-  const IngredientQuantitySelection({required this.amount, required this.unit});
+  // Only for the 'pcs' unit: what one piece weighs, in grams.
+  final double? pieceWeightG;
+  const IngredientQuantitySelection({
+    required this.amount,
+    required this.unit,
+    this.pieceWeightG,
+  });
+}
+
+/// Unit as shown to the user. The stored value stays a stable key; only
+/// 'pcs' and 'pinch' have a translated label, the rest read the same everywhere.
+String ingredientUnitLabel(BuildContext context, String unit) {
+  switch (unit) {
+    case 'pcs':
+      return S.of(context).recipeUnitPiece;
+    case 'pinch':
+      return S.of(context).recipeUnitPinch;
+    default:
+      return unit;
+  }
 }
 
 /// Modal bottom sheet that asks for the amount + unit of an ingredient.
@@ -18,6 +37,7 @@ Future<IngredientQuantitySelection?> showIngredientQuantityDialog(
   required MealEntity meal,
   double? initialAmount,
   String? initialUnit,
+  double? initialPieceWeightG,
 }) {
   return showModalBottomSheet<IngredientQuantitySelection>(
     context: context,
@@ -26,6 +46,7 @@ Future<IngredientQuantitySelection?> showIngredientQuantityDialog(
       meal: meal,
       initialAmount: initialAmount,
       initialUnit: initialUnit,
+      initialPieceWeightG: initialPieceWeightG,
     ),
   );
 }
@@ -34,11 +55,13 @@ class _IngredientQuantitySheet extends StatefulWidget {
   final MealEntity meal;
   final double? initialAmount;
   final String? initialUnit;
+  final double? initialPieceWeightG;
 
   const _IngredientQuantitySheet({
     required this.meal,
     this.initialAmount,
     this.initialUnit,
+    this.initialPieceWeightG,
   });
 
   @override
@@ -48,7 +71,9 @@ class _IngredientQuantitySheet extends StatefulWidget {
 
 class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
   late TextEditingController _amountController;
+  late TextEditingController _pieceWeightController;
   late String _unit;
+  bool _pieceWeightMissing = false;
 
   @override
   void initState() {
@@ -59,11 +84,36 @@ class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
           : '',
     );
     _unit = widget.initialUnit ?? _defaultUnit(widget.meal);
+    final pieceWeight =
+        widget.initialPieceWeightG ?? _guessPieceWeightG(widget.meal);
+    _pieceWeightController = TextEditingController(
+      text: pieceWeight == null ? '' : _formatGrams(pieceWeight),
+    );
+  }
+
+  // A serving of a food is the best guess for one piece; an egg is the common
+  // case that usually has no serving data, so it gets a typical weight.
+  double? _guessPieceWeightG(MealEntity meal) {
+    final serving = meal.scalableServingQuantity;
+    if (serving != null && serving > 0) return serving;
+    final name = (meal.name ?? '').toLowerCase();
+    if (name.contains('яйц') || name.contains('яиц') || name.contains('egg')) {
+      return 55;
+    }
+    return null;
+  }
+
+  String _formatGrams(double g) {
+    final rounded = double.parse(g.toStringAsFixed(1));
+    return rounded == rounded.roundToDouble()
+        ? rounded.toInt().toString()
+        : rounded.toString();
   }
 
   @override
   void dispose() {
     _amountController.dispose();
+    _pieceWeightController.dispose();
     super.dispose();
   }
 
@@ -89,13 +139,20 @@ class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
       items.add(_unitItem('l'));
       items.add(_unitItem('fl.oz'));
     }
+    // Counted and pinched ingredients (2 eggs, a pinch of salt) are not weighed.
+    items.add(_unitItem('pcs'));
+    items.add(_unitItem('pinch'));
     return items;
   }
 
   DropdownMenuItem<String> _unitItem(String unit) {
     return DropdownMenuItem(
       value: unit,
-      child: Text(unit, maxLines: 1, overflow: TextOverflow.ellipsis),
+      child: Text(
+        ingredientUnitLabel(context, unit),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
@@ -186,6 +243,31 @@ class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
                 ),
               ],
             ),
+            if (_unit == 'pcs') ...[
+              const SizedBox(height: Dimens.spacing12),
+              TextFormField(
+                controller: _pieceWeightController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^\d+([.,]\d{0,2})?$'),
+                  ),
+                ],
+                onChanged: (_) {
+                  if (_pieceWeightMissing) {
+                    setState(() => _pieceWeightMissing = false);
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: S.of(context).recipePieceWeightLabel,
+                  errorText: _pieceWeightMissing ? '' : null,
+                  border: fieldBorder,
+                  enabledBorder: fieldBorder,
+                ),
+              ),
+            ],
             const SizedBox(height: Dimens.spacing24),
             SizedBox(
               width: double.infinity,
@@ -212,8 +294,22 @@ class _IngredientQuantitySheetState extends State<_IngredientQuantitySheet> {
       Navigator.of(context).pop();
       return;
     }
+    double? pieceWeightG;
+    if (_unit == 'pcs') {
+      pieceWeightG =
+          double.tryParse(_pieceWeightController.text.replaceAll(',', '.'));
+      // Without a weight a piece counts as 0 g, a silent mistake: stay open.
+      if (pieceWeightG == null || pieceWeightG <= 0) {
+        setState(() => _pieceWeightMissing = true);
+        return;
+      }
+    }
     Navigator.of(context).pop(
-      IngredientQuantitySelection(amount: amount, unit: _unit),
+      IngredientQuantitySelection(
+        amount: amount,
+        unit: _unit,
+        pieceWeightG: pieceWeightG,
+      ),
     );
   }
 }

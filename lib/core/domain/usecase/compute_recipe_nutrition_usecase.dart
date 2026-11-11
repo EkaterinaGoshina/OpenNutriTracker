@@ -13,6 +13,9 @@ class ComputeRecipeNutritionResult {
 }
 
 class ComputeRecipeNutritionUseCase {
+  /// A pinch of salt or pepper, about 0.4 g. Culinary sources give 0.3-0.5 g.
+  static const double pinchWeightG = 0.4;
+
   // Treat a serving as the snapshot meal's serving weight in grams.
   // Treat 1 ml ≈ 1 g per the v1 simplification (see plan §3, decision 3).
   // Returns null when the unit can't be converted (e.g. a "serving" unit
@@ -21,6 +24,7 @@ class ComputeRecipeNutritionUseCase {
     required double amount,
     required String unit,
     double? servingQuantityG,
+    double? pieceWeightG,
   }) {
     switch (unit) {
       case 'g':
@@ -44,6 +48,11 @@ class ComputeRecipeNutritionUseCase {
       case 'fl oz':
       case 'fl.oz':
         return UnitCalc.flOzToMl(amount);
+      case 'pinch':
+        return amount * pinchWeightG;
+      case 'pcs':
+        if (pieceWeightG == null || pieceWeightG <= 0) return null;
+        return amount * pieceWeightG;
       case 'serving':
         if (servingQuantityG == null || servingQuantityG <= 0) return null;
         return amount * servingQuantityG;

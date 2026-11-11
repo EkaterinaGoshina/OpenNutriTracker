@@ -38,9 +38,9 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Русский язык | ✅ fork | `lib/l10n/intl_ru.arb`, [ru-translation-guide.md](ru-translation-guide.md) |
 | Учёт воды, таймер голодания | ❌ убраны | коммит `e5734880` |
 | Веб-версия | 🟡 выложена на https://opennutritracker.goshina.workers.dev, демо и поиск работают | [WEB_PORT_PLAN.md](WEB_PORT_PLAN.md), `worker/` |
-| Аккаунт: вход по коду из письма, Google | 🟡 код готов, экранов нет | `features/family/data/account_repository.dart` |
-| Семья: создать, пригласить по коду, вступить, выйти | 🟡 сервер и код готовы, экранов нет | `features/family`, `supabase/` |
-| Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет | `supabase/migrations/20261106130000_family_dishes.sql` |
+| Аккаунт: вход по коду из письма, Google | ✅ экран входа; Google только в вебе | `features/family/data/account_repository.dart`, `features/family/presentation/screens/sign_in_screen.dart` |
+| Семья: создать, пригласить по коду, вступить, выйти, участники, передать роль | ✅ экраны на `FamilyCubit`; открываются из раздела «Семья» в профиле (нужны `ACCOUNT_SUPABASE_*` в `.env`) | `features/family`, `supabase/` |
+| Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет. Не сделано в приложении: метки «семья» у блюд, «Отправить в семью», конфликт правок | `supabase/migrations/20261106130000_family_dishes.sql` |
 | Cloudflare Worker: сайт и прокси Open Food Facts | ✅ | `worker/src/index.js` |
 | Фото блюд в R2 | ⬜ | [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 

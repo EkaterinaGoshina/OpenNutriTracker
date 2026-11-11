@@ -38,6 +38,7 @@ class IngredientPickerScreen extends StatelessWidget {
         meal: meal,
         amount: selection.amount,
         unit: selection.unit,
+        pieceWeightG: selection.pieceWeightG,
       ),
     );
   }

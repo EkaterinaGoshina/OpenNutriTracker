@@ -122,6 +122,7 @@ class RecipeBuilderBloc
           amount: event.amount,
           unit: event.unit,
           servingQuantityG: event.meal.servingQuantity,
+          pieceWeightG: event.pieceWeightG,
         ) ??
         0;
     final newIngredient = RecipeIngredientEntity(
@@ -146,6 +147,7 @@ class RecipeBuilderBloc
           amount: event.amount,
           unit: event.unit,
           servingQuantityG: old.snapshotMeal.servingQuantity,
+          pieceWeightG: event.pieceWeightG,
         ) ??
         0;
     final updated = old.copyWith(
