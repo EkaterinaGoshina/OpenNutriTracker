@@ -1529,5 +1529,18 @@
   "familyErrorTooManyInvites": "Too many active codes. Delete one first.",
   "familyErrorNotOwner": "Only the owner can do that.",
   "familyErrorInvalidName": "Enter a name of up to 60 characters.",
-  "familyErrorNotAuthenticated": "Sign in again to continue."
+  "familyErrorNotAuthenticated": "Sign in again to continue.",
+  "serveFamilyModeSelf": "For me",
+  "serveFamilyModeFamily": "For the family",
+  "serveFamilyMe": "Me",
+  "serveFamilyHint": "Enter how much each person gets. Leave a field empty to skip them.",
+  "serveFamilySubmit": "Serve",
+  "serveFamilyDone": "Portions served",
+  "serveFamilyUnavailable": "Sign in and join a family with at least one other person to serve portions.",
+  "serveFamilyFailed": "Couldn't send the portions. Nothing was saved.",
+  "servedByLabel": "Served by {name}",
+  "@servedByLabel": {"placeholders": {"name": {"type": "String"}}},
+  "servedByCookLabel": "Served by a family member",
+  "familyPortionsReceived": "{count, plural, one{1 new portion from your family} other{{count} new portions from your family}}",
+  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}}
 }

@@ -109,6 +109,7 @@ import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_b
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
 import 'package:opennutritracker/features/family/data/account_repository.dart';
+import 'package:opennutritracker/features/family/data/family_portion_service.dart';
 import 'package:opennutritracker/features/family/data/family_repository.dart';
 import 'package:opennutritracker/features/family/domain/pending_family_invite.dart';
 import 'package:opennutritracker/features/family/presentation/bloc/family_cubit.dart';
@@ -221,6 +222,18 @@ Future<void> initLocator() async {
     );
     locator.registerLazySingleton<FamilyRepository>(
       () => FamilyRepository(accountClient),
+    );
+    locator.registerLazySingleton<FamilyPortionService>(
+      () => FamilyPortionService(
+        account: locator(),
+        family: locator(),
+        // Looked up per call: the diary behind these follows the active
+        // profile.
+        intakeExists: (id) async =>
+            await locator<GetIntakeUsecase>().getIntakeById(id) != null,
+        addIntake: (intake) =>
+            locator<MealDetailBloc>().addIntakeEntity(intake),
+      ),
     );
     locator.registerSingleton<PendingFamilyInvite>(
       PendingFamilyInvite(Uri.base),

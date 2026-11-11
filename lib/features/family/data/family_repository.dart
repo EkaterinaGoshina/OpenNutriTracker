@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/features/family/domain/entity/family_entity.dart';
+import 'package:opennutritracker/features/family/domain/entity/family_portion_entity.dart';
 import 'package:opennutritracker/features/family/domain/family_exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -128,6 +129,46 @@ class FamilyRepository {
         .update({'display_name': trimmed})
         .eq('user_id', userId);
   });
+
+  /// Serves portions to other members of the caller's family, all or
+  /// nothing. Serving the same ids again is safe and adds nothing. Returns
+  /// how many were new.
+  Future<int> servePortions(List<PortionToServe> portions) => _guard(
+    () async => await _client.rpc<int>(
+      'serve_portions',
+      params: {
+        'p_items': [for (final p in portions) p.toRpcItem()],
+      },
+    ),
+  );
+
+  /// Portions the cook has served to the caller that the caller has not yet
+  /// added to their diary, oldest first.
+  Future<List<PendingPortion>> getPendingPortions(String userId) =>
+      _guard(() async {
+        final rows = await _client
+            .from('family_portions')
+            .select('id, cook_id, created_at, payload')
+            .eq('recipient_id', userId)
+            .isFilter('received_at', null)
+            .order('created_at', ascending: true)
+            .limit(100);
+        return [
+          for (final row in rows)
+            PendingPortion(
+              id: row['id'] as String,
+              cookId: row['cook_id'] as String?,
+              createdAt: DateTime.parse(row['created_at'] as String),
+              payload: Map<String, dynamic>.from(row['payload'] as Map),
+            ),
+        ];
+      });
+
+  /// Marks portions as added to the caller's diary, so they stop coming.
+  Future<void> markPortionsReceived(List<String> ids) => _guard(
+    () async =>
+        await _client.rpc<int>('receive_portions', params: {'p_ids': ids}),
+  );
 
   static FamilyInviteEntity _invite(Map<String, dynamic> row) =>
       FamilyInviteEntity(

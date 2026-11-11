@@ -15,6 +15,7 @@ import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dar
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
+import 'package:opennutritracker/features/home/presentation/widgets/kitchen_eat_sheet.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/util/quick_serving_option.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -281,6 +282,23 @@ class _MealDetailBottomSheetState extends State<MealDetailBottomSheet> {
                           ),
                         ),
                       ),
+                      // The cook can put this food on someone else's plate:
+                      // rice, bread, anything that is not a dish of the
+                      // kitchen. Only with an account; the sheet explains if
+                      // there is no one to serve.
+                      if (widget.logTray == null &&
+                          !productMissingRequiredInfo &&
+                          familyServingAvailable())
+                        Semantics(
+                          identifier: 'meal-detail-serve-family',
+                          child: TextButton.icon(
+                            onPressed: _submitting
+                                ? null
+                                : () => _serveFamily(context),
+                            icon: const Icon(Icons.soup_kitchen_rounded),
+                            label: Text(S.of(context).serveFamilyModeFamily),
+                          ),
+                        ),
                       productMissingRequiredInfo
                           ? Text(
                               '${S.of(context).missingProductInfo}\n'
@@ -316,6 +334,20 @@ class _MealDetailBottomSheetState extends State<MealDetailBottomSheet> {
       if (productNutriments.fat100 == null) s.fatLabel,
       if (productNutriments.proteins100 == null) s.proteinLabel,
     ];
+  }
+
+  Future<void> _serveFamily(BuildContext context) async {
+    final served = await showServeFamilySheet(
+      context,
+      meal: widget.product,
+      initialType: widget.intakeTypeEntity,
+      day: widget.day,
+    );
+    if (!served || !context.mounted) return;
+    // Back to the dashboard, as after "Add".
+    Navigator.of(
+      context,
+    ).popUntil(namedRouteOrFirst(NavigationOptions.mainRoute));
   }
 
   Future<void> onAddButtonPressed(BuildContext context) async {

@@ -103,6 +103,35 @@ class IntakeCard extends StatelessWidget {
                         usesImperialUnits: usesImperialUnits,
                         textStyle: textTheme.bodySmall?.copyWith(color: palette.textMuted),
                       ),
+                      // A portion a family cook served: say who, so it is not
+                      // mistaken for something the person logged themselves.
+                      if (intake.servedBy != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.soup_kitchen_rounded,
+                                size: 14,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  intake.servedBy!.isEmpty
+                                      ? s.servedByCookLabel
+                                      : s.servedByLabel(intake.servedBy!),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),

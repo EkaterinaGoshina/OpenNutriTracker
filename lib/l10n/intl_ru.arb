@@ -1763,5 +1763,18 @@
   "familyErrorTooManyInvites": "Слишком много активных кодов. Сначала удалите один.",
   "familyErrorNotOwner": "Это может только владелец семьи.",
   "familyErrorInvalidName": "Введите название до 60 символов.",
-  "familyErrorNotAuthenticated": "Войдите заново, чтобы продолжить."
+  "familyErrorNotAuthenticated": "Войдите заново, чтобы продолжить.",
+  "serveFamilyModeSelf": "Себе",
+  "serveFamilyModeFamily": "На семью",
+  "serveFamilyMe": "Я",
+  "serveFamilyHint": "Укажите, сколько кому. Пустое поле — пропустить человека.",
+  "serveFamilySubmit": "Разложить",
+  "serveFamilyDone": "Порции разложены",
+  "serveFamilyUnavailable": "Войдите в аккаунт и вступите в семью, где есть ещё кто-то, чтобы раскладывать порции.",
+  "serveFamilyFailed": "Не удалось отправить порции. Ничего не записано.",
+  "servedByLabel": "Положил(а) {name}",
+  "@servedByLabel": {"placeholders": {"name": {"type": "String"}}},
+  "servedByCookLabel": "Положил(а) повар из семьи",
+  "familyPortionsReceived": "{count, plural, one{Новая порция от семьи: {count}} few{Новые порции от семьи: {count}} many{Новые порции от семьи: {count}} other{Новые порции от семьи: {count}}}",
+  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}}
 }

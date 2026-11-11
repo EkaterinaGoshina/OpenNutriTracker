@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/presentation/widgets/add_item_bottom_sheet.dart';
+import 'package:opennutritracker/core/presentation/widgets/notched_pill_border.dart';
 import 'package:opennutritracker/core/presentation/widgets/demo_mode_banner.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/utils/health_rationale_service.dart';
+import 'package:opennutritracker/features/family/data/family_portion_service.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
+import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/meal_type_suggester.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
@@ -39,6 +45,27 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadConfigDrivenUi();
+    _receiveFamilyPortions();
+  }
+
+  /// Takes portions a family cook served to this person into the diary and
+  /// says so. Runs at launch and each time the app comes back; with no
+  /// account, no family or no network it quietly does nothing.
+  Future<void> _receiveFamilyPortions() async {
+    if (!locator.isRegistered<FamilyPortionService>()) return;
+    try {
+      final added = await locator<FamilyPortionService>().receivePending();
+      if (added == 0 || !mounted) return;
+      locator<HomeBloc>().add(const LoadItemsEvent());
+      locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+      locator<CalendarDayBloc>().add(const RefreshCalendarDayEvent());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).familyPortionsReceived(added))),
+      );
+    } catch (e, st) {
+      // Offline, signed out, or the server is down: the portions wait.
+      Logger('MainScreen').info('Receiving family portions failed', e, st);
+    }
   }
 
   @override
@@ -55,6 +82,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // that an intent arrived.
     if (state == AppLifecycleState.resumed) {
       _maybeOpenHealthRationale();
+      _receiveFamilyPortions();
     }
   }
 
@@ -133,6 +161,17 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
+      floatingActionButton: Semantics(
+        identifier: 'fab-add-item',
+        child: FloatingActionButton(
+          onPressed: () => _onFabPressed(context),
+          tooltip: S.of(context).addLabel,
+          elevation: 2,
+          highlightElevation: 4,
+          child: const Icon(Icons.add, size: 30),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Padding(
         // Floats clear of the screen edge so the pill stays inside the rounded
         // corners of modern iPhones instead of being clipped by them.
@@ -142,70 +181,60 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           elevation: 6,
           shadowColor: Colors.black54,
           surfaceTintColor: Colors.transparent,
-          borderRadius: BorderRadius.circular(_navBarHeight / 2),
+          shape: const NotchedPillBorder(notchRadius: _fabNotchRadius),
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
             height: _navBarHeight,
-            child: Row(
-              children: [
-                _NavItem(
-                  id: 'nav-home',
-                  icon: Icons.home_outlined,
-                  selectedIcon: Icons.home_rounded,
-                  label: S.of(context).homeLabel,
-                  index: 0,
-                  selectedIndex: _selectedPageIndex,
-                  palette: palette,
-                  onTap: _setPage,
-                ),
-                _NavItem(
-                  id: 'nav-diary',
-                  icon: Icons.book_outlined,
-                  selectedIcon: Icons.book_rounded,
-                  label: S.of(context).diaryLabel,
-                  index: 1,
-                  selectedIndex: _selectedPageIndex,
-                  palette: palette,
-                  onTap: _setPage,
-                ),
-                SizedBox(
-                  width: 72,
-                  child: Center(
-                    child: Semantics(
-                      identifier: 'fab-add-item',
-                      child: FloatingActionButton(
-                        onPressed: () => _onFabPressed(context),
-                        tooltip: S.of(context).addLabel,
-                        elevation: 0,
-                        focusElevation: 0,
-                        hoverElevation: 0,
-                        highlightElevation: 0,
-                        child: const Icon(Icons.add, size: 30),
-                      ),
-                    ),
+            // Keeps the first and last tab's backing the same distance from
+            // the rounded ends as from the top and bottom.
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: [
+                  _NavItem(
+                    id: 'nav-home',
+                    icon: Icons.home_outlined,
+                    selectedIcon: Icons.home_rounded,
+                    label: S.of(context).homeLabel,
+                    index: 0,
+                    selectedIndex: _selectedPageIndex,
+                    palette: palette,
+                    onTap: _setPage,
                   ),
-                ),
-                _NavItem(
-                  id: 'nav-trends',
-                  icon: Icons.insights_outlined,
-                  selectedIcon: Icons.insights_rounded,
-                  label: S.of(context).trendsLabel,
-                  index: 2,
-                  selectedIndex: _selectedPageIndex,
-                  palette: palette,
-                  onTap: _setPage,
-                ),
-                _NavItem(
-                  id: 'nav-you',
-                  icon: Icons.account_circle_outlined,
-                  selectedIcon: Icons.account_circle_rounded,
-                  label: S.of(context).youLabel,
-                  index: 3,
-                  selectedIndex: _selectedPageIndex,
-                  palette: palette,
-                  onTap: _setPage,
-                ),
-              ],
+                  _NavItem(
+                    id: 'nav-diary',
+                    icon: Icons.book_outlined,
+                    selectedIcon: Icons.book_rounded,
+                    label: S.of(context).diaryLabel,
+                    index: 1,
+                    selectedIndex: _selectedPageIndex,
+                    palette: palette,
+                    onTap: _setPage,
+                  ),
+                  // The Add button sits in the notch above, docked to the bar.
+                  const SizedBox(width: _fabNotchRadius * 2 + 8),
+                  _NavItem(
+                    id: 'nav-trends',
+                    icon: Icons.insights_outlined,
+                    selectedIcon: Icons.insights_rounded,
+                    label: S.of(context).trendsLabel,
+                    index: 2,
+                    selectedIndex: _selectedPageIndex,
+                    palette: palette,
+                    onTap: _setPage,
+                  ),
+                  _NavItem(
+                    id: 'nav-you',
+                    icon: Icons.account_circle_outlined,
+                    selectedIcon: Icons.account_circle_rounded,
+                    label: S.of(context).youLabel,
+                    index: 3,
+                    selectedIndex: _selectedPageIndex,
+                    palette: palette,
+                    onTap: _setPage,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -214,6 +243,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   static const double _navBarHeight = 72;
+
+  /// The notch is the 56 px Add button plus 6 px of air around it.
+  static const double _fabNotchRadius = 34;
 
   /// Gap under the floating bar: sits just above the home indicator on
   /// iPhones, and a plain margin where there is no inset.
@@ -276,26 +308,54 @@ class _NavItem extends StatelessWidget {
     final color = selected
         ? Theme.of(context).colorScheme.primary
         : palette.textMuted;
+    final accent = Theme.of(context).colorScheme.primary;
     return Expanded(
       child: Semantics(
         identifier: id,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => onTap(index),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(selected ? selectedIcon : icon, color: color, size: 26),
-                const SizedBox(height: 3),
-                Text(
-                  label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: color),
+        // The current page sits on a round backing, as in the iOS tab bar.
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 8),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            decoration: BoxDecoration(
+              color: selected
+                  ? accent.withValues(alpha: 0.22)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(28),
+                onTap: () => onTap(index),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        selected ? selectedIcon : icon,
+                        color: color,
+                        size: 26,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: color,
+                          fontWeight: selected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

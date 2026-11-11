@@ -42,6 +42,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Аккаунт: вход по коду из письма, Google | ✅ экран входа; Google только в вебе | `features/family/data/account_repository.dart`, `features/family/presentation/screens/sign_in_screen.dart` |
 | Семья: создать, пригласить по коду, вступить, выйти, участники, передать роль | ✅ экраны на `FamilyCubit`; открываются из раздела «Семья» в профиле (нужны `ACCOUNT_SUPABASE_*` в `.env`) | `features/family`, `supabase/` |
 | Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет. Не сделано в приложении: метки «семья» у блюд, «Отправить в семью», конфликт правок | `supabase/migrations/20261106130000_family_dishes.sql` |
+| Повар раскладывает порции: «На семью» в листе «Ам» у блюда и на экране любого продукта, порции приходят в дневники остальных с пометкой «положил(а)» | ✅ миграция `family_portions` применена к рабочему проекту 2026-11-11, код и тесты готовы; вживую на двух аккаунтах ещё не проверено | `features/family/data/family_portion_service.dart`, `features/home/presentation/widgets/kitchen_eat_sheet.dart`, `supabase/migrations/20261111120000_family_portions.sql`, [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 | Cloudflare Worker: сайт и прокси Open Food Facts | ✅ | `worker/src/index.js` |
 | Фото блюд в R2 | ⬜ | [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 

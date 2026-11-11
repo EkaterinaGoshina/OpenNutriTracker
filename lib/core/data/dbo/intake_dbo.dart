@@ -24,6 +24,11 @@ class IntakeDBO extends HiveObject {
   @HiveField(5)
   DateTime dateTime;
 
+  /// Who put this portion on the plate when a family cook served it; null
+  /// for everything the user logged themselves.
+  @HiveField(6)
+  String? servedBy;
+
   IntakeDBO({
     required this.id,
     required this.unit,
@@ -31,6 +36,7 @@ class IntakeDBO extends HiveObject {
     required this.type,
     required this.meal,
     required this.dateTime,
+    this.servedBy,
   });
 
   factory IntakeDBO.fromIntakeEntity(IntakeEntity entity) {
@@ -41,6 +47,7 @@ class IntakeDBO extends HiveObject {
       type: IntakeTypeDBO.fromIntakeTypeEntity(entity.type),
       meal: MealDBO.fromMealEntity(entity.meal),
       dateTime: entity.dateTime,
+      servedBy: entity.servedBy,
     );
   }
 

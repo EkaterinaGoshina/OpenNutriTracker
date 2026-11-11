@@ -8,9 +8,10 @@
 |---|---|
 | `migrations/20261106120000_family.sql` | Таблицы `profiles`, `families`, `family_members`, `family_invites`, RPC, политики RLS |
 | `migrations/20261106130000_family_dishes.sql` | Таблица `family_dishes`, RPC сохранения и удаления блюд, политика RLS |
+| `migrations/20261111120000_family_portions.sql` | Таблица `family_portions` (почтовый ящик порций от повара), RPC `serve_portions`, `receive_portions`, RLS |
 | `migrations/20261106140000_hardening.sql` | Правки по Supabase Advisors: закрыт `rls_auto_enable()`, индексы на внешние ключи |
 | `tests/harness.mjs` | Применяет все миграции к Postgres в памяти (PGlite) и запускает запросы от лица разных пользователей |
-| `tests/family_test.mjs`, `tests/dishes_test.mjs` | Проверки RPC и прав для семей и для блюд |
+| `tests/family_test.mjs`, `tests/dishes_test.mjs`, `tests/portions_test.mjs` | Проверки RPC и прав для семей, блюд и порций |
 
 ## RPC
 
@@ -26,11 +27,13 @@
 | `transfer_ownership(user_id)` | Владелец | Передаёт роль владельца |
 | `is_family_member(family_id)`, `my_family_id()` | Любой вошедший | Проверки для приложения и Worker |
 | `save_family_dish(id, payload, photo_key, base_version)` | Участник | Создаёт блюдо (`base_version = null`) или сохраняет поверх версии, которую видел клиент. Возвращает новую версию |
+| `serve_portions(items)` | Участник (повар) | Кладёт порции другим участникам семьи, от 1 до 20, все или ни одной. Себе нельзя. Повтор тех же `id` для тех же людей ничего не меняет. Возвращает, сколько строк новых |
+| `receive_portions(ids)` | Получатель | Помечает порции полученными. Чужие и уже помеченные игнорируются. Возвращает, сколько помечено |
 | `delete_family_dish(id, base_version)` | Участник | Оставляет надгробие. `base_version = null` удаляет без проверки версии. Повторное удаление не ошибка |
 
 Блюда клиент читает напрямую из `family_dishes` (RLS отдаёт только свою семью): `updated_at > курсор` возвращает новые, изменённые и удалённые.
 
-Ошибки приходят как текст исключения: `not_authenticated`, `invalid_name`, `already_in_family`, `not_in_family`, `not_owner`, `not_a_member`, `invite_not_found`, `invite_expired`, `invite_used`, `owner_must_transfer`, `too_many_invites`, `dish_conflict`, `dish_deleted`, `invalid_dish`. Приложение переводит их в сообщения для пользователя.
+Ошибки приходят как текст исключения: `not_authenticated`, `invalid_name`, `already_in_family`, `not_in_family`, `not_owner`, `not_a_member`, `invite_not_found`, `invite_expired`, `invite_used`, `owner_must_transfer`, `too_many_invites`, `dish_conflict`, `dish_deleted`, `invalid_dish`, `invalid_portion`. Приложение переводит их в сообщения для пользователя.
 
 Если удалить аккаунт владельца, владельцем становится участник, вступивший раньше всех. Если удалить последний аккаунт, семья удаляется.
 
@@ -48,7 +51,7 @@ cd supabase/tests && npm install && npm test
 
 `opennutritracker`, ref `ygsqeedsclwypknfbzea`, регион eu-central-1. Все миграции применены.
 
-Supabase Advisors после применения показывает 12 предупреждений «Signed-In Users Can Execute SECURITY DEFINER Function». Это наши RPC: они и задуманы как API для вошедших пользователей, и каждая сама проверяет вызывающего. Других предупреждений безопасности нет.
+Supabase Advisors после применения показывает 14 предупреждений «Signed-In Users Can Execute SECURITY DEFINER Function». Это наши RPC: они и задуманы как API для вошедших пользователей, и каждая сама проверяет вызывающего. Других предупреждений безопасности нет.
 
 ## Как применить к проекту Supabase
 

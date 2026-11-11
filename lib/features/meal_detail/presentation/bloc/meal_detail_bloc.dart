@@ -177,14 +177,24 @@ class MealDetailBloc extends Bloc<MealDetailEvent, MealDetailState> {
   ) async {
     final quantity = double.parse(amountText.replaceAll(',', '.'));
 
-    final intakeEntity = IntakeEntity(
-      id: IdGenerator.getUniqueID(),
-      unit: unit,
-      amount: quantity,
-      type: type,
-      meal: meal,
-      dateTime: day,
+    await addIntakeEntity(
+      IntakeEntity(
+        id: IdGenerator.getUniqueID(),
+        unit: unit,
+        amount: quantity,
+        type: type,
+        meal: meal,
+        dateTime: day,
+      ),
     );
+  }
+
+  /// Logs a ready-made [intakeEntity] on the day it carries, and puts that
+  /// day's totals right. Also the way a portion a family cook served lands in
+  /// the diary, under the id the cook gave it.
+  Future<void> addIntakeEntity(IntakeEntity intakeEntity) async {
+    final day = intakeEntity.dateTime;
+    final meal = intakeEntity.meal;
     // Write the intake immediately so the Home/Diary refresh that
     // follows on the caller side picks it up. The cache refresh happens
     // in the background — the user shouldn't wait for an OFF round-trip

@@ -12,6 +12,10 @@ class IntakeEntity extends Equatable {
 
   final MealEntity meal;
 
+  /// The family cook who served this portion, or null when the user logged
+  /// it themselves.
+  final String? servedBy;
+
   const IntakeEntity({
     required this.id,
     required this.unit,
@@ -19,6 +23,7 @@ class IntakeEntity extends Equatable {
     required this.type,
     required this.meal,
     required this.dateTime,
+    this.servedBy,
   });
 
   factory IntakeEntity.fromIntakeDBO(IntakeDBO intakeDBO) {
@@ -29,6 +34,7 @@ class IntakeEntity extends Equatable {
       type: IntakeTypeEntity.fromIntakeTypeDBO(intakeDBO.type),
       meal: MealEntity.fromMealDBO(intakeDBO.meal),
       dateTime: intakeDBO.dateTime,
+      servedBy: intakeDBO.servedBy,
     );
   }
 
@@ -43,5 +49,5 @@ class IntakeEntity extends Equatable {
       amount * (meal.nutriments.proteinsPerUnit ?? 0);
 
   @override
-  List<Object?> get props => [id, unit, amount, type, dateTime];
+  List<Object?> get props => [id, unit, amount, type, dateTime, servedBy];
 }

@@ -13,6 +13,7 @@ enum FamilyError {
   inviteUsed('invite_used'),
   ownerMustTransfer('owner_must_transfer'),
   tooManyInvites('too_many_invites'),
+  invalidPortion('invalid_portion'),
 
   /// Anything else: the network, the server, or a code this build does not
   /// know yet.
