@@ -178,10 +178,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         padding: EdgeInsets.fromLTRB(16, 0, 16, _floatingBarBottomGap(context)),
         child: Material(
           color: palette.surface,
-          elevation: 6,
-          shadowColor: Colors.black54,
+          // No elevation: a shadow along the notched outline is redrawn every
+          // frame and made taps stutter on phones. The outline is a hairline.
+          elevation: 0,
           surfaceTintColor: Colors.transparent,
-          shape: const NotchedPillBorder(notchRadius: _fabNotchRadius),
+          shape: NotchedPillBorder(
+            notchRadius: _fabNotchRadius,
+            borderColor: palette.border,
+          ),
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
             height: _navBarHeight,

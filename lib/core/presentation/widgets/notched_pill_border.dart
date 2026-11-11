@@ -12,7 +12,16 @@ class NotchedPillBorder extends ShapeBorder {
   final double notchRadius;
   final double fillet;
 
-  const NotchedPillBorder({required this.notchRadius, this.fillet = 8});
+  /// Colour of the hairline drawn along the outline, instead of a shadow:
+  /// an elevation shadow follows this path every frame, which is costly on a
+  /// phone browser, while a stroked line is a single cheap draw.
+  final Color? borderColor;
+
+  const NotchedPillBorder({
+    required this.notchRadius,
+    this.fillet = 8,
+    this.borderColor,
+  });
 
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
@@ -58,9 +67,22 @@ class NotchedPillBorder extends ShapeBorder {
   }
 
   @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    final color = borderColor;
+    if (color == null) return;
+    canvas.drawPath(
+      getOuterPath(rect, textDirection: textDirection),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = color,
+    );
+  }
 
   @override
-  ShapeBorder scale(double t) =>
-      NotchedPillBorder(notchRadius: notchRadius * t, fillet: fillet * t);
+  ShapeBorder scale(double t) => NotchedPillBorder(
+    notchRadius: notchRadius * t,
+    fillet: fillet * t,
+    borderColor: borderColor,
+  );
 }
