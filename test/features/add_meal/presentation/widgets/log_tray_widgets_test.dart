@@ -42,6 +42,7 @@ Future<void> _pumpTray(
   WidgetTester tester,
   LogTray tray, {
   bool kilojoules = false,
+  bool startCollapsed = false,
 }) => tester.pumpWidget(
   ChangeNotifierProvider(
     create: (_) => EnergyUnitProvider(usesKilojoules: kilojoules),
@@ -56,7 +57,7 @@ Future<void> _pumpTray(
       home: Scaffold(
         body: ListView(
           children: [
-            LogTrayList(tray: tray),
+            LogTrayList(tray: tray, startCollapsed: startCollapsed),
             LogTrayLogButton(tray: tray, onPressed: () {}),
           ],
         ),
@@ -101,6 +102,60 @@ void main() {
       expect(find.text('80.4 g · 336 kJ'), findsOneWidget);
       expect(find.text('14.4 g · 60 kJ'), findsOneWidget);
       expect(find.text('396 kJ'), findsOneWidget);
+    });
+  });
+
+  group('a collapsed list keeps the screen above the results short', () {
+    testWidgets('shows only the title line until it is tapped', (tester) async {
+      final tray = LogTray()
+        ..add(_item('Rice', 80))
+        ..add(_item('Bread', 15));
+      await _pumpTray(tester, tray, startCollapsed: true);
+
+      expect(find.text('TO LOG · 2'), findsOneWidget);
+      expect(find.text('80.0 g · 80 kcal'), findsNothing);
+      expect(find.text('15.0 g · 15 kcal'), findsNothing);
+      // The total under it still says what is on the list.
+      expect(find.text('95 kcal'), findsOneWidget);
+
+      await tester.tap(find.text('TO LOG · 2'));
+      await tester.pump();
+      expect(find.text('80.0 g · 80 kcal'), findsOneWidget);
+      expect(find.text('15.0 g · 15 kcal'), findsOneWidget);
+
+      await tester.tap(find.text('TO LOG · 2'));
+      await tester.pump();
+      expect(find.text('80.0 g · 80 kcal'), findsNothing);
+    });
+
+    testWidgets('is a fraction of the height of the open list', (tester) async {
+      final tray = LogTray()
+        ..add(_item('Rice', 80))
+        ..add(_item('Bread', 15))
+        ..add(_item('Egg', 70));
+      await _pumpTray(tester, tray);
+      final open = tester.getSize(find.byType(LogTrayList)).height;
+
+      // A fresh tree, so the open list's state is not carried over.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await _pumpTray(tester, tray, startCollapsed: true);
+      final folded = tester.getSize(find.byType(LogTrayList)).height;
+
+      expect(folded, lessThan(open / 2));
+    });
+
+    testWidgets('open by default, as before', (tester) async {
+      final tray = LogTray()..add(_item('Rice', 80));
+      await _pumpTray(tester, tray);
+      expect(find.text('80.0 g · 80 kcal'), findsOneWidget);
+    });
+
+    testWidgets('Clear works while it is folded', (tester) async {
+      final tray = LogTray()..add(_item('Rice', 80));
+      await _pumpTray(tester, tray, startCollapsed: true);
+      await tester.tap(find.text('Clear'));
+      await tester.pump();
+      expect(tray.isEmpty, isTrue);
     });
   });
 }

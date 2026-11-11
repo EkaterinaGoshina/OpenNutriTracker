@@ -205,8 +205,7 @@ Widget _app() => MaterialApp(
 
 /// A result card: the name is the first span of a rich title, after which
 /// the card appends the brand.
-Finder _card(String name) =>
-    find.textContaining(name, findRichText: true);
+Finder _card(String name) => find.textContaining(name, findRichText: true);
 
 /// Opens the screen and submits [query], which searches All.
 Future<void> _search(WidgetTester tester, String query) async {
@@ -222,25 +221,30 @@ Future<void> _search(WidgetTester tester, String query) async {
 
 void main() {
   group('Search blocs carry provider failures on the loaded state', () {
-    test('a throwing OFF source loads, flagged as failed, not as empty',
-        () async {
-      final repository = _FakeProductsRepository()..offThrows = true;
-      final config = _FakeGetConfigUsecase();
-      final bloc = ProductsBloc(_useCase(repository, config), config);
-      addTearDown(bloc.close);
+    test(
+      'a throwing OFF source loads, flagged as failed, not as empty',
+      () async {
+        final repository = _FakeProductsRepository()..offThrows = true;
+        final config = _FakeGetConfigUsecase();
+        final bloc = ProductsBloc(_useCase(repository, config), config);
+        addTearDown(bloc.close);
 
-      bloc.add(const LoadProductsEvent(searchString: 'apple'));
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+        bloc.add(const LoadProductsEvent(searchString: 'apple'));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
-      final state = bloc.state as ProductsLoadedState;
-      expect(state.remoteSourceFailed, isTrue);
+        final state = bloc.state as ProductsLoadedState;
+        expect(state.remoteSourceFailed, isTrue);
 
-      repository.offThrows = false;
-      bloc.add(const LoadProductsEvent(searchString: 'apples'));
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-      expect((bloc.state as ProductsLoadedState).remoteSourceFailed, isFalse,
-          reason: 'a zero-row answer is not a failure');
-    });
+        repository.offThrows = false;
+        bloc.add(const LoadProductsEvent(searchString: 'apples'));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect(
+          (bloc.state as ProductsLoadedState).remoteSourceFailed,
+          isFalse,
+          reason: 'a zero-row answer is not a failure',
+        );
+      },
+    );
 
     test('a throwing Supabase source loads, flagged as failed', () async {
       final repository = _FakeProductsRepository()..fdcThrows = true;
@@ -317,40 +321,47 @@ void main() {
     });
 
     testWidgets(
-        'both providers down but saved foods match: the list, with a notice '
-        'that no online source answered and a Retry for both', (tester) async {
-      await _register();
-      _customMeals.meals.add(
-        MealDBO.fromMealEntity(_meal('Apple pie', MealSourceEntity.custom)),
-      );
-      _repository
-        ..offThrows = true
-        ..fdcThrows = true;
+      'both providers down but saved foods match: the list, with a notice '
+      'that no online source answered and a Retry for both',
+      (tester) async {
+        await _register();
+        _customMeals.meals.add(
+          MealDBO.fromMealEntity(_meal('Apple pie', MealSourceEntity.custom)),
+        );
+        _repository
+          ..offThrows = true
+          ..fdcThrows = true;
 
-      await _search(tester, 'apple');
+        await _search(tester, 'apple');
 
-      expect(_card('Apple pie'), findsOneWidget);
-      expect(find.text(l10nEn.partialResultsAllSourcesDownNotice),
-          findsOneWidget);
-      expect(find.text(l10nEn.partialResultsNotice), findsNothing,
-          reason: 'neither source answered, so none is "the one" missing');
-      expect(find.text(l10nEn.errorFetchingProductData), findsNothing);
+        expect(_card('Apple pie'), findsOneWidget);
+        expect(
+          find.text(l10nEn.partialResultsAllSourcesDownNotice),
+          findsOneWidget,
+        );
+        expect(
+          find.text(l10nEn.partialResultsNotice),
+          findsNothing,
+          reason: 'neither source answered, so none is "the one" missing',
+        );
+        expect(find.text(l10nEn.errorFetchingProductData), findsNothing);
 
-      // Both recover; the notice's Retry re-runs both searches.
-      _repository
-        ..offThrows = false
-        ..fdcThrows = false
-        ..offResults = [_meal('Apple juice', MealSourceEntity.off)]
-        ..fdcResults = [_meal('Apple, raw', MealSourceEntity.fdc)];
-      await tester.tap(
-        find.bySemanticsIdentifier('search-partial-results-retry'),
-      );
-      await tester.pumpAndSettle();
+        // Both recover; the notice's Retry re-runs both searches.
+        _repository
+          ..offThrows = false
+          ..fdcThrows = false
+          ..offResults = [_meal('Apple juice', MealSourceEntity.off)]
+          ..fdcResults = [_meal('Apple, raw', MealSourceEntity.fdc)];
+        await tester.tap(
+          find.bySemanticsIdentifier('search-partial-results-retry'),
+        );
+        await tester.pumpAndSettle();
 
-      expect(_card('Apple juice'), findsOneWidget);
-      expect(_card('Apple, raw'), findsOneWidget);
-      expect(find.byType(PartialResultsNotice), findsNothing);
-    });
+        expect(_card('Apple juice'), findsOneWidget);
+        expect(_card('Apple, raw'), findsOneWidget);
+        expect(find.byType(PartialResultsNotice), findsNothing);
+      },
+    );
 
     testWidgets('one provider down, other empty: notice above no-results', (
       tester,
@@ -365,42 +376,47 @@ void main() {
     });
 
     testWidgets(
-        'both providers down on a landscape phone: the error scrolls instead '
-        'of overflowing, and Retry stays reachable', (tester) async {
-      // 800 x 360 logical: a phone on its side, where the space left under
-      // the search field, chips and header is shorter than the error.
-      tester.view.physicalSize = const Size(2400, 1080);
-      tester.view.devicePixelRatio = 3;
-      addTearDown(tester.view.reset);
-      await _register();
-      _repository
-        ..offThrows = true
-        ..fdcThrows = true;
+      'both providers down on a landscape phone: the error scrolls instead '
+      'of overflowing, and Retry stays reachable',
+      (tester) async {
+        // 800 x 360 logical: a phone on its side, where the space left under
+        // the search field, chips and header is shorter than the error.
+        tester.view.physicalSize = const Size(2400, 1080);
+        tester.view.devicePixelRatio = 3;
+        addTearDown(tester.view.reset);
+        await _register();
+        _repository
+          ..offThrows = true
+          ..fdcThrows = true;
 
-      await tester.pumpWidget(_app());
-      await tester.pumpAndSettle();
-      // The empty-history Recent hint the screen opens on doesn't fit this
-      // height either. That is older than this state and outside it, so
-      // drop its report and judge only what the search renders.
-      tester.takeException();
-      await _search(tester, 'apple');
+        await tester.pumpWidget(_app());
+        await tester.pumpAndSettle();
+        // The empty-history Recent hint the screen opens on doesn't fit this
+        // height either. That is older than this state and outside it, so
+        // drop its report and judge only what the search renders.
+        tester.takeException();
+        await _search(tester, 'apple');
 
-      expect(tester.takeException(), isNull,
-          reason: 'the error must not overflow the results area');
-      final retry = find.bySemanticsIdentifier('search-all-retry');
-      await tester.scrollUntilVisible(
-        retry,
-        50,
-        scrollable: find.byType(Scrollable).last,
-      );
-      _repository
-        ..offThrows = false
-        ..fdcThrows = false
-        ..fdcResults = [_meal('Apple, raw', MealSourceEntity.fdc)];
-      await tester.tap(retry);
-      await tester.pumpAndSettle();
-      expect(_card('Apple, raw'), findsOneWidget);
-    });
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'the error must not overflow the results area',
+        );
+        final retry = find.bySemanticsIdentifier('search-all-retry');
+        await tester.scrollUntilVisible(
+          retry,
+          50,
+          scrollable: find.byType(Scrollable).last,
+        );
+        _repository
+          ..offThrows = false
+          ..fdcThrows = false
+          ..fdcResults = [_meal('Apple, raw', MealSourceEntity.fdc)];
+        await tester.tap(retry);
+        await tester.pumpAndSettle();
+        expect(_card('Apple, raw'), findsOneWidget);
+      },
+    );
 
     testWidgets('both providers down: an error with an identified Retry', (
       tester,

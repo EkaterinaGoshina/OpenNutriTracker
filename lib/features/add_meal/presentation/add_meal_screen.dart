@@ -239,7 +239,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                         ],
                         if (!_logTray.isEmpty) ...[
                           const SizedBox(height: Dimens.spacing16),
-                          LogTrayList(tray: _logTray),
+                          LogTrayList(tray: _logTray, startCollapsed: true),
                         ],
                       ],
                     ),

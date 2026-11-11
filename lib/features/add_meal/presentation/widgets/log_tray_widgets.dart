@@ -8,19 +8,39 @@ import 'package:opennutritracker/generated/l10n.dart';
 
 /// The "To log" list on the add-food screen: what has been picked so far,
 /// each with a way to take it off again.
-class LogTrayList extends StatelessWidget {
+///
+/// With [startCollapsed] the rows stay folded behind the title line until it
+/// is tapped. Each food added would otherwise add a row's height to the block
+/// above the results, pushing the source chips down and squeezing the list
+/// being picked from; the log button below already carries the count and the
+/// total.
+class LogTrayList extends StatefulWidget {
   final LogTray tray;
+  final bool startCollapsed;
 
-  const LogTrayList({super.key, required this.tray});
+  const LogTrayList({
+    super.key,
+    required this.tray,
+    this.startCollapsed = false,
+  });
+
+  @override
+  State<LogTrayList> createState() => _LogTrayListState();
+}
+
+class _LogTrayListState extends State<LogTrayList> {
+  late bool _expanded = !widget.startCollapsed;
 
   @override
   Widget build(BuildContext context) {
+    final tray = widget.tray;
     final palette = Theme.of(context).brightness == Brightness.dark
         ? AppPalette.dark
         : AppPalette.light;
     final accent = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
     final items = tray.items;
+    final collapsible = widget.startCollapsed;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -32,15 +52,44 @@ class LogTrayList extends StatelessWidget {
               // One line beside Clear at any text size (AGENTS.md, row
               // titles): it shrinks before it ellipsizes.
               Expanded(
-                child: AutoSizeText(
-                  S.of(context).logTrayTitle(items.length).toUpperCase(),
-                  maxLines: 1,
-                  minFontSize: 10,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelLarge?.copyWith(
-                    color: accent,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                child: Semantics(
+                  identifier: 'add-meal-tray-toggle',
+                  button: collapsible,
+                  child: InkWell(
+                    borderRadius: Dimens.borderRadiusS,
+                    onTap: collapsible
+                        ? () => setState(() => _expanded = !_expanded)
+                        : null,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: AutoSizeText(
+                              S
+                                  .of(context)
+                                  .logTrayTitle(items.length)
+                                  .toUpperCase(),
+                              maxLines: 1,
+                              minFontSize: 10,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.labelLarge?.copyWith(
+                                color: accent,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          if (collapsible)
+                            Icon(
+                              _expanded
+                                  ? Icons.expand_less_rounded
+                                  : Icons.expand_more_rounded,
+                              color: accent,
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -60,23 +109,24 @@ class LogTrayList extends StatelessWidget {
         ),
         // A fixed set of rows, not a builder: the list is labelled as a
         // whole, the way the result lists below it are.
-        Semantics(
-          identifier: 'add-meal-tray-list',
-          container: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var i = 0; i < items.length; i++)
-                Padding(
-                  padding: const EdgeInsets.only(top: Dimens.spacing8),
-                  child: _LogTrayRow(
-                    item: items[i],
-                    onRemove: () => tray.removeAt(i),
+        if (_expanded)
+          Semantics(
+            identifier: 'add-meal-tray-list',
+            container: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < items.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(top: Dimens.spacing8),
+                    child: _LogTrayRow(
+                      item: items[i],
+                      onRemove: () => tray.removeAt(i),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

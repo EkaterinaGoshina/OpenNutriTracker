@@ -57,11 +57,15 @@ class _FakeSp extends SpFoodDataSource {
 
 class _FakeOff extends OFFDataSource {
   @override
-  Future<OFFWordResponseDTO> fetchSearchWordResults(String searchString) async =>
-      OFFWordResponseDTO(
-        count: 0, page: 1, page_count: 1, page_size: 0,
-        products: const <OFFProductDTO>[],
-      );
+  Future<OFFWordResponseDTO> fetchSearchWordResults(
+    String searchString,
+  ) async => OFFWordResponseDTO(
+    count: 0,
+    page: 1,
+    page_count: 1,
+    page_size: 0,
+    products: const <OFFProductDTO>[],
+  );
 }
 
 void main() {
@@ -71,8 +75,10 @@ void main() {
         [_food(1, 'Bread', servingSize: '1 slice (38 g)')],
         {1: '1 Scheibe (38 g)'},
       );
-      final meals =
-          await ProductsRepository(_FakeOff(), sp).getSupabaseFoodsByString('bread');
+      final meals = await ProductsRepository(
+        _FakeOff(),
+        sp,
+      ).getSupabaseFoodsByString('bread');
 
       expect(meals, hasLength(1));
       expect(meals.single.servingSize, '1 Scheibe (38 g)');
@@ -90,8 +96,10 @@ void main() {
         ],
         {1: '1 Scheibe (38 g)'},
       );
-      final meals =
-          await ProductsRepository(_FakeOff(), sp).getSupabaseFoodsByString('x');
+      final meals = await ProductsRepository(
+        _FakeOff(),
+        sp,
+      ).getSupabaseFoodsByString('x');
 
       final byName = {for (final m in meals) m.name: m};
       expect(byName['Bread']!.servingSizeIsLocalized, isTrue);
@@ -99,34 +107,46 @@ void main() {
       expect(byName['Cheese']!.servingSizeIsLocalized, isFalse);
     });
 
-    test('asks only for the foods that survived the consistency filter',
-        () async {
-      // The lookup runs after filtering, so nothing is fetched for rows that
-      // were just dropped.
-      //
-      // The dropped food has to be genuinely implausible — more sugar than
-      // carbohydrate, which #222 rejects — or this passes whether the fetch
-      // happens before or after the filter, and pins nothing. An earlier
-      // version made exactly that mistake.
-      final sp = _FakeSp([
-        _food(7, 'Bread', servingSize: '1 slice'),
-        _food(8, 'Impossible', servingSize: '1 slice', carbs: 5, sugars: 40),
-      ], {});
-      final meals =
-          await ProductsRepository(_FakeOff(), sp).getSupabaseFoodsByString('b');
+    test(
+      'asks only for the foods that survived the consistency filter',
+      () async {
+        // The lookup runs after filtering, so nothing is fetched for rows that
+        // were just dropped.
+        //
+        // The dropped food has to be genuinely implausible — more sugar than
+        // carbohydrate, which #222 rejects — or this passes whether the fetch
+        // happens before or after the filter, and pins nothing. An earlier
+        // version made exactly that mistake.
+        final sp = _FakeSp([
+          _food(7, 'Bread', servingSize: '1 slice'),
+          _food(8, 'Impossible', servingSize: '1 slice', carbs: 5, sugars: 40),
+        ], {});
+        final meals = await ProductsRepository(
+          _FakeOff(),
+          sp,
+        ).getSupabaseFoodsByString('b');
 
-      expect(meals.map((m) => m.name), ['Bread'],
-          reason: 'the implausible food should have been dropped');
-      expect(sp.askedFor, [7],
-          reason: 'a dropped food must not be looked up');
-    });
+        expect(
+          meals.map((m) => m.name),
+          ['Bread'],
+          reason: 'the implausible food should have been dropped',
+        );
+        expect(sp.askedFor, [
+          7,
+        ], reason: 'a dropped food must not be looked up');
+      },
+    );
 
     test('an empty label map changes nothing', () async {
       // What every English build gets, and every locale nobody has reviewed:
       // the lookup returns nothing and the results are exactly as before.
-      final sp = _FakeSp([_food(1, 'Bread', servingSize: '1 slice (38 g)')], {});
-      final meals =
-          await ProductsRepository(_FakeOff(), sp).getSupabaseFoodsByString('b');
+      final sp = _FakeSp([
+        _food(1, 'Bread', servingSize: '1 slice (38 g)'),
+      ], {});
+      final meals = await ProductsRepository(
+        _FakeOff(),
+        sp,
+      ).getSupabaseFoodsByString('b');
       expect(meals.single.servingSize, '1 slice (38 g)');
       expect(meals.single.servingSizeIsLocalized, isFalse);
     });

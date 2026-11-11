@@ -474,6 +474,12 @@ void main() {
       expect(find.text(l10nEn.bulkAddSubmitLabel(2)), findsOneWidget);
       expect(find.text('580 kcal'), findsOneWidget);
 
+      // Folded to its title line so the results keep their room; the rows
+      // are one tap away.
+      expect(find.byTooltip(l10nEn.logTrayRemoveLabel), findsNothing);
+      await tester.tap(find.text(l10nEn.logTrayTitle(2).toUpperCase()));
+      await tester.pumpAndSettle();
+
       await tester.tap(find.byTooltip(l10nEn.logTrayRemoveLabel).first);
       await tester.pumpAndSettle();
       expect(find.text(l10nEn.bulkAddSubmitLabel(1)), findsOneWidget);
@@ -687,6 +693,8 @@ void main() {
       await _tapPlus(tester, 'Oats');
       await tester.pumpAndSettle();
       await _tapPlus(tester, 'Milk');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10nEn.logTrayTitle(2).toUpperCase()));
       await tester.pumpAndSettle();
       final gate = _mealDetailBloc.gate = Completer<void>();
 
