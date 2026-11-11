@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="0.55" stop-color="#F9444F"/>
+      <stop offset="1" stop-color="#D81B6A"/>
+    </linearGradient>
+    <linearGradient id="apple" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFAF4"/>
+      <stop offset="1" stop-color="#FFD9C6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.18" r="0.7">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="flameCut">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <path fill="#000" d="M512 410C545 490 630 535 630 645C630 730 576 785 512 785C448 785 394 730 394 645C394 590 422 556 445 520C452 560 474 584 494 590C482 520 490 462 512 410Z"/>
+    </mask>
+    <linearGradient id="inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE7A8"/>
+      <stop offset="1" stop-color="#FFB27A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+  <!-- soft shadow under the apple -->
+  <ellipse cx="512" cy="878" rx="210" ry="22" fill="#7A0F3A" opacity="0.22"/>
+  <!-- apple with a flame cut out of it -->
+  <path mask="url(#flameCut)" fill="url(#apple)" d="M512 300C440 250 270 250 235 420C205 570 300 800 400 840C450 860 480 835 512 835C544 835 574 860 624 840C724 800 819 570 789 420C754 250 584 250 512 300Z"/>
+  <!-- inner flame core -->
+  <path fill="url(#inner)" d="M512 600C536 642 568 668 568 708C568 738 544 756 512 756C480 756 456 738 456 708C456 672 490 650 512 600Z"/>
+  <!-- stem and leaf -->
+  <path d="M512 300C504 245 518 205 548 172" fill="none" stroke="#FFF1E6" stroke-width="26" stroke-linecap="round"/>
+  <path fill="#BFF5CF" d="M545 214C602 140 692 148 718 176C692 246 602 268 545 214Z"/>
+</svg>

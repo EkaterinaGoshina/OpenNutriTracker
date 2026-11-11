@@ -133,70 +133,93 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      floatingActionButton: Semantics(
-        identifier: 'fab-add-item',
-        child: FloatingActionButton(
-          onPressed: () => _onFabPressed(context),
-          tooltip: S.of(context).addLabel,
-          child: const Icon(Icons.add, size: 30),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: palette.surface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        height: 78,
-        padding: EdgeInsets.zero,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          children: [
-            _NavItem(
-              id: 'nav-home',
-              icon: Icons.home_outlined,
-              selectedIcon: Icons.home_rounded,
-              label: S.of(context).homeLabel,
-              index: 0,
-              selectedIndex: _selectedPageIndex,
-              palette: palette,
-              onTap: _setPage,
+      bottomNavigationBar: Padding(
+        // Floats clear of the screen edge so the pill stays inside the rounded
+        // corners of modern iPhones instead of being clipped by them.
+        padding: EdgeInsets.fromLTRB(16, 0, 16, _floatingBarBottomGap(context)),
+        child: Material(
+          color: palette.surface,
+          elevation: 6,
+          shadowColor: Colors.black54,
+          surfaceTintColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(_navBarHeight / 2),
+          clipBehavior: Clip.antiAlias,
+          child: SizedBox(
+            height: _navBarHeight,
+            child: Row(
+              children: [
+                _NavItem(
+                  id: 'nav-home',
+                  icon: Icons.home_outlined,
+                  selectedIcon: Icons.home_rounded,
+                  label: S.of(context).homeLabel,
+                  index: 0,
+                  selectedIndex: _selectedPageIndex,
+                  palette: palette,
+                  onTap: _setPage,
+                ),
+                _NavItem(
+                  id: 'nav-diary',
+                  icon: Icons.book_outlined,
+                  selectedIcon: Icons.book_rounded,
+                  label: S.of(context).diaryLabel,
+                  index: 1,
+                  selectedIndex: _selectedPageIndex,
+                  palette: palette,
+                  onTap: _setPage,
+                ),
+                SizedBox(
+                  width: 72,
+                  child: Center(
+                    child: Semantics(
+                      identifier: 'fab-add-item',
+                      child: FloatingActionButton(
+                        onPressed: () => _onFabPressed(context),
+                        tooltip: S.of(context).addLabel,
+                        elevation: 0,
+                        focusElevation: 0,
+                        hoverElevation: 0,
+                        highlightElevation: 0,
+                        child: const Icon(Icons.add, size: 30),
+                      ),
+                    ),
+                  ),
+                ),
+                _NavItem(
+                  id: 'nav-trends',
+                  icon: Icons.insights_outlined,
+                  selectedIcon: Icons.insights_rounded,
+                  label: S.of(context).trendsLabel,
+                  index: 2,
+                  selectedIndex: _selectedPageIndex,
+                  palette: palette,
+                  onTap: _setPage,
+                ),
+                _NavItem(
+                  id: 'nav-you',
+                  icon: Icons.account_circle_outlined,
+                  selectedIcon: Icons.account_circle_rounded,
+                  label: S.of(context).youLabel,
+                  index: 3,
+                  selectedIndex: _selectedPageIndex,
+                  palette: palette,
+                  onTap: _setPage,
+                ),
+              ],
             ),
-            _NavItem(
-              id: 'nav-diary',
-              icon: Icons.book_outlined,
-              selectedIcon: Icons.book_rounded,
-              label: S.of(context).diaryLabel,
-              index: 1,
-              selectedIndex: _selectedPageIndex,
-              palette: palette,
-              onTap: _setPage,
-            ),
-            const SizedBox(width: 64), // notch gap for the centre Add FAB
-            _NavItem(
-              id: 'nav-trends',
-              icon: Icons.insights_outlined,
-              selectedIcon: Icons.insights_rounded,
-              label: S.of(context).trendsLabel,
-              index: 2,
-              selectedIndex: _selectedPageIndex,
-              palette: palette,
-              onTap: _setPage,
-            ),
-            _NavItem(
-              id: 'nav-you',
-              icon: Icons.account_circle_outlined,
-              selectedIcon: Icons.account_circle_rounded,
-              label: S.of(context).youLabel,
-              index: 3,
-              selectedIndex: _selectedPageIndex,
-              palette: palette,
-              onTap: _setPage,
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  static const double _navBarHeight = 72;
+
+  /// Gap under the floating bar: sits just above the home indicator on
+  /// iPhones, and a plain margin where there is no inset.
+  double _floatingBarBottomGap(BuildContext context) {
+    final inset = MediaQuery.paddingOf(context).bottom;
+    return inset > 0 ? inset - 6 : 12;
   }
 
   void _setPage(int selectedIndex) {

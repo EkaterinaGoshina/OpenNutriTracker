@@ -27,8 +27,9 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Свои продукты, избранное | ✅ | `features/add_meal`, `features/recipes` |
 | Блюда (рецепты) из ингредиентов, вес или порции | ✅ | `features/recipes`, `core/domain/usecase/compute_recipe_nutrition_usecase.dart` |
 | Добавление ингредиентов пачкой, создание продукта из поиска | ✅ fork | `features/recipes/presentation/screens/ingredient_picker_screen.dart` |
-| «Кухня» на главной: блюда, «Ам» — записать порцию, свайп — удалить | ✅ fork | `features/home/presentation/widgets/kitchen_card.dart`, `kitchen_eat_sheet.dart` |
-| Упрощённая главная: калории и макросы в одной карточке | ✅ fork | `features/home/presentation/widgets/dashboard_widget.dart` |
+| «Кухня» на главной: все блюда, «Ам» — записать порцию, свайп — удалить (красный фон как в iOS) | ✅ fork | `features/home/presentation/widgets/kitchen_card.dart`, `kitchen_eat_sheet.dart` |
+| Упрощённая главная: калории и макросы в одной карточке, без логотипа и названия сверху, меню приёма пищи без импорта | ✅ fork | `features/home/presentation/widgets/dashboard_widget.dart`, `intake_vertical_list.dart` |
+| Плавающая нижняя панель с кнопкой «+» внутри, закруглённая под углы iPhone | ✅ fork | `core/presentation/main_screen.dart` |
 | Активности и расход калорий | ✅, по умолчанию скрыто | `features/add_activity`, включается в настройках |
 | Вес, тренды, цели по калориям и макросам | ✅ | `features/profile`, `features/trends`, `features/settings` |
 | Несколько локальных профилей на устройстве | ✅ | `core/utils/hive_db_provider.dart` |
@@ -37,7 +38,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Демо-режим | ✅ | `core/utils/demo`, [demo-data.md](demo-data.md) |
 | Русский язык | ✅ fork | `lib/l10n/intl_ru.arb`, [ru-translation-guide.md](ru-translation-guide.md) |
 | Учёт воды, таймер голодания | ❌ убраны | коммит `e5734880` |
-| Веб-версия | 🟡 выложена на https://opennutritracker.goshina.workers.dev, демо и поиск работают | [WEB_PORT_PLAN.md](WEB_PORT_PLAN.md), `worker/` |
+| Веб-версия | 🟡 выложена на https://opennutritracker.goshina.workers.dev, демо и поиск работают. На iPhone ставится на домашний экран как «Калории» (иконка из `design/app_icon.svg`, PNG в `web/icons/`), рисует под «чёлкой»: Flutter не читает CSS-отступы, их измеряет `web/index.html` и отдаёт в `MediaQuery` | [WEB_PORT_PLAN.md](WEB_PORT_PLAN.md), `worker/`, `lib/core/utils/web/` |
 | Аккаунт: вход по коду из письма, Google | ✅ экран входа; Google только в вебе | `features/family/data/account_repository.dart`, `features/family/presentation/screens/sign_in_screen.dart` |
 | Семья: создать, пригласить по коду, вступить, выйти, участники, передать роль | ✅ экраны на `FamilyCubit`; открываются из раздела «Семья» в профиле (нужны `ACCOUNT_SUPABASE_*` в `.env`) | `features/family`, `supabase/` |
 | Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет. Не сделано в приложении: метки «семья» у блюд, «Отправить в семью», конфликт правок | `supabase/migrations/20261106130000_family_dishes.sql` |

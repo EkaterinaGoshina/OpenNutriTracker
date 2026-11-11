@@ -273,11 +273,11 @@ void main() {
     },
   );
 
-  // Regression: the QR-share/import options were dropped from the popup
-  // menu when the macros toggle PR landed on a stale base. Lock in the
-  // expected items so it can't happen again silently.
+  // Regression: the QR-share option was dropped from the popup menu when the
+  // macros toggle PR landed on a stale base. Lock in the expected items so it
+  // can't happen again silently. Import / paste-code are deliberately gone.
   testWidgets(
-    'popup menu shows Copy/Delete/Share/Import for non-empty section',
+    'popup menu shows Copy/Delete/Share for non-empty section',
     (WidgetTester tester) async {
       await tester.pumpWidget(_wrapWithMaterial(IntakeVerticalList(
         day: DateTime(2026, 1, 1),
@@ -298,13 +298,13 @@ void main() {
       expect(find.text(l10nEn.dialogCopyLabel), findsOneWidget);
       expect(find.text(l10nEn.deleteAllLabel), findsOneWidget);
       expect(find.text(l10nEn.shareMealLabel), findsOneWidget);
-      expect(find.text(l10nEn.importMealLabel), findsOneWidget);
-      expect(find.text(l10nEn.pasteCodeLabel), findsOneWidget);
+      expect(find.text(l10nEn.importMealLabel), findsNothing);
+      expect(find.text(l10nEn.pasteCodeLabel), findsNothing);
     },
   );
 
   testWidgets(
-    'popup menu shows only Import when section is empty',
+    'no popup menu when section is empty',
     (WidgetTester tester) async {
       await tester.pumpWidget(_wrapWithMaterial(IntakeVerticalList(
         day: DateTime(2026, 1, 1),
@@ -318,16 +318,12 @@ void main() {
       )));
       await tester.pump();
 
-      await tester.tap(find.byType(PopupMenuButton<VerticalListPopupMenuSelections>));
-      await tester.pumpAndSettle();
-
-      // Empty section: no Copy/Delete/Share — nothing to act on. Import is
-      // always available so the user can scan a QR to populate the section.
-      expect(find.text(l10nEn.dialogCopyLabel), findsNothing);
-      expect(find.text(l10nEn.deleteAllLabel), findsNothing);
-      expect(find.text(l10nEn.shareMealLabel), findsNothing);
-      expect(find.text(l10nEn.importMealLabel), findsOneWidget);
-      expect(find.text(l10nEn.pasteCodeLabel), findsOneWidget);
+      // Every menu entry acts on existing intakes, so an empty section has
+      // no menu to open.
+      expect(
+        find.byType(PopupMenuButton<VerticalListPopupMenuSelections>),
+        findsNothing,
+      );
     },
   );
 

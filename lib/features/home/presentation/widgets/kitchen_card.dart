@@ -12,15 +12,11 @@ import 'package:opennutritracker/features/recipes/presentation/bloc/recipes_bloc
 import 'package:opennutritracker/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
-/// The home screen's kitchen: the dishes the user cooks, with a way to make a
+/// The home screen's kitchen: every dish the user cooks, with a way to make a
 /// new one, open one to edit it, and log a portion of one without going
 /// through the add-food screen.
 class KitchenCard extends StatefulWidget {
   const KitchenCard({super.key});
-
-  /// How many dishes the card lists; the rest are one tap away under
-  /// "All dishes".
-  static const maxDishes = 2;
 
   @override
   State<KitchenCard> createState() => _KitchenCardState();
@@ -115,15 +111,6 @@ class _KitchenCardState extends State<KitchenCard> {
                         ),
                       ),
                     ),
-                    if (dishes.length > KitchenCard.maxDishes)
-                      Semantics(
-                        identifier: 'home-kitchen-all',
-                        child: TextButton(
-                          onPressed: () =>
-                              _open(NavigationOptions.recipesRoute),
-                          child: Text(S.of(context).kitchenAllDishes),
-                        ),
-                      ),
                     Semantics(
                       identifier: 'home-kitchen-create',
                       child: IconButton(
@@ -154,7 +141,7 @@ class _KitchenCardState extends State<KitchenCard> {
                     ),
                   )
                 else
-                  for (final dish in dishes.take(KitchenCard.maxDishes))
+                  for (final dish in dishes)
                     Dismissible(
                       key: ValueKey(dish.id),
                       direction: DismissDirection.endToStart,
@@ -182,21 +169,25 @@ class _KitchenCardState extends State<KitchenCard> {
   }
 }
 
-/// What shows behind a dish row as it is swiped left.
+/// What shows behind a dish row as it is swiped left: the iOS destructive red
+/// with a white bin, as in the system apps.
 class _DeleteBackground extends StatelessWidget {
   const _DeleteBackground();
 
+  static const _lightRed = Color(0xFFFF3B30);
+  static const _darkRed = Color(0xFFFF453A);
+
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.only(right: Dimens.spacing24),
       decoration: BoxDecoration(
-        color: colors.errorContainer,
+        color: isDark ? _darkRed : _lightRed,
         borderRadius: Dimens.borderRadiusM,
       ),
-      child: Icon(Icons.delete_outline_rounded, color: colors.onErrorContainer),
+      child: const Icon(Icons.delete_rounded, color: Colors.white),
     );
   }
 }

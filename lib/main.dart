@@ -26,6 +26,7 @@ import 'package:opennutritracker/core/utils/hive_storage_integrity_exception.dar
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/logger_config.dart';
 import 'package:opennutritracker/core/utils/sentry_config.dart';
+import 'package:opennutritracker/core/utils/web/web_safe_area.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/energy_unit_provider.dart';
 import 'package:opennutritracker/core/utils/locale_provider.dart';
@@ -366,8 +367,10 @@ class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp>
       ],
       supportedLocales: _appLocales,
       // Above the Navigator, so dialogs and sheets are covered too.
-      builder: (context, child) =>
-          KeyboardDismisser(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => _withWebSafeArea(
+        context,
+        KeyboardDismisser(child: child ?? const SizedBox.shrink()),
+      ),
       initialRoute: NavigationOptions.splashRoute,
       routes: {
         NavigationOptions.splashRoute: (context) =>
@@ -378,7 +381,8 @@ class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp>
         NavigationOptions.settingsRoute: (context) => const SettingsScreen(),
         NavigationOptions.accentColourRoute: (context) =>
             const AccentColourScreen(),
-        NavigationOptions.healthSyncRoute: (context) => const HealthSyncScreen(),
+        NavigationOptions.healthSyncRoute: (context) =>
+            const HealthSyncScreen(),
         NavigationOptions.addMealRoute: (context) => const AddMealScreen(),
         NavigationOptions.bulkAddRoute: (context) => const BulkAddScreen(),
         NavigationOptions.scannerRoute: (context) => const ScannerScreen(),
@@ -408,6 +412,33 @@ class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp>
             const ManageProfilesScreen(),
         NavigationOptions.familyRoute: (context) => const FamilyScreen(),
       },
+    );
+  }
+
+  /// On the web Flutter reports zero safe-area insets, so an iPhone home-screen
+  /// app would draw its content under the notch. Feed the measured CSS insets
+  /// into [MediaQuery] so Scaffold, AppBar and SafeArea keep clear of them.
+  Widget _withWebSafeArea(BuildContext context, Widget child) {
+    if (!kIsWeb) return child;
+    final inset = readWebSafeArea();
+    if (inset == EdgeInsets.zero) return child;
+    final mq = MediaQuery.of(context);
+    return MediaQuery(
+      data: mq.copyWith(
+        padding: mq.padding.copyWith(
+          left: inset.left > mq.padding.left ? inset.left : null,
+          top: inset.top > mq.padding.top ? inset.top : null,
+          right: inset.right > mq.padding.right ? inset.right : null,
+          bottom: inset.bottom > mq.padding.bottom ? inset.bottom : null,
+        ),
+        viewPadding: mq.viewPadding.copyWith(
+          left: inset.left > mq.viewPadding.left ? inset.left : null,
+          top: inset.top > mq.viewPadding.top ? inset.top : null,
+          right: inset.right > mq.viewPadding.right ? inset.right : null,
+          bottom: inset.bottom > mq.viewPadding.bottom ? inset.bottom : null,
+        ),
+      ),
+      child: child,
     );
   }
 }
