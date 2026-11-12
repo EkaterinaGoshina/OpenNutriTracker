@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:opennutritracker/core/utils/picked_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:opennutritracker/core/domain/usecase/save_recipe_usecase.dart';
 import 'package:opennutritracker/core/utils/csv_recipe_importer.dart';
@@ -19,10 +19,8 @@ class ImportRecipesCsvResult {
   });
 }
 
-Future<PlatformFile?> _pickCsvFile() => FilePicker.pickFile(
-      type: FileType.custom,
-      allowedExtensions: ['csv'],
-    );
+Future<PlatformFile?> _pickCsvFile() =>
+    FilePicker.pickFile(type: FileType.custom, allowedExtensions: ['csv']);
 
 /// Picks a CSV file from disk, parses it via [CsvRecipeImporter], and
 /// persists each recipe via [SaveRecipeUseCase] (which re-aggregates
@@ -43,12 +41,11 @@ class ImportRecipesCsvUsecase {
   /// Returns null when the user cancelled the file picker.
   Future<ImportRecipesCsvResult?> importFromPickedFile() async {
     final picked = await _pickFile();
-    if (picked == null || picked.path == null) {
+    if (picked == null || !isReadablePick(picked)) {
       return null;
     }
 
-    final file = File(picked.path!);
-    final content = await file.readAsString(encoding: utf8);
+    final content = utf8.decode(await readPickedBytes(picked));
 
     final parseResult = CsvRecipeImporter.parse(content);
 

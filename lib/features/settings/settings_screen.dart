@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/app_theme_entity.dart';
@@ -484,55 +485,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: Dimens.spacing20),
-              _categoryHeader(
-                context,
-                palette,
-                S.of(context).settingsNotificationsLabel,
-              ),
-              _SettingsGroup(
-                palette: palette,
-                tiles: [
-                  _SettingsSwitchTile(
-                    palette: palette,
-                    icon: Icons.notifications_rounded,
-                    title: S.of(context).settingsNotificationsLabel,
-                    subtitle: state.notificationsEnabled
-                        ? S
-                              .of(context)
-                              .settingsNotificationsTimeLabel(
-                                _formatNotificationTime(
-                                  state.notificationHour,
-                                  state.notificationMinute,
-                                ),
-                              )
-                        : null,
-                    value: state.notificationsEnabled,
-                    onChanged: (bool value) =>
-                        _onNotificationToggled(context, value, state),
-                  ),
-                  if (state.notificationsEnabled)
-                    _SettingsTile(
+              // Reminders need the OS notification plugin, which has no web
+              // implementation, so the browser build does not offer them.
+              if (!kIsWeb) ...[
+                const SizedBox(height: Dimens.spacing20),
+                _categoryHeader(
+                  context,
+                  palette,
+                  S.of(context).settingsNotificationsLabel,
+                ),
+                _SettingsGroup(
+                  palette: palette,
+                  tiles: [
+                    _SettingsSwitchTile(
                       palette: palette,
-                      icon: Icons.access_time_rounded,
-                      title: S
-                          .of(context)
-                          .settingsNotificationsTimeLabel(
-                            _formatNotificationTime(
-                              state.notificationHour,
-                              state.notificationMinute,
+                      icon: Icons.notifications_rounded,
+                      title: S.of(context).settingsNotificationsLabel,
+                      subtitle: state.notificationsEnabled
+                          ? S
+                                .of(context)
+                                .settingsNotificationsTimeLabel(
+                                  _formatNotificationTime(
+                                    state.notificationHour,
+                                    state.notificationMinute,
+                                  ),
+                                )
+                          : null,
+                      value: state.notificationsEnabled,
+                      onChanged: (bool value) =>
+                          _onNotificationToggled(context, value, state),
+                    ),
+                    if (state.notificationsEnabled)
+                      _SettingsTile(
+                        palette: palette,
+                        icon: Icons.access_time_rounded,
+                        title: S
+                            .of(context)
+                            .settingsNotificationsTimeLabel(
+                              _formatNotificationTime(
+                                state.notificationHour,
+                                state.notificationMinute,
+                              ),
                             ),
+                        onTap: () => _pickNotificationTime(
+                          context,
+                          TimeOfDay(
+                            hour: state.notificationHour,
+                            minute: state.notificationMinute,
                           ),
-                      onTap: () => _pickNotificationTime(
-                        context,
-                        TimeOfDay(
-                          hour: state.notificationHour,
-                          minute: state.notificationMinute,
                         ),
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                ),
+              ],
               const SizedBox(height: Dimens.spacing20),
               _categoryHeader(
                 context,
@@ -550,18 +555,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: S.of(context).settingsFoodSourcesSubtitle,
                     onTap: () => _openFoodSourcesScreen(context),
                   ),
-                  _SettingsTile(
-                    identifier: 'settings-health-sync',
-                    palette: palette,
-                    icon: Icons.favorite_rounded,
-                    // The platform's own product name, so the row reads as
-                    // the thing users already know ("Health Connect"), not
-                    // as a generic feature label.
-                    title: healthPlatformName,
-                    subtitle: S.of(context).settingsHealthSyncSubtitle,
-                    showChevron: true,
-                    onTap: () => _openHealthSyncScreen(context),
-                  ),
+                  // Apple Health and Health Connect exist only on the phone.
+                  if (!kIsWeb)
+                    _SettingsTile(
+                      identifier: 'settings-health-sync',
+                      palette: palette,
+                      icon: Icons.favorite_rounded,
+                      // The platform's own product name, so the row reads as
+                      // the thing users already know ("Health Connect"), not
+                      // as a generic feature label.
+                      title: healthPlatformName,
+                      subtitle: S.of(context).settingsHealthSyncSubtitle,
+                      showChevron: true,
+                      onTap: () => _openHealthSyncScreen(context),
+                    ),
                   _SettingsTile(
                     identifier: 'settings-ai-assist',
                     palette: palette,

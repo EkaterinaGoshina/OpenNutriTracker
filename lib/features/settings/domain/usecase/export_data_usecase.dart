@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
 import 'package:opennutritracker/core/data/data_source/custom_meal_data_source.dart';
 import 'package:opennutritracker/core/data/dbo/favourite_meal_dbo.dart';
@@ -119,6 +120,11 @@ class ExportDataUsecase {
           allowedExtensions: ['zip'],
           bytes: Uint8List.fromList(zipBytes),
         );
+
+        // The browser has no save dialog to cancel: the picker triggers a
+        // download and always returns null, and there is no file to read
+        // back, so the verifier below has nothing to check either.
+        if (kIsWeb) return true;
 
         if (result == null) {
           // User cancelled the save dialog.
@@ -384,6 +390,8 @@ class ExportDataUsecase {
   /// there. A missing file is not an error: the photo may have been cleared
   /// by the OS, and losing one image is not worth failing an export over.
   Future<void> _addUserImage(Archive archive, String sanitized) async {
+    // Photos live in app files, which the web build does not have.
+    if (kIsWeb) return;
     final absolute = await UserImageStorage.absolutePath(sanitized);
     final file = File(absolute);
     if (!await file.exists()) return;

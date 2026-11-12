@@ -33,8 +33,8 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Активности и расход калорий | ✅, по умолчанию скрыто | `features/add_activity`, включается в настройках |
 | Вес, тренды, цели по калориям и макросам | ✅ | `features/profile`, `features/trends`, `features/settings` |
 | Несколько локальных профилей на устройстве | ✅ | `core/utils/hive_db_provider.dart` |
-| Экспорт и импорт (zip, JSON, CSV) | ✅ на телефоне, ⬜ в вебе | `features/settings`, [export-format.md](export-format.md) |
-| Apple Health / Health Connect, виджет iOS, напоминания | ✅ на телефоне, ⬜ отключить в вебе | `core/data/data_source/health`, [ios-calorie-widget.md](ios-calorie-widget.md) |
+| Экспорт и импорт (zip, JSON, CSV) | ✅ на телефоне; в вебе 🟡 скачивание и загрузка файла через браузер, без фото (их в вебе нет). В браузере ещё не проверено вручную | `features/settings`, `core/utils/picked_file.dart`, [export-format.md](export-format.md) |
+| Apple Health / Health Connect, виджет iOS, напоминания | ✅ на телефоне; в вебе строки Health и напоминаний (настройки и онбординг) скрыты, виджет молчит | `core/data/data_source/health`, [ios-calorie-widget.md](ios-calorie-widget.md) |
 | Демо-режим | ✅ | `core/utils/demo`, [demo-data.md](demo-data.md) |
 | Русский язык | ✅ fork | `lib/l10n/intl_ru.arb`, [ru-translation-guide.md](ru-translation-guide.md) |
 | Учёт воды, таймер голодания | ❌ убраны | коммит `e5734880` |

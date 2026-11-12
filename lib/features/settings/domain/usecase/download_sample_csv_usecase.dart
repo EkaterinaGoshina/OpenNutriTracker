@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:opennutritracker/core/utils/csv_meal_importer.dart';
 import 'package:opennutritracker/core/utils/csv_recipe_importer.dart';
 import 'package:opennutritracker/features/settings/domain/export_import_failure.dart';
@@ -34,6 +35,8 @@ class DownloadSampleCsvUsecase {
         bytes: bytes,
       ),
     );
-    return result != null;
+    // On the web the browser downloads the file and the picker has nothing
+    // to hand back, so a null there is not a cancelled dialog.
+    return kIsWeb || result != null;
   }
 }

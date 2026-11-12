@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:opennutritracker/core/data/data_source/custom_activity_template_dbo.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/favourite_meal_dbo.dart';
@@ -21,6 +22,7 @@ import 'package:opennutritracker/core/data/repository/weight_log_repository.dart
 import 'package:opennutritracker/core/utils/csv_data_exporter.dart';
 import 'package:opennutritracker/core/utils/extensions.dart';
 import 'package:opennutritracker/core/utils/off_micronutrient_repair.dart';
+import 'package:opennutritracker/core/utils/picked_file.dart';
 import 'package:opennutritracker/core/utils/tracked_day_lock.dart';
 import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/features/settings/domain/export_import_failure.dart';
@@ -205,23 +207,27 @@ class ImportDataUsecase {
         );
       }
 
-      final recipeDir = await UserImageStorage.ensureDirectory(
-        UserImageKind.recipe,
-      );
-      final mealDir = await UserImageStorage.ensureDirectory(
-        UserImageKind.meal,
-      );
-      for (final entry in archive.files) {
-        if (!entry.isFile) continue;
-        final sanitized = UserImageStorage.sanitizeRelative(entry.name);
-        if (sanitized == null) continue;
-        final parts = sanitized.split('/');
-        final targetDir = parts[0] == UserImageKind.recipe.subdir
-            ? recipeDir
-            : mealDir;
-        final destPath = '${targetDir.path}/${parts[1]}';
-        final destFile = File(destPath);
-        await destFile.writeAsBytes(entry.content as List<int>, flush: true);
+      // Photos are files in the app's folder, which the web build does not
+      // have: an archive made on a phone restores everything but its photos.
+      if (!kIsWeb) {
+        final recipeDir = await UserImageStorage.ensureDirectory(
+          UserImageKind.recipe,
+        );
+        final mealDir = await UserImageStorage.ensureDirectory(
+          UserImageKind.meal,
+        );
+        for (final entry in archive.files) {
+          if (!entry.isFile) continue;
+          final sanitized = UserImageStorage.sanitizeRelative(entry.name);
+          if (sanitized == null) continue;
+          final parts = sanitized.split('/');
+          final targetDir = parts[0] == UserImageKind.recipe.subdir
+              ? recipeDir
+              : mealDir;
+          final destPath = '${targetDir.path}/${parts[1]}';
+          final destFile = File(destPath);
+          await destFile.writeAsBytes(entry.content as List<int>, flush: true);
+        }
       }
 
       return true;
@@ -334,18 +340,19 @@ class ImportDataUsecase {
         'The user dismissed the file picker',
       );
     }
-    final path = result.path;
-    if (path == null) {
+    // A browser pick never has a path; the bytes come from its handle.
+    if (!isReadablePick(result)) {
       throw ExportImportFailure(
         ExportImportFailureReason.unreadableOrWrongFormat,
         'The file picker returned "${result.name}" without a readable path',
       );
     }
+    final path = result.path ?? result.name;
 
     final zipBytes = await ExportImportFailure.guard(
       ExportImportFailureReason.unreadableOrWrongFormat,
       'Could not read the picked file $path',
-      () => File(path).readAsBytes(),
+      () => readPickedBytes(result),
     );
     return ExportImportFailure.guardSync(
       ExportImportFailureReason.unreadableOrWrongFormat,

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:opennutritracker/core/utils/picked_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:opennutritracker/core/data/data_source/custom_meal_data_source.dart';
 import 'package:opennutritracker/core/data/dbo/meal_dbo.dart';
@@ -37,12 +37,11 @@ class ImportMealsCsvUsecase {
       type: FileType.custom,
       allowedExtensions: ['csv'],
     );
-    if (picked == null || picked.path == null) {
+    if (picked == null || !isReadablePick(picked)) {
       return null;
     }
 
-    final file = File(picked.path!);
-    final content = await file.readAsString(encoding: utf8);
+    final content = utf8.decode(await readPickedBytes(picked));
 
     final parseResult = CsvMealImporter.parse(content);
 
