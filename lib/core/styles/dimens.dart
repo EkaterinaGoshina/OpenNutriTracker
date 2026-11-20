@@ -28,6 +28,12 @@ abstract final class Dimens {
   static const RoundedRectangleBorder shapeXL = RoundedRectangleBorder(borderRadius: borderRadiusXL);
 
   static const double hairline = 1;
+
+  /// Room a scrolling page leaves under its last row for the floating Add
+  /// button above the tab bar: the button's 56 dp, the 16 dp the Scaffold puts
+  /// between it and the bar, and 24 dp of air so a tap on the last row cannot
+  /// land on the button (#1368).
+  static const double floatingAddClearance = 56 + 16 + 24;
   static const double minTouchTarget = 52;
 
   // Recurring widget sizes.

@@ -17,15 +17,21 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <!-- viewport-fit=cover lets the app draw under the notch / Dynamic Island -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!--
+    The viewport Flutter's engine adds on its own when a page has none: no
+    zoom, so a quick second tap is never taken for a double-tap zoom. No
+    viewport-fit=cover and a plain "black" status bar: the page stays inside
+    the safe area. Drawing under the notch (cover + black-translucent) came
+    with taps dropped in the iPhone home-screen app; to be confirmed.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1c1b1b">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Калории: дневник питания и подсчёт калорий.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Калории">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 

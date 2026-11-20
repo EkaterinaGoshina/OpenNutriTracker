@@ -167,6 +167,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Stack(
       children: [
         ListView(
+          padding: const EdgeInsets.only(bottom: Dimens.floatingAddClearance),
           children: [
             const SizedBox(height: Dimens.spacing8),
             DashboardWidget(

@@ -119,7 +119,7 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
     bool showActivityTracking,
   ) {
     return ListView(
-      padding: const EdgeInsets.only(bottom: Dimens.spacing16),
+      padding: const EdgeInsets.only(bottom: Dimens.floatingAddClearance),
       children: [
         DiaryTableCalendar(
           trackedDaysMap: trackedDaysMap,

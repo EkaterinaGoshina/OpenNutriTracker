@@ -61,7 +61,10 @@ class _TrendsView extends StatelessWidget {
         }
         return ListView(
           padding: const EdgeInsets.fromLTRB(
-              Dimens.spacing16, Dimens.spacing8, Dimens.spacing16, Dimens.spacing32),
+              Dimens.spacing16,
+              Dimens.spacing8,
+              Dimens.spacing16,
+              Dimens.floatingAddClearance),
           children: [
             _StreakCard(
               days: state.days,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/presentation/widgets/add_item_bottom_sheet.dart';
-import 'package:opennutritracker/core/presentation/widgets/notched_pill_border.dart';
 import 'package:opennutritracker/core/presentation/widgets/demo_mode_banner.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/utils/health_rationale_service.dart';
@@ -163,30 +162,32 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       ),
       floatingActionButton: Semantics(
         identifier: 'fab-add-item',
-        child: FloatingActionButton(
+        child: FloatingActionButton.extended(
           onPressed: () => _onFabPressed(context),
           tooltip: S.of(context).addLabel,
           elevation: 2,
           highlightElevation: 4,
-          child: const Icon(Icons.add, size: 30),
+          icon: const Icon(Icons.add, size: 24),
+          label: Text(S.of(context).addLabel),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // Floats above the tab bar rather than sitting in it, so the bar is a
+      // plain row of four tabs and nothing cuts into it.
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: Padding(
         // Floats clear of the screen edge so the pill stays inside the rounded
         // corners of modern iPhones instead of being clipped by them.
         padding: EdgeInsets.fromLTRB(16, 0, 16, _floatingBarBottomGap(context)),
         child: Material(
           color: palette.surface,
-          // No elevation: a shadow along the notched outline is redrawn every
-          // frame and made taps stutter on phones. The outline is a hairline.
+          // No elevation: a shadow under the bar is redrawn every frame and
+          // made taps stutter on phones. The outline is a hairline.
           elevation: 0,
           surfaceTintColor: Colors.transparent,
-          shape: NotchedPillBorder(
-            notchRadius: _fabNotchRadius,
-            borderColor: palette.border,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(_navBarHeight / 2),
+            side: BorderSide(color: palette.border),
           ),
-          clipBehavior: Clip.antiAlias,
           child: SizedBox(
             height: _navBarHeight,
             // Keeps the first and last tab's backing the same distance from
@@ -215,8 +216,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                     palette: palette,
                     onTap: _setPage,
                   ),
-                  // The Add button sits in the notch above, docked to the bar.
-                  const SizedBox(width: _fabNotchRadius * 2 + 8),
                   _NavItem(
                     id: 'nav-trends',
                     icon: Icons.insights_outlined,
@@ -247,9 +246,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   static const double _navBarHeight = 72;
-
-  /// The notch is the 56 px Add button plus 6 px of air around it.
-  static const double _fabNotchRadius = 34;
 
   /// Gap under the floating bar: sits just above the home indicator on
   /// iPhones, and a plain margin where there is no inset.

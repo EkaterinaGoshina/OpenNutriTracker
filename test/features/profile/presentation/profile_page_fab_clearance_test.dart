@@ -50,8 +50,8 @@ class _SingleProfileGetProfilesUsecase implements GetProfilesUsecase {
   ProfileEntity? getActiveProfile() => _profile;
 }
 
-/// The You tab as MainScreen hosts it: under a centre-docked Add button
-/// that rides half above a notched bottom bar.
+/// The You tab as MainScreen hosts it: under an Add button that floats above
+/// a plain bottom bar.
 Widget _hostedLikeMainScreen() => MaterialApp(
   localizationsDelegates: const [
     S.delegate,
@@ -62,17 +62,13 @@ Widget _hostedLikeMainScreen() => MaterialApp(
   supportedLocales: S.supportedLocales,
   home: Scaffold(
     body: const ProfilePage(),
-    floatingActionButton: FloatingActionButton(
+    floatingActionButton: FloatingActionButton.extended(
       onPressed: () {},
-      child: const Icon(Icons.add, size: 30),
+      icon: const Icon(Icons.add),
+      label: const Text('Add'),
     ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    bottomNavigationBar: const BottomAppBar(
-      height: 78,
-      padding: EdgeInsets.zero,
-      shape: CircularNotchedRectangle(),
-      notchMargin: 8,
-    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    bottomNavigationBar: const SizedBox(height: 72),
   ),
 );
 

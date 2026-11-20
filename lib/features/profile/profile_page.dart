@@ -42,11 +42,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  /// Room below the last row for the centre-docked Add button, which rides
-  /// half of its 56 dp above the bottom bar and so over the end of this list.
-  /// The old 32 dp left the last row 5 dp above the button, close enough that
-  /// a tap meant for it could open the Add sheet instead (#1368).
-  static const double _fabClearance = 56 / 2 + Dimens.spacing32;
+  /// Room below the last row for the floating Add button over the end of this
+  /// list, so a tap meant for the row cannot open the Add sheet (#1368).
+  static const double _fabClearance = Dimens.floatingAddClearance;
 
   late ProfileBloc _profileBloc;
 
