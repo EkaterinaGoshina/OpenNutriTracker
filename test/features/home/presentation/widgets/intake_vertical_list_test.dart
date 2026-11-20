@@ -368,6 +368,43 @@ void main() {
     },
   );
 
+  // The kcal line used to sit in a loose Flexible beside the Expanded title, so
+  // it and the add button stopped at mid-row with a gap on the right.
+  testWidgets('the compact header puts its add button at the right edge',
+      (WidgetTester tester) async {
+    // Wide enough that the kcal text is far narrower than half the row.
+    tester.view.physicalSize = const Size(800, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_wrapWithMaterial(
+      Align(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 700,
+          child: IntakeVerticalList(
+            day: DateTime(2026, 1, 1),
+            title: 'Breakfast',
+            listIcon: Icons.bakery_dining_outlined,
+            addMealType: AddMealType.breakfastType,
+            intakeList: const [],
+            usesImperialUnits: false,
+            compact: true,
+            mealKcalTarget: 583,
+            onDeleteIntakeCallback: (_, _) {},
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+
+    final addButton = find.byIcon(Icons.add_rounded);
+    expect(addButton, findsOneWidget);
+    final right = tester.getTopRight(find.byType(IconButton)).dx;
+    final edge = tester.getTopRight(find.byType(IntakeVerticalList)).dx;
+    // 12 dp of header padding plus the button's own margin, not half a row.
+    expect(edge - right, lessThan(24));
+  });
+
   testWidgets('a profile switch queued during a drag between meals waits '
       'for the delete', (WidgetTester tester) async {
     await tester.pumpWidget(

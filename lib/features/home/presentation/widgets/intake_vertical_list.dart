@@ -196,8 +196,11 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
                 ),
               ),
               const SizedBox(width: Dimens.spacing8),
+              // Expanded, not Flexible: a loose Flexible shares the free space
+              // with the title but keeps only its text's width, so the kcal
+              // line and the buttons stopped at mid-row with a gap to the right.
               if (_shouldShowHeaderSummary)
-                Flexible(
+                Expanded(
                   child: Text(
                     _buildHeaderSummary(context),
                     maxLines: widget.compact ? 1 : 2,
