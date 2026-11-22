@@ -119,6 +119,14 @@ class FamilyCubit extends Cubit<FamilyState> {
   Future<void> transferOwnership(String userId) =>
       _then(() => _family.transferOwnership(userId));
 
+  /// The name the rest of the family sees. Signing in still takes the name
+  /// the account was made with.
+  Future<void> renameMe(String name) async {
+    final userId = state.userId;
+    if (userId == null) return;
+    await _then(() => _family.setDisplayName(userId, name));
+  }
+
   Future<void> signOut() async {
     await _account.signOut();
     await load();

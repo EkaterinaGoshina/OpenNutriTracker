@@ -163,6 +163,15 @@ class _FamilyScreenState extends State<FamilyScreen> {
     }
   }
 
+  Future<void> _renameMe(String current) async {
+    final name = await showDialog<String>(
+      context: context,
+      builder: (_) => _RenameDialog(current: current),
+    );
+    if (name == null || name == current || !mounted) return;
+    await _run(() => _cubit.renameMe(name));
+  }
+
   String _nameOf(S s, FamilyMemberEntity member) =>
       member.displayName.trim().isEmpty
       ? s.familyMemberUnnamed
@@ -372,6 +381,15 @@ class _FamilyScreenState extends State<FamilyScreen> {
               ],
             ),
           ),
+          if (isMe)
+            Semantics(
+              identifier: 'family-rename-me',
+              child: IconButton(
+                tooltip: s.familyRenameMeAction,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => _renameMe(member.displayName.trim()),
+              ),
+            ),
           if (state.isOwner && !isMe)
             Semantics(
               identifier: 'family-member-menu',
@@ -451,6 +469,78 @@ class _FamilyScreenState extends State<FamilyScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Asks for the name the family sees. Pops the trimmed name, or nothing on
+/// cancel.
+class _RenameDialog extends StatefulWidget {
+  final String current;
+
+  const _RenameDialog({required this.current});
+
+  @override
+  State<_RenameDialog> createState() => _RenameDialogState();
+}
+
+class _RenameDialogState extends State<_RenameDialog> {
+  static const _maxLength = 60;
+
+  late final _controller = TextEditingController(text: widget.current);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final name = _controller.text.trim();
+    if (name.isNotEmpty) Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    return AlertDialog(
+      title: Text(s.familyRenameMeTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            s.familyRenameMeBody,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: paletteOf(context).textMuted,
+            ),
+          ),
+          const SizedBox(height: Dimens.spacing12),
+          Semantics(
+            identifier: 'family-rename-me-field',
+            child: TextField(
+              controller: _controller,
+              autofocus: true,
+              maxLength: _maxLength,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.done,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _save(),
+              decoration: InputDecoration(labelText: s.familyPersonNameLabel),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(s.dialogCancelLabel),
+        ),
+        FilledButton(
+          onPressed: _controller.text.trim().isEmpty ? null : _save,
+          child: Text(s.buttonSaveLabel),
+        ),
+      ],
     );
   }
 }

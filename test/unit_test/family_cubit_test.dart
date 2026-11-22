@@ -74,6 +74,11 @@ class _FakeFamilies implements FamilyRepository {
   }
 
   @override
+  Future<void> setDisplayName(String userId, String name) async {
+    calls.add('setDisplayName $userId $name');
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -212,6 +217,20 @@ void main() {
     expect(account.signedOut, 1);
     expect(cubit.state.signedIn, isFalse);
     expect(cubit.state.family, isNull);
+    await cubit.close();
+  });
+
+  test('renaming yourself saves the name and reads the family again', () async {
+    families.family = _family('u1');
+    final cubit = FamilyCubit(_FakeAccount(_user('u1')), families);
+    await cubit.load();
+    families.calls.clear();
+    await cubit.renameMe('Мама');
+    expect(families.calls, [
+      'setDisplayName u1 Мама',
+      'getMyFamily',
+      'getPendingInvites',
+    ]);
     await cubit.close();
   });
 }
