@@ -28,20 +28,12 @@ class _FakeFamilies implements FamilyRepository {
 }
 
 class _FakeAccount implements AccountRepository {
-  final signedIn = <String>[];
-  final signedUp = <String>[];
+  final entered = <String>[];
   AuthException? failure;
 
   @override
-  Future<User?> signIn(String login, String password) async {
-    signedIn.add(login);
-    if (failure != null) throw failure!;
-    return null;
-  }
-
-  @override
-  Future<User?> signUp(String login, String password) async {
-    signedUp.add(login);
+  Future<User?> enter(String name, String password) async {
+    entered.add(name);
     if (failure != null) throw failure!;
     return null;
   }
@@ -117,120 +109,104 @@ void main() {
   });
 
   group('SignInScreen', () {
-    Future<void> fill(
-      WidgetTester tester,
-      String login,
-      String password,
-    ) async {
-      await tester.enterText(find.byType(TextField).at(0), login);
+    Future<void> fill(WidgetTester tester, String name, String password) async {
+      await tester.enterText(find.byType(TextField).at(0), name);
       await tester.enterText(find.byType(TextField).at(1), password);
       await tester.tap(find.byType(FilledButton));
       await tester.pump();
     }
 
-    testWidgets('a login with an address in it is refused without a request', (
+    testWidgets('an empty name is refused without a request', (tester) async {
+      await tester.pumpWidget(_app(const SignInScreen()));
+      await fill(tester, '   ', '');
+      expect(find.text(l10nEn.familyNameEmpty), findsOneWidget);
+      expect(account.entered, isEmpty);
+    });
+
+    testWidgets('a Cyrillic name and a short password go through', (
       tester,
     ) async {
       await tester.pumpWidget(_app(const SignInScreen()));
-      await fill(tester, 'anna@mail.com', 'secret1');
-      expect(find.text(l10nEn.familyLoginInvalid), findsOneWidget);
-      expect(account.signedIn, isEmpty);
+      await fill(tester, 'Катя', 'к');
+      expect(account.entered, ['Катя']);
+      expect(find.text(l10nEn.familyNameEmpty), findsNothing);
     });
 
-    testWidgets('a short password is refused without a request', (
-      tester,
-    ) async {
+    testWidgets('an empty password goes through', (tester) async {
       await tester.pumpWidget(_app(const SignInScreen()));
-      await fill(tester, 'anna', '123');
-      expect(
-        find.text(
-          l10nEn.familyPasswordTooShort(AccountRepository.minPasswordLength),
-        ),
-        findsOneWidget,
-      );
-      expect(account.signedIn, isEmpty);
+      await fill(tester, 'катя', '');
+      expect(account.entered, ['катя']);
     });
 
-    testWidgets('a wrong password says so', (tester) async {
+    testWidgets('a taken name with another password says so', (tester) async {
       account.failure = const AuthException(
-        'Invalid login credentials',
-        statusCode: '400',
-        code: 'invalid_credentials',
+        'Wrong password',
+        code: 'wrong_password',
       );
       await tester.pumpWidget(_app(const SignInScreen()));
-      await fill(tester, 'anna', 'secret1');
-      expect(account.signedIn, ['anna']);
-      expect(find.text(l10nEn.familyWrongCredentials), findsOneWidget);
-    });
-
-    testWidgets('creating an account with a taken login says so', (
-      tester,
-    ) async {
-      account.failure = const AuthException(
-        'User already registered',
-        statusCode: '422',
-        code: 'user_already_exists',
-      );
-      await tester.pumpWidget(_app(const SignInScreen()));
-      await tester.tap(find.text(l10nEn.familyToSignUpAction));
-      await tester.pump();
-      expect(find.text(l10nEn.familySignUpHeading), findsOneWidget);
-      await fill(tester, 'Anna', 'secret1');
-      expect(account.signedUp, ['Anna']);
-      expect(account.signedIn, isEmpty);
-      expect(find.text(l10nEn.familyLoginTaken), findsOneWidget);
+      await fill(tester, 'катя', 'x');
+      expect(find.text(l10nEn.familyWrongPassword), findsOneWidget);
     });
   });
 
   group('SignInScreen on the first run', () {
-    testWidgets('opens on creating an account and can be skipped', (
-      tester,
-    ) async {
+    testWidgets('can be skipped with Later', (tester) async {
       var done = 0;
       await tester.pumpWidget(_app(SignInScreen(onDone: (_) => done++)));
-      expect(find.text(l10nEn.familySignUpHeading), findsOneWidget);
       expect(find.text(l10nEn.familyFirstRunNote), findsOneWidget);
       expect(find.byType(BackButton), findsNothing);
       await tester.tap(find.text(l10nEn.familyLaterAction));
       await tester.pump();
       expect(done, 1);
-      expect(account.signedUp, isEmpty);
+      expect(account.entered, isEmpty);
     });
 
-    testWidgets('a new account moves on to onboarding', (tester) async {
+    testWidgets('signing in moves on to onboarding', (tester) async {
       var done = 0;
       await tester.pumpWidget(_app(SignInScreen(onDone: (_) => done++)));
-      await tester.enterText(find.byType(TextField).at(0), 'anna');
-      await tester.enterText(find.byType(TextField).at(1), 'secret1');
+      await tester.enterText(find.byType(TextField).at(0), 'Катя');
       await tester.tap(find.byType(FilledButton));
       await tester.pump();
-      expect(account.signedUp, ['anna']);
+      expect(account.entered, ['Катя']);
       expect(done, 1);
     });
   });
 
-  group('AccountRepository logins', () {
-    test('a login maps to one address whatever its case', () {
-      expect(
-        AccountRepository.emailForLogin(' Anna '),
-        'anna@${AccountRepository.loginDomain}',
-      );
+  group('AccountRepository names', () {
+    test('a name maps to one address whatever its case and spaces', () {
+      final email = AccountRepository.emailForName(' Катя ');
+      expect(email, AccountRepository.emailForName('катя'));
+      expect(email, endsWith('@${AccountRepository.loginDomain}'));
+      final local = email.split('@').first;
+      expect(local.length, lessThanOrEqualTo(64));
+      expect(RegExp(r'^[a-z0-9-]+$').hasMatch(local), isTrue);
     });
 
-    test('the address of a login account shows as the login', () {
-      expect(
-        AccountRepository.displayName(AccountRepository.emailForLogin('anna')),
-        'anna',
-      );
+    test('the address of a name account shows as the name', () {
+      for (final name in ['катя', 'anna', 'мама 2', 'ёжик-😀']) {
+        expect(
+          AccountRepository.displayName(AccountRepository.emailForName(name)),
+          name,
+        );
+      }
       expect(AccountRepository.displayName('anna@gmail.com'), 'anna@gmail.com');
     });
 
-    test('only safe characters make a login', () {
-      expect(AccountRepository.isValidLogin('anna.k-2_x'), isTrue);
-      expect(AccountRepository.isValidLogin('an'), isFalse);
-      expect(AccountRepository.isValidLogin('.anna'), isFalse);
-      expect(AccountRepository.isValidLogin('анна'), isFalse);
-      expect(AccountRepository.isValidLogin('an na'), isFalse);
+    test('the longest allowed name still fits an address', () {
+      final name = 'я' * AccountRepository.maxNameLength;
+      expect(AccountRepository.isNameTooLong(name), isFalse);
+      final local = AccountRepository.emailForName(name).split('@').first;
+      expect(local.length, lessThanOrEqualTo(64));
+      expect(
+        AccountRepository.isNameTooLong(
+          'я' * (AccountRepository.maxNameLength + 1),
+        ),
+        isTrue,
+      );
+    });
+
+    test('any password, even an empty one, is long enough for Supabase', () {
+      expect(AccountRepository.passwordFor('').length, greaterThanOrEqualTo(6));
     });
   });
 }

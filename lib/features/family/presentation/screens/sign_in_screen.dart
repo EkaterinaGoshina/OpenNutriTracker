@@ -6,13 +6,13 @@ import 'package:opennutritracker/features/family/presentation/widgets/family_wid
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Signs in with a login and a password. The same
-/// screen creates an account. Pops `true` once signed in, so the screen that
-/// asked can go on with what it was doing.
+/// Signs in with a name and an optional password; a name no one has yet
+/// makes a new account (AccountRepository.enter). Pops `true` once signed
+/// in, so the screen that asked can go on with what it was doing.
 ///
-/// With [onDone] it is the first-run step instead: it opens on creating an
-/// account, offers "Later", has no back arrow, and calls [onDone] rather than
-/// popping, whether the person signed in or skipped.
+/// With [onDone] it is the first-run step instead: it offers "Later", has no
+/// back arrow, and calls [onDone] rather than popping, whether the person
+/// signed in or skipped.
 class SignInScreen extends StatefulWidget {
   final void Function(BuildContext context)? onDone;
 
@@ -24,34 +24,32 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _account = locator<AccountRepository>();
-  final _login = TextEditingController();
+  final _name = TextEditingController();
   final _password = TextEditingController();
 
   bool get _firstRun => widget.onDone != null;
 
-  late bool _creating = _firstRun;
   bool _busy = false;
-  bool _showPassword = false;
+  // Visible by default: the password only tells family members apart.
+  bool _showPassword = true;
   String? _error;
 
   @override
   void dispose() {
-    _login.dispose();
+    _name.dispose();
     _password.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     final s = S.of(context);
-    if (!AccountRepository.isValidLogin(_login.text)) {
-      setState(() => _error = s.familyLoginInvalid);
+    if (AccountRepository.isNameEmpty(_name.text)) {
+      setState(() => _error = s.familyNameEmpty);
       return;
     }
-    if (_password.text.length < AccountRepository.minPasswordLength) {
+    if (AccountRepository.isNameTooLong(_name.text)) {
       setState(
-        () => _error = s.familyPasswordTooShort(
-          AccountRepository.minPasswordLength,
-        ),
+        () => _error = s.familyNameTooLong(AccountRepository.maxNameLength),
       );
       return;
     }
@@ -60,11 +58,7 @@ class _SignInScreenState extends State<SignInScreen> {
       _error = null;
     });
     try {
-      if (_creating) {
-        await _account.signUp(_login.text, _password.text);
-      } else {
-        await _account.signIn(_login.text, _password.text);
-      }
+      await _account.enter(_name.text, _password.text);
       if (mounted) _finish(signedIn: true);
     } catch (e) {
       if (!mounted) return;
@@ -77,24 +71,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
   String _errorText(S s, Object error) {
     if (error is! AuthException) return familyErrorText(s, error);
-    switch (error.code) {
-      case 'invalid_credentials':
-        return s.familyWrongCredentials;
-      case 'user_already_exists':
-      case 'email_exists':
-        return s.familyLoginTaken;
-      case 'weak_password':
-        return s.familyPasswordTooShort(AccountRepository.minPasswordLength);
-      case 'signup_disabled':
-      case 'email_provider_disabled':
-      case 'email_not_confirmed':
-        return s.familySignUpUnavailable;
-    }
-    // Before error codes, a wrong password came back as a bare 400.
-    if (error.statusCode == '400' && !_creating) {
-      return s.familyWrongCredentials;
-    }
-    return familyErrorText(s, error);
+    return switch (error.code) {
+      'wrong_password' => s.familyWrongPassword,
+      'signup_disabled' ||
+      'email_provider_disabled' ||
+      'email_not_confirmed' => s.familySignUpUnavailable,
+      _ => familyErrorText(s, error),
+    };
   }
 
   void _finish({required bool signedIn}) {
@@ -105,11 +88,6 @@ class _SignInScreenState extends State<SignInScreen> {
       Navigator.of(context).pop(signedIn);
     }
   }
-
-  void _toggleMode() => setState(() {
-    _creating = !_creating;
-    _error = null;
-  });
 
   void _clearError() {
     if (_error != null) setState(() => _error = null);
@@ -123,7 +101,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: !_firstRun,
-        title: Text(_creating ? s.familySignUpTitle : s.familySignInTitle),
+        title: Text(s.familySignInTitle),
         actions: [
           if (_firstRun)
             Semantics(
@@ -138,112 +116,78 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(Dimens.spacing20),
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  _creating ? s.familySignUpHeading : s.familySignInHeading,
-                  style: text.headlineSmall,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(s.familySignInHeading, style: text.headlineSmall),
+              const SizedBox(height: Dimens.spacing8),
+              Text(
+                s.familySignInBody,
+                style: text.bodyMedium?.copyWith(color: muted),
+              ),
+              if (_firstRun) ...[
                 const SizedBox(height: Dimens.spacing8),
                 Text(
-                  _creating ? s.familySignUpBody : s.familySignInBody,
+                  s.familyFirstRunNote,
                   style: text.bodyMedium?.copyWith(color: muted),
                 ),
-                if (_firstRun) ...[
-                  const SizedBox(height: Dimens.spacing8),
-                  Text(
-                    s.familyFirstRunNote,
-                    style: text.bodyMedium?.copyWith(color: muted),
-                  ),
-                ],
-                const SizedBox(height: Dimens.spacing24),
-                Semantics(
-                  identifier: 'family-sign-in-login',
-                  child: TextField(
-                    controller: _login,
-                    enabled: !_busy,
-                    autofocus: true,
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    textCapitalization: TextCapitalization.none,
-                    keyboardType: TextInputType.visiblePassword,
-                    autofillHints: [
-                      _creating
-                          ? AutofillHints.newUsername
-                          : AutofillHints.username,
-                    ],
-                    textInputAction: TextInputAction.next,
-                    onChanged: (_) => _clearError(),
-                    decoration: InputDecoration(
-                      labelText: s.familyLoginLabel,
-                      helperText: _creating ? s.familyLoginHint : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: Dimens.spacing12),
-                Semantics(
-                  identifier: 'family-sign-in-password',
-                  child: TextField(
-                    controller: _password,
-                    enabled: !_busy,
-                    obscureText: !_showPassword,
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    autofillHints: [
-                      _creating
-                          ? AutofillHints.newPassword
-                          : AutofillHints.password,
-                    ],
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submit(),
-                    onChanged: (_) => _clearError(),
-                    decoration: InputDecoration(
-                      labelText: s.familyPasswordLabel,
-                      suffixIcon: IconButton(
-                        tooltip: _showPassword
-                            ? s.familyHidePasswordTooltip
-                            : s.familyShowPasswordTooltip,
-                        icon: Icon(
-                          _showPassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
-                        onPressed: () =>
-                            setState(() => _showPassword = !_showPassword),
-                      ),
-                    ),
-                  ),
-                ),
-                if (_error != null) _errorLine(context),
-                const SizedBox(height: Dimens.spacing16),
-                Semantics(
-                  identifier: 'family-sign-in-submit',
-                  child: FilledButton(
-                    onPressed: _busy ? null : _submit,
-                    child: BusyLabel(
-                      busy: _busy,
-                      label: _creating
-                          ? s.familySignUpAction
-                          : s.familySignInAction,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: Dimens.spacing8),
-                Semantics(
-                  identifier: 'family-sign-in-toggle-mode',
-                  child: TextButton(
-                    onPressed: _busy ? null : _toggleMode,
-                    child: Text(
-                      _creating
-                          ? s.familyToSignInAction
-                          : s.familyToSignUpAction,
-                    ),
-                  ),
-                ),
               ],
-            ),
+              const SizedBox(height: Dimens.spacing24),
+              Semantics(
+                identifier: 'family-sign-in-name',
+                child: TextField(
+                  controller: _name,
+                  enabled: !_busy,
+                  autofocus: true,
+                  autocorrect: false,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (_) => _clearError(),
+                  decoration: InputDecoration(
+                    labelText: s.familyPersonNameLabel,
+                  ),
+                ),
+              ),
+              const SizedBox(height: Dimens.spacing12),
+              Semantics(
+                identifier: 'family-sign-in-password',
+                child: TextField(
+                  controller: _password,
+                  enabled: !_busy,
+                  obscureText: !_showPassword,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _submit(),
+                  onChanged: (_) => _clearError(),
+                  decoration: InputDecoration(
+                    labelText: s.familyPasswordLabel,
+                    helperText: s.familyPasswordHint,
+                    suffixIcon: IconButton(
+                      tooltip: _showPassword
+                          ? s.familyHidePasswordTooltip
+                          : s.familyShowPasswordTooltip,
+                      icon: Icon(
+                        _showPassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
+                      onPressed: () =>
+                          setState(() => _showPassword = !_showPassword),
+                    ),
+                  ),
+                ),
+              ),
+              if (_error != null) _errorLine(context),
+              const SizedBox(height: Dimens.spacing16),
+              Semantics(
+                identifier: 'family-sign-in-submit',
+                child: FilledButton(
+                  onPressed: _busy ? null : _submit,
+                  child: BusyLabel(busy: _busy, label: s.familySignInAction),
+                ),
+              ),
+            ],
           ),
         ),
       ),
