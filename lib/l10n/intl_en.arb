@@ -1493,8 +1493,6 @@
   "familySignInTitle": "Sign in",
   "familySignInHeading": "Sign in to your account",
   "familySignInBody": "Your login and password. No email needed.",
-  "familyGoogleAction": "Continue with Google",
-  "familyOrDivider": "or",
   "familySignUpTitle": "New account",
   "familySignUpHeading": "Create an account",
   "familySignUpBody": "Choose a login and a password. Write them down: without an email the password can't be reset from the app.",

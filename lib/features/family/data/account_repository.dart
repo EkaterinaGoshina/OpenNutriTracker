@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Sign-in to our Supabase project. An account exists only for the family:
@@ -33,10 +32,6 @@ class AccountRepository {
   Stream<User?> get userChanges =>
       _auth.onAuthStateChange.map((state) => state.session?.user);
 
-  /// Google returns to the page through a browser redirect, which only the
-  /// web build handles so far; the mobile apps would need a deep link.
-  bool get supportsGoogle => kIsWeb;
-
   /// Logins are case-insensitive: `Katya` and `katya` are one account.
   static String normalizeLogin(String login) => login.trim().toLowerCase();
 
@@ -52,8 +47,8 @@ class AccountRepository {
   static String emailForLogin(String login) =>
       '${normalizeLogin(login)}@$loginDomain';
 
-  /// What to show as "signed in as": the login for a login account, the
-  /// address for a Google one.
+  /// What to show as "signed in as": the login, or the whole address for an
+  /// account made some other way.
   static String displayName(String email) {
     const suffix = '@$loginDomain';
     return email.endsWith(suffix)
@@ -87,11 +82,6 @@ class AccountRepository {
     }
     return response.user;
   }
-
-  /// Leaves the page for Google's sign-in and comes back to [returnTo], so a
-  /// `?join=` code in it survives the round trip.
-  Future<void> signInWithGoogle({required Uri returnTo}) => _auth
-      .signInWithOAuth(OAuthProvider.google, redirectTo: returnTo.toString());
 
   /// Signs out on this device only; other devices keep their sessions.
   Future<void> signOut() => _auth.signOut(scope: SignOutScope.local);

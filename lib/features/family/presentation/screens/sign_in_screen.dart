@@ -6,7 +6,7 @@ import 'package:opennutritracker/features/family/presentation/widgets/family_wid
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Signs in with a login and a password, or with Google on the web. The same
+/// Signs in with a login and a password. The same
 /// screen creates an account. Pops `true` once signed in, so the screen that
 /// asked can go on with what it was doing.
 ///
@@ -95,16 +95,6 @@ class _SignInScreenState extends State<SignInScreen> {
       return s.familyWrongCredentials;
     }
     return familyErrorText(s, error);
-  }
-
-  Future<void> _google() async {
-    final s = S.of(context);
-    setState(() => _error = null);
-    try {
-      await _account.signInWithGoogle(returnTo: Uri.base);
-    } catch (e) {
-      if (mounted) setState(() => _error = familyErrorText(s, e));
-    }
   }
 
   void _finish({required bool signedIn}) {
@@ -252,33 +242,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                 ),
-                if (_account.supportsGoogle) ...[
-                  const SizedBox(height: Dimens.spacing8),
-                  Row(
-                    children: [
-                      const Expanded(child: Divider()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Dimens.spacing12,
-                        ),
-                        child: Text(
-                          s.familyOrDivider,
-                          style: text.bodySmall?.copyWith(color: muted),
-                        ),
-                      ),
-                      const Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: Dimens.spacing16),
-                  Semantics(
-                    identifier: 'family-sign-in-google',
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.account_circle_outlined),
-                      label: Text(s.familyGoogleAction),
-                      onPressed: _busy ? null : _google,
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

@@ -33,9 +33,6 @@ class _FakeAccount implements AccountRepository {
   AuthException? failure;
 
   @override
-  bool get supportsGoogle => false;
-
-  @override
   Future<User?> signIn(String login, String password) async {
     signedIn.add(login);
     if (failure != null) throw failure!;

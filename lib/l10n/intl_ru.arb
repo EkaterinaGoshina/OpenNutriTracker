@@ -1729,8 +1729,6 @@
   "familySignInTitle": "Вход",
   "familySignInHeading": "Войдите в аккаунт",
   "familySignInBody": "Логин и пароль. Почта не нужна.",
-  "familyGoogleAction": "Продолжить с Google",
-  "familyOrDivider": "или",
   "familySignUpTitle": "Новый аккаунт",
   "familySignUpHeading": "Создайте аккаунт",
   "familySignUpBody": "Придумайте логин и пароль. Запишите их: без почты пароль не восстановить из приложения.",
