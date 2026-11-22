@@ -5,6 +5,7 @@ import 'package:opennutritracker/core/presentation/widgets/empty_hint.dart';
 import 'package:opennutritracker/core/presentation/widgets/error_dialog.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/features/family/data/account_repository.dart';
 import 'package:opennutritracker/features/family/domain/entity/family_entity.dart';
 import 'package:opennutritracker/features/family/presentation/bloc/family_cubit.dart';
 import 'package:opennutritracker/features/family/presentation/screens/create_family_screen.dart';
@@ -244,7 +245,9 @@ class _FamilyScreenState extends State<FamilyScreen> {
             const SizedBox(height: Dimens.spacing16),
             Text(
               state.signedIn && state.email != null
-                  ? s.familySignedInAs(state.email!)
+                  ? s.familySignedInAs(
+                      AccountRepository.displayName(state.email!),
+                    )
                   : s.familyAccountNote,
               textAlign: TextAlign.center,
               style: Theme.of(

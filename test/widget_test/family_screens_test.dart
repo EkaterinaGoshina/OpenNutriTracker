@@ -8,6 +8,7 @@ import 'package:opennutritracker/features/family/domain/family_exception.dart';
 import 'package:opennutritracker/features/family/presentation/screens/join_family_screen.dart';
 import 'package:opennutritracker/features/family/presentation/screens/sign_in_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../helpers/test_l10n.dart';
 
@@ -27,13 +28,26 @@ class _FakeFamilies implements FamilyRepository {
 }
 
 class _FakeAccount implements AccountRepository {
-  final sentTo = <String>[];
+  final signedIn = <String>[];
+  final signedUp = <String>[];
+  AuthException? failure;
 
   @override
   bool get supportsGoogle => false;
 
   @override
-  Future<void> sendEmailCode(String email) async => sentTo.add(email);
+  Future<User?> signIn(String login, String password) async {
+    signedIn.add(login);
+    if (failure != null) throw failure!;
+    return null;
+  }
+
+  @override
+  Future<User?> signUp(String login, String password) async {
+    signedUp.add(login);
+    if (failure != null) throw failure!;
+    return null;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -106,32 +120,93 @@ void main() {
   });
 
   group('SignInScreen', () {
-    testWidgets('an address that is not one is refused without a request', (
+    Future<void> fill(
+      WidgetTester tester,
+      String login,
+      String password,
+    ) async {
+      await tester.enterText(find.byType(TextField).at(0), login);
+      await tester.enterText(find.byType(TextField).at(1), password);
+      await tester.tap(find.byType(FilledButton));
+      await tester.pump();
+    }
+
+    testWidgets('a login with an address in it is refused without a request', (
       tester,
     ) async {
       await tester.pumpWidget(_app(const SignInScreen()));
-      await tester.enterText(find.byType(TextField), 'anna');
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-      expect(find.text(l10nEn.familyEmailInvalid), findsOneWidget);
-      expect(account.sentTo, isEmpty);
+      await fill(tester, 'anna@mail.com', 'secret1');
+      expect(find.text(l10nEn.familyLoginInvalid), findsOneWidget);
+      expect(account.signedIn, isEmpty);
     });
 
-    testWidgets('after the code is sent, the code step shows the address', (
+    testWidgets('a short password is refused without a request', (
       tester,
     ) async {
       await tester.pumpWidget(_app(const SignInScreen()));
-      await tester.enterText(find.byType(TextField), 'anna@mail.com');
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-      expect(account.sentTo, ['anna@mail.com']);
+      await fill(tester, 'anna', '123');
       expect(
-        find.text(l10nEn.familyCodeSentTo('anna@mail.com')),
+        find.text(
+          l10nEn.familyPasswordTooShort(AccountRepository.minPasswordLength),
+        ),
         findsOneWidget,
       );
-      expect(find.text(l10nEn.familyResendIn('1:00')), findsOneWidget);
-      // Let the resend timer finish so the test leaves nothing running.
-      await tester.pumpWidget(const SizedBox());
+      expect(account.signedIn, isEmpty);
+    });
+
+    testWidgets('a wrong password says so', (tester) async {
+      account.failure = const AuthException(
+        'Invalid login credentials',
+        statusCode: '400',
+        code: 'invalid_credentials',
+      );
+      await tester.pumpWidget(_app(const SignInScreen()));
+      await fill(tester, 'anna', 'secret1');
+      expect(account.signedIn, ['anna']);
+      expect(find.text(l10nEn.familyWrongCredentials), findsOneWidget);
+    });
+
+    testWidgets('creating an account with a taken login says so', (
+      tester,
+    ) async {
+      account.failure = const AuthException(
+        'User already registered',
+        statusCode: '422',
+        code: 'user_already_exists',
+      );
+      await tester.pumpWidget(_app(const SignInScreen()));
+      await tester.tap(find.text(l10nEn.familyToSignUpAction));
+      await tester.pump();
+      expect(find.text(l10nEn.familySignUpHeading), findsOneWidget);
+      await fill(tester, 'Anna', 'secret1');
+      expect(account.signedUp, ['Anna']);
+      expect(account.signedIn, isEmpty);
+      expect(find.text(l10nEn.familyLoginTaken), findsOneWidget);
+    });
+  });
+
+  group('AccountRepository logins', () {
+    test('a login maps to one address whatever its case', () {
+      expect(
+        AccountRepository.emailForLogin(' Anna '),
+        'anna@${AccountRepository.loginDomain}',
+      );
+    });
+
+    test('the address of a login account shows as the login', () {
+      expect(
+        AccountRepository.displayName(AccountRepository.emailForLogin('anna')),
+        'anna',
+      );
+      expect(AccountRepository.displayName('anna@gmail.com'), 'anna@gmail.com');
+    });
+
+    test('only safe characters make a login', () {
+      expect(AccountRepository.isValidLogin('anna.k-2_x'), isTrue);
+      expect(AccountRepository.isValidLogin('an'), isFalse);
+      expect(AccountRepository.isValidLogin('.anna'), isFalse);
+      expect(AccountRepository.isValidLogin('анна'), isFalse);
+      expect(AccountRepository.isValidLogin('an na'), isFalse);
     });
   });
 }
