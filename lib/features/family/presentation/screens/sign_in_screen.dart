@@ -9,8 +9,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Signs in with a login and a password, or with Google on the web. The same
 /// screen creates an account. Pops `true` once signed in, so the screen that
 /// asked can go on with what it was doing.
+///
+/// With [onDone] it is the first-run step instead: it opens on creating an
+/// account, offers "Later", has no back arrow, and calls [onDone] rather than
+/// popping, whether the person signed in or skipped.
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  final void Function(BuildContext context)? onDone;
+
+  const SignInScreen({super.key, this.onDone});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -21,7 +27,9 @@ class _SignInScreenState extends State<SignInScreen> {
   final _login = TextEditingController();
   final _password = TextEditingController();
 
-  bool _creating = false;
+  bool get _firstRun => widget.onDone != null;
+
+  late bool _creating = _firstRun;
   bool _busy = false;
   bool _showPassword = false;
   String? _error;
@@ -57,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
       } else {
         await _account.signIn(_login.text, _password.text);
       }
-      if (mounted) Navigator.of(context).pop(true);
+      if (mounted) _finish(signedIn: true);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -99,6 +107,15 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  void _finish({required bool signedIn}) {
+    final onDone = widget.onDone;
+    if (onDone != null) {
+      onDone(context);
+    } else {
+      Navigator.of(context).pop(signedIn);
+    }
+  }
+
   void _toggleMode() => setState(() {
     _creating = !_creating;
     _error = null;
@@ -115,7 +132,18 @@ class _SignInScreenState extends State<SignInScreen> {
     final muted = paletteOf(context).textMuted;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: !_firstRun,
         title: Text(_creating ? s.familySignUpTitle : s.familySignInTitle),
+        actions: [
+          if (_firstRun)
+            Semantics(
+              identifier: 'family-sign-in-later',
+              child: TextButton(
+                onPressed: _busy ? null : () => _finish(signedIn: false),
+                child: Text(s.familyLaterAction),
+              ),
+            ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -133,6 +161,13 @@ class _SignInScreenState extends State<SignInScreen> {
                   _creating ? s.familySignUpBody : s.familySignInBody,
                   style: text.bodyMedium?.copyWith(color: muted),
                 ),
+                if (_firstRun) ...[
+                  const SizedBox(height: Dimens.spacing8),
+                  Text(
+                    s.familyFirstRunNote,
+                    style: text.bodyMedium?.copyWith(color: muted),
+                  ),
+                ],
                 const SizedBox(height: Dimens.spacing24),
                 Semantics(
                   identifier: 'family-sign-in-login',

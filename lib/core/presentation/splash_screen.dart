@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:opennutritracker/features/family/data/account_repository.dart';
+import 'package:opennutritracker/features/family/presentation/screens/sign_in_screen.dart';
 
 /// First screen shown on launch: the OpenNutriTracker logo with the spoon
 /// making a single accelerating-then-settling spin, after which it routes on
-/// to the main screen (returning user) or onboarding (first run).
+/// to the main screen (returning user) or onboarding (first run). On the
+/// first run the account screen comes before onboarding, with a way to skip.
 ///
 /// The native launch screen (Android `launch_background`, iOS
 /// `LaunchScreen.storyboard`) paints the same canvas colour behind the Flutter
@@ -41,16 +45,23 @@ class _SplashScreenState extends State<SplashScreen>
     // Accelerate in, then decelerate to a stop — mirrors the design mock's
     // cubic-bezier easing (0.45, 0, 0.12, 1). A single full turn (turns: 0 → 1)
     // leaves the spoon back in its original upright position.
-    _spin = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: _controller, curve: const Cubic(0.45, 0.0, 0.12, 1.0)));
+    _spin = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Cubic(0.45, 0.0, 0.12, 1.0),
+      ),
+    );
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) _goNext();
     });
 
     // Honour the OS "reduce motion" setting: skip the spin and move on.
-    final reduceMotion = WidgetsBinding.instance.platformDispatcher
-        .accessibilityFeatures.disableAnimations;
+    final reduceMotion = WidgetsBinding
+        .instance
+        .platformDispatcher
+        .accessibilityFeatures
+        .disableAnimations;
     if (reduceMotion) {
       _startTimer = Timer(const Duration(milliseconds: 600), _goNext);
     } else {
@@ -64,9 +75,28 @@ class _SplashScreenState extends State<SplashScreen>
   void _goNext() {
     if (_navigated || !mounted) return;
     _navigated = true;
-    Navigator.of(context).pushReplacementNamed(widget.userInitialized
-        ? NavigationOptions.mainRoute
-        : NavigationOptions.onboardingRoute);
+    final navigator = Navigator.of(context);
+    if (widget.userInitialized) {
+      navigator.pushReplacementNamed(NavigationOptions.mainRoute);
+      return;
+    }
+    // First run: offer the account before onboarding, once. Builds without
+    // our Supabase project have no accounts, and a session restored from
+    // an earlier install needs no second sign-in.
+    final hasAccounts = locator.isRegistered<AccountRepository>();
+    if (hasAccounts && locator<AccountRepository>().currentUser == null) {
+      navigator.pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => SignInScreen(
+            onDone: (context) => Navigator.of(
+              context,
+            ).pushReplacementNamed(NavigationOptions.onboardingRoute),
+          ),
+        ),
+      );
+      return;
+    }
+    navigator.pushReplacementNamed(NavigationOptions.onboardingRoute);
   }
 
   @override
@@ -92,14 +122,19 @@ class _SplashScreenState extends State<SplashScreen>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              SvgPicture.asset('assets/icon/ont_splash_rings.svg',
-                  width: _logoSize, height: _logoSize),
+              SvgPicture.asset(
+                'assets/icon/ont_splash_rings.svg',
+                width: _logoSize,
+                height: _logoSize,
+              ),
               RotationTransition(
                 turns: _spin,
-                child: SvgPicture.asset('assets/icon/ont_splash_spoon.svg',
-                    width: _logoSize,
-                    height: _logoSize,
-                    theme: SvgTheme(currentColor: spoonColor)),
+                child: SvgPicture.asset(
+                  'assets/icon/ont_splash_spoon.svg',
+                  width: _logoSize,
+                  height: _logoSize,
+                  theme: SvgTheme(currentColor: spoonColor),
+                ),
               ),
             ],
           ),

@@ -1748,6 +1748,8 @@
   "familyWrongCredentials": "Неверный логин или пароль.",
   "familyLoginTaken": "Этот логин занят. Придумайте другой.",
   "familySignUpUnavailable": "Сервер сейчас не принимает новые аккаунты. Попробуйте позже.",
+  "familyLaterAction": "Позже",
+  "familyFirstRunNote": "Аккаунт нужен для семьи: общие блюда и порции. Можно пропустить и войти позже: Профиль → «Семья».",
   "familyNetworkError": "Не удалось связаться с сервером. Проверьте сеть и повторите.",
   "familyCreateTitle": "Новая семья",
   "familyCreateHeading": "Как назвать семью?",

@@ -185,6 +185,33 @@ void main() {
     });
   });
 
+  group('SignInScreen on the first run', () {
+    testWidgets('opens on creating an account and can be skipped', (
+      tester,
+    ) async {
+      var done = 0;
+      await tester.pumpWidget(_app(SignInScreen(onDone: (_) => done++)));
+      expect(find.text(l10nEn.familySignUpHeading), findsOneWidget);
+      expect(find.text(l10nEn.familyFirstRunNote), findsOneWidget);
+      expect(find.byType(BackButton), findsNothing);
+      await tester.tap(find.text(l10nEn.familyLaterAction));
+      await tester.pump();
+      expect(done, 1);
+      expect(account.signedUp, isEmpty);
+    });
+
+    testWidgets('a new account moves on to onboarding', (tester) async {
+      var done = 0;
+      await tester.pumpWidget(_app(SignInScreen(onDone: (_) => done++)));
+      await tester.enterText(find.byType(TextField).at(0), 'anna');
+      await tester.enterText(find.byType(TextField).at(1), 'secret1');
+      await tester.tap(find.byType(FilledButton));
+      await tester.pump();
+      expect(account.signedUp, ['anna']);
+      expect(done, 1);
+    });
+  });
+
   group('AccountRepository logins', () {
     test('a login maps to one address whatever its case', () {
       expect(

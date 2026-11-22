@@ -1513,6 +1513,8 @@
   "familyWrongCredentials": "Wrong login or password.",
   "familyLoginTaken": "That login is taken. Choose another one.",
   "familySignUpUnavailable": "The server doesn't accept new accounts right now. Try again later.",
+  "familyLaterAction": "Later",
+  "familyFirstRunNote": "The account is for the family: shared dishes and portions. You can skip it and sign in later under Profile → Family.",
   "familyNetworkError": "Couldn't reach the server. Check your connection and try again.",
   "familyCreateTitle": "New family",
   "familyCreateHeading": "What should we call the family?",
