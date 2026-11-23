@@ -168,9 +168,14 @@ void main() {
   }
 
   Future<void> load(HomeBloc bloc) async {
+    final firstLoad = bloc.state is! HomeLoadedState;
     bloc.add(const LoadItemsEvent());
-    await bloc.stream.firstWhere((state) => state is HomeLoadedState);
-    await pumpEventQueue();
+    // A reload with the same figures emits no new state (the loaded page
+    // stays up), so only the first load has a state to wait for.
+    if (firstLoad) {
+      await bloc.stream.firstWhere((state) => state is HomeLoadedState);
+    }
+    await pumpEventQueue(times: 100);
   }
 
   test('a load that crosses the day boundary stamps the widget with the day '
@@ -215,6 +220,30 @@ void main() {
 
     await load(bloc);
     expect(store.written, hasLength(1), reason: 'the next load still writes');
+  });
+
+  test('the first load shows the loading state, a reload keeps the loaded '
+      'page on screen', () async {
+    final bloc = await home(_RecordingStore());
+    final seen = <HomeState>[];
+    final sub = bloc.stream.listen(seen.add);
+    addTearDown(sub.cancel);
+
+    await load(bloc);
+    expect(seen.first, isA<HomeLoadingState>());
+    expect(seen.last, isA<HomeLoadedState>());
+
+    // Same figures again, so Bloc may drop the identical state: wait for the
+    // event queue to drain rather than for a state that need not come.
+    seen.clear();
+    bloc.add(const LoadItemsEvent());
+    await pumpEventQueue(times: 50);
+    expect(
+      seen.whereType<HomeLoadingState>(),
+      isEmpty,
+      reason: 'a spinner here would replace the whole page on every reload',
+    );
+    expect(bloc.state, isA<HomeLoadedState>());
   });
 }
 

@@ -68,7 +68,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }) : _calorieWidgetStore = calorieWidgetStore ?? HomeWidgetCalorieStore(),
        super(HomeInitial()) {
     on<LoadItemsEvent>((event, emit) async {
-      emit(HomeLoadingState());
+      // Only the first load shows the spinner. A reload (after an edit, on
+      // resume, after a setting changed) keeps the loaded page on screen and
+      // swaps in the fresh figures: emitting the loading state there threw
+      // the whole page away, including the kitchen and the scroll position,
+      // and rebuilt it a moment later.
+      if (state is! HomeLoadedState) emit(HomeLoadingState());
       // A profile switch or delete-all may clear the widget while this
       // load is still reading; the store then drops what it read.
       final widgetGeneration = _calorieWidgetStore.generation;
