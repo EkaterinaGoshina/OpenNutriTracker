@@ -42,8 +42,12 @@ class AppCard extends StatelessWidget {
         color: color ?? palette.surface,
         borderRadius: radius,
         border: bordered ? Border.all(color: palette.border, width: Dimens.hairline) : null,
+        // A tight blur: the cost of a blurred shadow grows with its radius,
+        // and a card repaints (with its shadow) whenever anything inside it
+        // animates — the kcal counter, the progress bars. At 18 this made
+        // every such frame expensive for a shadow that is 8% opaque.
         boxShadow: [
-          BoxShadow(color: palette.shadow, blurRadius: 18, offset: const Offset(0, 6)),
+          BoxShadow(color: palette.shadow, blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       // A transparent Material directly below the colored decoration so any
