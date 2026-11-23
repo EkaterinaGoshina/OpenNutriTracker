@@ -31,6 +31,15 @@ class RecipeBuilderBloc
         clearImagePath: event.imagePath == null,
       ));
     });
+    on<UpdateCookedAtEvent>((event, emit) {
+      emit(state.copyWith(cookedAt: event.cookedAt));
+    });
+    on<UpdateExpiresAtEvent>((event, emit) {
+      emit(state.copyWith(
+        expiresAt: event.expiresAt,
+        clearExpiresAt: event.expiresAt == null,
+      ));
+    });
     on<AddIngredientEvent>(_onAddIngredient);
     on<UpdateIngredientEvent>(_onUpdateIngredient);
     on<RemoveIngredientEvent>(_onRemoveIngredient);
@@ -39,6 +48,10 @@ class RecipeBuilderBloc
     on<SaveRecipeEvent>(_onSave);
   }
 
+  static DateTime _today() {
+    final n = DateTime.now();
+    return DateTime(n.year, n.month, n.day);
+  }
 
   void _onInitialize(
     InitializeBuilderEvent event,
@@ -50,6 +63,7 @@ class RecipeBuilderBloc
       // (recipe_images/<id>.webp). The id is still kept on save below.
       emit(RecipeBuilderState.initial().copyWith(
         id: IdGenerator.getUniqueID(),
+        cookedAt: _today(),
       ));
     } else {
       final r = event.existing!;
@@ -82,6 +96,12 @@ class RecipeBuilderBloc
           // here. The user can attach a fresh photo to the new recipe.
           imagePath: isDuplicate ? null : r.imagePath,
           clearImagePath: isDuplicate ? true : (r.imagePath == null),
+          // A duplicate is a new cooking: today, and no old expiry. An
+          // existing dish keeps its dates as they were.
+          cookedAt:
+              isDuplicate ? _today() : r.cookedAt,
+          expiresAt: isDuplicate ? null : r.expiresAt,
+          clearExpiresAt: isDuplicate || r.expiresAt == null,
         ),
       );
       _recompute(emit);
@@ -242,6 +262,8 @@ class RecipeBuilderBloc
         servingsCount: state.servingsCount,
         tags: state.tags,
         imagePath: state.imagePath,
+        cookedAt: state.cookedAt,
+        expiresAt: state.expiresAt,
       );
       await _saveUseCase.save(
         recipe,

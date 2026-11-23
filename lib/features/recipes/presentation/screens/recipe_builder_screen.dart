@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/user_image_picker_tile.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
+import 'package:opennutritracker/core/utils/dish_shelf_life.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/features/recipes/presentation/bloc/recipe_builder_bloc.dart';
@@ -210,6 +211,62 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
                 },
               ),
               const SizedBox(height: Dimens.spacing12),
+              Semantics(
+                identifier: 'recipe-builder-cooked-on',
+                child: _DateField(
+                  label: S.of(context).recipeCookedOnLabel,
+                  value: state.cookedAt,
+                  border: fieldBorder,
+                  onTap: () => _pickDate(
+                    context,
+                    initial: state.cookedAt,
+                    onPicked: (d) => _bloc.add(UpdateCookedAtEvent(d)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: Dimens.spacing12),
+              Semantics(
+                identifier: 'recipe-builder-expires-on',
+                child: _DateField(
+                  label: S.of(context).recipeExpiresOnLabel,
+                  value: state.expiresAt,
+                  border: fieldBorder,
+                  helper: S.of(context).recipeExpiryHelper,
+                  onClear: state.expiresAt == null
+                      ? null
+                      : () => _bloc.add(const UpdateExpiresAtEvent(null)),
+                  onTap: () => _pickDate(
+                    context,
+                    initial: state.expiresAt ??
+                        DishShelfLife.suggestedExpiry(
+                          state.cookedAt ?? DateTime.now(),
+                        ),
+                    onPicked: (d) => _bloc.add(UpdateExpiresAtEvent(d)),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Semantics(
+                  identifier: 'recipe-builder-expires-suggest',
+                  child: TextButton.icon(
+                    onPressed: () => _bloc.add(
+                      UpdateExpiresAtEvent(
+                        DishShelfLife.suggestedExpiry(
+                          state.cookedAt ?? DateTime.now(),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.event_available_outlined),
+                    label: Text(
+                      S.of(context).recipeExpirySuggestButton(
+                            DishShelfLife.suggestedDays,
+                          ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: Dimens.spacing12),
               TextField(
                 controller: _tagsController,
                 decoration: InputDecoration(
@@ -332,6 +389,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
         state.ingredients.isNotEmpty ||
         state.servingsCount != null ||
         state.tags.isNotEmpty ||
+        state.expiresAt != null ||
         state.imagePath != null;
   }
 
@@ -354,6 +412,21 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _pickDate(
+    BuildContext context, {
+    required DateTime? initial,
+    required ValueChanged<DateTime> onPicked,
+  }) async {
+    final start = initial ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: start,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) onPicked(picked);
   }
 
   Future<void> _onAddIngredient(BuildContext context) async {
@@ -444,4 +517,51 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
     );
   }
 
+}
+
+/// A read-only field that shows a date and opens a picker when tapped.
+class _DateField extends StatelessWidget {
+  final String label;
+  final DateTime? value;
+  final InputBorder border;
+  final String? helper;
+  final VoidCallback onTap;
+  final VoidCallback? onClear;
+
+  const _DateField({
+    required this.label,
+    required this.value,
+    required this.border,
+    required this.onTap,
+    this.helper,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final text = value == null
+        ? S.of(context).recipeExpiresNotSet
+        : MaterialLocalizations.of(context).formatMediumDate(value!);
+    return InkWell(
+      borderRadius: Dimens.borderRadiusS,
+      onTap: onTap,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          helperText: helper,
+          helperMaxLines: 3,
+          border: border,
+          enabledBorder: border,
+          suffixIcon: onClear == null
+              ? const Icon(Icons.calendar_today_outlined)
+              : IconButton(
+                  tooltip: S.of(context).recipeExpiresClearTooltip,
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: onClear,
+                ),
+        ),
+        child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
+    );
+  }
 }

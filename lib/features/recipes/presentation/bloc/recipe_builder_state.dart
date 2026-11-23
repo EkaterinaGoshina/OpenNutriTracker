@@ -18,6 +18,8 @@ class RecipeBuilderState extends Equatable {
   final MealNutrimentsEntity aggregatedNutrimentsPer100;
   final List<String> tags;
   final String? imagePath;
+  final DateTime? cookedAt;
+  final DateTime? expiresAt;
   final bool isExistingRecipe;
   final bool isSaving;
   final bool didSave;
@@ -35,6 +37,8 @@ class RecipeBuilderState extends Equatable {
     required this.aggregatedNutrimentsPer100,
     required this.tags,
     required this.imagePath,
+    required this.cookedAt,
+    required this.expiresAt,
     required this.isExistingRecipe,
     required this.isSaving,
     required this.didSave,
@@ -53,6 +57,8 @@ class RecipeBuilderState extends Equatable {
         aggregatedNutrimentsPer100: MealNutrimentsEntity.empty(),
         tags: const [],
         imagePath: null,
+        cookedAt: null,
+        expiresAt: null,
         isExistingRecipe: false,
         isSaving: false,
         didSave: false,
@@ -71,6 +77,8 @@ class RecipeBuilderState extends Equatable {
     MealNutrimentsEntity? aggregatedNutrimentsPer100,
     List<String>? tags,
     String? imagePath,
+    DateTime? cookedAt,
+    DateTime? expiresAt,
     bool? isExistingRecipe,
     bool? isSaving,
     bool? didSave,
@@ -79,6 +87,7 @@ class RecipeBuilderState extends Equatable {
     bool clearServingsCount = false,
     bool clearSaveError = false,
     bool clearImagePath = false,
+    bool clearExpiresAt = false,
   }) {
     return RecipeBuilderState(
       id: id ?? this.id,
@@ -94,6 +103,8 @@ class RecipeBuilderState extends Equatable {
           aggregatedNutrimentsPer100 ?? this.aggregatedNutrimentsPer100,
       tags: tags ?? this.tags,
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
+      cookedAt: cookedAt ?? this.cookedAt,
+      expiresAt: clearExpiresAt ? null : (expiresAt ?? this.expiresAt),
       isExistingRecipe: isExistingRecipe ?? this.isExistingRecipe,
       isSaving: isSaving ?? this.isSaving,
       didSave: didSave ?? this.didSave,
@@ -114,6 +125,8 @@ class RecipeBuilderState extends Equatable {
         aggregatedNutrimentsPer100,
         tags,
         imagePath,
+        cookedAt,
+        expiresAt,
         isExistingRecipe,
         isSaving,
         didSave,

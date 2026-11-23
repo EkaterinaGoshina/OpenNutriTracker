@@ -114,3 +114,20 @@ class UpdateImagePathEvent extends RecipeBuilderEvent {
   @override
   List<Object?> get props => [imagePath];
 }
+
+class UpdateCookedAtEvent extends RecipeBuilderEvent {
+  final DateTime cookedAt;
+  const UpdateCookedAtEvent(this.cookedAt);
+
+  @override
+  List<Object?> get props => [cookedAt];
+}
+
+/// Sets the "good until" day, or clears it when [expiresAt] is null.
+class UpdateExpiresAtEvent extends RecipeBuilderEvent {
+  final DateTime? expiresAt;
+  const UpdateExpiresAtEvent(this.expiresAt);
+
+  @override
+  List<Object?> get props => [expiresAt];
+}

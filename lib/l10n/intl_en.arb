@@ -1006,6 +1006,43 @@
   "recipeTotalWeightCalculatedHelper": "Calculated from ingredients. Liquids approximated as 1 ml ≈ 1 g.",
   "recipeTotalWeightManualHelper": "Entered manually, so changing ingredients won't change it.",
   "recipeTotalWeightLabel": "Total weight (g)",
+  "recipeCookedOnLabel": "Cooked on",
+  "recipeExpiresOnLabel": "Good until (optional)",
+  "recipeExpiresNotSet": "Not set",
+  "recipeExpiresClearTooltip": "Clear date",
+  "recipeExpirySuggestButton": "Suggest {days} days",
+  "@recipeExpirySuggestButton": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recipeExpiryHelper": "Cooked food usually keeps 3–4 days in the fridge (USDA). Set your own date if you know better.",
+  "kitchenDishCooked": "Cooked {date}",
+  "@kitchenDishCooked": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "kitchenDishGoodUntil": "Good until {date}",
+  "@kitchenDishGoodUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "kitchenDishExpired": "Expired {date}",
+  "@kitchenDishExpired": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "recipeTotalWeightUseIngredientTotalButton": "Use ingredient total",
   "recipesEmptyHint": "Build a meal from multiple ingredients and reuse it like any other food.",
   "recipesEmptyLabel": "No recipes yet",

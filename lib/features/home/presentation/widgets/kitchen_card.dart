@@ -5,11 +5,13 @@ import 'package:opennutritracker/core/domain/usecase/delete_recipe_usecase.dart'
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
+import 'package:opennutritracker/core/utils/dish_shelf_life.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/kitchen_eat_sheet.dart';
 import 'package:opennutritracker/features/recipes/presentation/bloc/recipes_bloc.dart';
 import 'package:opennutritracker/features/recipes/presentation/screens/recipe_detail_screen.dart';
+import 'package:opennutritracker/features/recipes/presentation/widgets/dish_dates_line.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 /// The home screen's kitchen: every dish the user cooks, with a way to make a
@@ -206,6 +208,8 @@ class _DishRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? AppPalette.dark : AppPalette.light;
     return InkWell(
       borderRadius: Dimens.borderRadiusM,
       onTap: onOpen,
@@ -214,13 +218,32 @@ class _DishRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                dish.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dish.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (dishDatesLine(context, dish) case final line?)
+                    Text(
+                      line,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: DishShelfLife.isExpired(
+                          dish.expiresAt,
+                          DateTime.now(),
+                        )
+                            ? Theme.of(context).colorScheme.error
+                            : palette.textMuted,
+                      ),
+                    ),
+                ],
               ),
             ),
             const SizedBox(width: Dimens.spacing8),

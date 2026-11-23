@@ -28,13 +28,15 @@ class RecipeDBOAdapter extends TypeAdapter<RecipeDBO> {
       servingsCount: (fields[8] as num?)?.toInt(),
       tags: (fields[9] as List?)?.cast<String>(),
       imagePath: fields[11] as String?,
+      cookedAt: fields[12] as DateTime?,
+      expiresAt: fields[13] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeDBO obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +58,11 @@ class RecipeDBOAdapter extends TypeAdapter<RecipeDBO> {
       ..writeByte(9)
       ..write(obj.tags)
       ..writeByte(11)
-      ..write(obj.imagePath);
+      ..write(obj.imagePath)
+      ..writeByte(12)
+      ..write(obj.cookedAt)
+      ..writeByte(13)
+      ..write(obj.expiresAt);
   }
 
   @override
@@ -90,6 +96,12 @@ RecipeDBO _$RecipeDBOFromJson(Map<String, dynamic> json) => RecipeDBO(
   servingsCount: (json['servingsCount'] as num?)?.toInt(),
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
   imagePath: json['imagePath'] as String?,
+  cookedAt: json['cookedAt'] == null
+      ? null
+      : DateTime.parse(json['cookedAt'] as String),
+  expiresAt: json['expiresAt'] == null
+      ? null
+      : DateTime.parse(json['expiresAt'] as String),
 );
 
 Map<String, dynamic> _$RecipeDBOToJson(RecipeDBO instance) => <String, dynamic>{
@@ -104,4 +116,6 @@ Map<String, dynamic> _$RecipeDBOToJson(RecipeDBO instance) => <String, dynamic>{
   'servingsCount': instance.servingsCount,
   'tags': instance.tags,
   'imagePath': instance.imagePath,
+  'cookedAt': instance.cookedAt?.toIso8601String(),
+  'expiresAt': instance.expiresAt?.toIso8601String(),
 };

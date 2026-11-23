@@ -26,6 +26,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | AI: описать еду текстом или фото | ✅ | `features/add_meal`, [ai-architecture.md](ai-architecture.md) |
 | Свои продукты, избранное | ✅ | `features/add_meal`, `features/recipes` |
 | Блюда (рецепты) из ингредиентов, вес или порции | ✅ | `features/recipes`, `core/domain/usecase/compute_recipe_nutrition_usecase.dart` |
+| Даты блюда: «приготовлено» (по умолчанию сегодня) и необязательное «годно до». Из интернета срок не подтягивается: источника для конкретного блюда нет, поэтому кнопка «Подставить 3 дня» берёт общее правило для готовой еды в холодильнике (USDA: 3–4 дня), а точную дату вводит пользователь. В «Кухне» и на экране блюда под названием строка «Годно до …», красная, когда срок прошёл. У дубликата блюда дата сегодня, срока нет | ✅ fork | `core/utils/dish_shelf_life.dart`, `features/recipes/presentation/widgets/dish_dates_line.dart`, поля `cookedAt`/`expiresAt` в `RecipeDBO` (HiveField 12, 13) |
 | Добавление ингредиентов пачкой, создание продукта из поиска | ✅ fork | `features/recipes/presentation/screens/ingredient_picker_screen.dart` |
 | «Кухня» на главной: все блюда, «Ам» — записать порцию, свайп — удалить (красный фон как в iOS) | ✅ fork | `features/home/presentation/widgets/kitchen_card.dart`, `kitchen_eat_sheet.dart` |
 | Упрощённая главная: калории и макросы в одной карточке, без логотипа и названия сверху, меню приёма пищи без импорта | ✅ fork | `features/home/presentation/widgets/dashboard_widget.dart`, `intake_vertical_list.dart` |

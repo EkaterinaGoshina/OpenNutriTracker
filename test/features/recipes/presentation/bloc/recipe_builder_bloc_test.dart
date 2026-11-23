@@ -60,6 +60,60 @@ void main() {
   tearDown(() => bloc.close());
 
   group('RecipeBuilderBloc', () {
+    group('cooked and expiry dates', () {
+      DateTime today() {
+        final n = DateTime.now();
+        return DateTime(n.year, n.month, n.day);
+      }
+
+      test('a new dish is cooked today with no expiry', () async {
+        bloc.add(const InitializeBuilderEvent());
+        await bloc.stream.first;
+        expect(bloc.state.cookedAt, today());
+        expect(bloc.state.expiresAt, isNull);
+      });
+
+      test('expiry can be set, saved and cleared', () async {
+        bloc.add(const InitializeBuilderEvent());
+        bloc.add(const UpdateNameEvent('Borscht'));
+        bloc.add(AddIngredientEvent(
+          meal: _meal('beet'),
+          amount: 500,
+          unit: 'g',
+        ));
+        bloc.add(UpdateCookedAtEvent(DateTime(2026, 11, 20)));
+        bloc.add(UpdateExpiresAtEvent(DateTime(2026, 11, 24)));
+        bloc.add(const SaveRecipeEvent());
+        await bloc.stream.firstWhere((s) => s.didSave);
+        expect(repo.saved.single.cookedAt, DateTime(2026, 11, 20));
+        expect(repo.saved.single.expiresAt, DateTime(2026, 11, 24));
+
+        bloc.add(const UpdateExpiresAtEvent(null));
+        await bloc.stream.first;
+        expect(bloc.state.expiresAt, isNull);
+      });
+
+      test('a duplicate is cooked today and drops the old expiry', () async {
+        final original = RecipeEntity(
+          id: '',
+          name: 'Soup',
+          description: null,
+          ingredients: const [],
+          totalWeightG: 0,
+          aggregatedNutrimentsPer100: MealNutrimentsEntity.empty(),
+          createdAt: DateTime(2026, 1, 1),
+          updatedAt: DateTime(2026, 1, 1),
+          servingsCount: null,
+          cookedAt: DateTime(2026, 1, 1),
+          expiresAt: DateTime(2026, 1, 4),
+        );
+        bloc.add(InitializeBuilderEvent(existing: original));
+        await bloc.stream.first;
+        expect(bloc.state.cookedAt, today());
+        expect(bloc.state.expiresAt, isNull);
+      });
+    });
+
     test('initial state has no id, empty name, empty ingredients', () {
       expect(bloc.state.id, isNull);
       expect(bloc.state.name, '');

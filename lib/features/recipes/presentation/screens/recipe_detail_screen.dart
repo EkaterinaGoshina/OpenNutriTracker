@@ -6,12 +6,14 @@ import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/presentation/widgets/share_qr_dialog.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
+import 'package:opennutritracker/core/utils/dish_shelf_life.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/meal_detail/meal_detail_screen.dart';
 import 'package:opennutritracker/features/recipes/domain/entity/shared_recipe_payload.dart';
 import 'package:opennutritracker/features/recipes/presentation/bloc/recipe_detail_bloc.dart';
 import 'package:opennutritracker/features/recipes/presentation/screens/recipe_builder_screen.dart';
+import 'package:opennutritracker/features/recipes/presentation/widgets/dish_dates_line.dart';
 import 'package:opennutritracker/features/recipes/presentation/widgets/ingredient_list_item.dart';
 import 'package:opennutritracker/features/recipes/presentation/widgets/recipe_nutrition_summary.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -143,6 +145,17 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             ),
             const SizedBox(height: Dimens.spacing16),
           ],
+          if (dishDatesLine(context, recipe) case final line?) ...[
+            Text(
+              line,
+              style: textTheme.bodyMedium?.copyWith(
+                color: DishShelfLife.isExpired(recipe.expiresAt, DateTime.now())
+                    ? Theme.of(context).colorScheme.error
+                    : palette.textMuted,
+              ),
+            ),
+            const SizedBox(height: Dimens.spacing16),
+          ],
           RecipeNutritionSummary(
             nutrimentsPer100: recipe.aggregatedNutrimentsPer100,
             totalWeightG: recipe.totalWeightG,
@@ -205,6 +218,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           updatedAt: DateTime.now(),
           servingsCount: draft.servingsCount,
           tags: draft.tags,
+          // cookedAt/expiresAt stay empty: the builder sets today and no
+          // expiry for a duplicate, since it is a new cooking.
         );
         await Navigator.of(context).pushNamed(
           NavigationOptions.recipeBuilderRoute,

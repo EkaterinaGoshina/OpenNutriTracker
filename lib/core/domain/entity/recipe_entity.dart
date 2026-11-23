@@ -24,6 +24,10 @@ class RecipeEntity extends Equatable {
   // resolve the absolute path via `path_provider` at read/write time so
   // we never persist a stale sandbox-specific prefix.
   final String? imagePath;
+  // Day the dish was cooked; null for dishes saved before this was tracked.
+  final DateTime? cookedAt;
+  // Optional "good until" day.
+  final DateTime? expiresAt;
 
   const RecipeEntity({
     required this.id,
@@ -37,6 +41,8 @@ class RecipeEntity extends Equatable {
     required this.servingsCount,
     this.tags = const [],
     this.imagePath,
+    this.cookedAt,
+    this.expiresAt,
   });
 
   factory RecipeEntity.fromDBO(RecipeDBO dbo) {
@@ -55,6 +61,8 @@ class RecipeEntity extends Equatable {
       servingsCount: dbo.servingsCount,
       tags: dbo.tags ?? const [],
       imagePath: dbo.imagePath,
+      cookedAt: dbo.cookedAt,
+      expiresAt: dbo.expiresAt,
     );
   }
 
@@ -74,6 +82,8 @@ class RecipeEntity extends Equatable {
       servingsCount: servingsCount,
       tags: tags.isEmpty ? null : tags,
       imagePath: imagePath,
+      cookedAt: cookedAt,
+      expiresAt: expiresAt,
     );
   }
 
@@ -113,9 +123,12 @@ class RecipeEntity extends Equatable {
     int? servingsCount,
     List<String>? tags,
     String? imagePath,
+    DateTime? cookedAt,
+    DateTime? expiresAt,
     bool clearServingsCount = false,
     bool clearDescription = false,
     bool clearImagePath = false,
+    bool clearExpiresAt = false,
   }) {
     return RecipeEntity(
       id: id ?? this.id,
@@ -131,6 +144,8 @@ class RecipeEntity extends Equatable {
           clearServingsCount ? null : (servingsCount ?? this.servingsCount),
       tags: tags ?? this.tags,
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
+      cookedAt: cookedAt ?? this.cookedAt,
+      expiresAt: clearExpiresAt ? null : (expiresAt ?? this.expiresAt),
     );
   }
 
@@ -147,5 +162,7 @@ class RecipeEntity extends Equatable {
         servingsCount,
         tags,
         imagePath,
+        cookedAt,
+        expiresAt,
       ];
 }

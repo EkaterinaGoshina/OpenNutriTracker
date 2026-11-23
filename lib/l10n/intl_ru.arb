@@ -933,6 +933,43 @@
   "recipeTagsHelper": "Через запятую, напр. «завтрак, веган»",
   "recipeTagsLabel": "Теги",
   "recipeTotalWeightLabel": "Общий вес (г)",
+  "recipeCookedOnLabel": "Приготовлено",
+  "recipeExpiresOnLabel": "Годно до (необязательно)",
+  "recipeExpiresNotSet": "Не указано",
+  "recipeExpiresClearTooltip": "Убрать дату",
+  "recipeExpirySuggestButton": "Подставить {days, plural, one{{days} день} few{{days} дня} many{{days} дней} other{{days} дня}}",
+  "@recipeExpirySuggestButton": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recipeExpiryHelper": "Готовая еда обычно хранится в холодильнике 3–4 дня (USDA). Если знаете точнее, поставьте свою дату.",
+  "kitchenDishCooked": "Приготовлено {date}",
+  "@kitchenDishCooked": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "kitchenDishGoodUntil": "Годно до {date}",
+  "@kitchenDishGoodUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "kitchenDishExpired": "Просрочено, было до {date}",
+  "@kitchenDishExpired": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "recipesEmptyHint": "Соберите блюдо из нескольких ингредиентов и используйте его повторно как любой другой продукт.",
   "recipesEmptyLabel": "Рецептов пока нет",
   "recipesFilterAllLabel": "Все",

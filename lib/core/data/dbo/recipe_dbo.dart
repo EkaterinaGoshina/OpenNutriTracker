@@ -55,6 +55,15 @@ class RecipeDBO extends HiveObject {
   @HiveField(11)
   final String? imagePath;
 
+  // When the dish was cooked. Null on dishes saved before the field existed.
+  @HiveField(12)
+  final DateTime? cookedAt;
+
+  // Optional "good until" date, entered by the user (or suggested from the
+  // cooking date). Null when the user did not set one.
+  @HiveField(13)
+  final DateTime? expiresAt;
+
   RecipeDBO({
     required this.id,
     required this.name,
@@ -67,6 +76,8 @@ class RecipeDBO extends HiveObject {
     required this.servingsCount,
     required this.tags,
     required this.imagePath,
+    this.cookedAt,
+    this.expiresAt,
   });
 
   factory RecipeDBO.fromJson(Map<String, dynamic> json) =>
