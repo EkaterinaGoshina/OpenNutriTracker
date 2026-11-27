@@ -59,7 +59,12 @@ async function proxyOpenFoodFacts(request, url) {
   const upstream = await fetch(target, {
     method: request.method,
     headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
-    cf: { cacheTtl: OFF_CACHE_SECONDS, cacheEverything: true },
+    // Only answers are kept. A negative TTL means "do not cache": an Open Food
+    // Facts outage must not outlive itself for an hour of the same query.
+    cf: {
+      cacheEverything: true,
+      cacheTtlByStatus: { '200-299': OFF_CACHE_SECONDS, '300-599': -1 },
+    },
   });
 
   const headers = new Headers();
@@ -67,7 +72,10 @@ async function proxyOpenFoodFacts(request, url) {
     const value = upstream.headers.get(name);
     if (value) headers.set(name, value);
   }
-  headers.set('cache-control', `public, max-age=${OFF_CACHE_SECONDS}`);
+  headers.set(
+    'cache-control',
+    upstream.ok ? `public, max-age=${OFF_CACHE_SECONDS}` : 'no-store',
+  );
   return new Response(upstream.body, { status: upstream.status, headers });
 }
 
