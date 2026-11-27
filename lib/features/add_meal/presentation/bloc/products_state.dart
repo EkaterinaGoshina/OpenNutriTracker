@@ -34,17 +34,27 @@ class ProductsLoadedState extends ProductsState {
   /// debouncing/in flight" — the latter shows a spinner, not "no results".
   final String query;
 
+  /// True while these are only the matches found on the device and the
+  /// remote source has not answered yet. The full result replaces them.
+  final bool isSearchingOnline;
+
   const ProductsLoadedState({
     required this.products,
     this.usesImperialUnits = false,
     this.remoteSourceEmpty = false,
     this.remoteSourceFailed = false,
     this.query = '',
+    this.isSearchingOnline = false,
   });
 
   @override
-  List<Object?> get props =>
-      [products, remoteSourceEmpty, remoteSourceFailed, query];
+  List<Object?> get props => [
+    products,
+    remoteSourceEmpty,
+    remoteSourceFailed,
+    query,
+    isSearchingOnline,
+  ];
 }
 
 class ProductsFailedState extends ProductsState {

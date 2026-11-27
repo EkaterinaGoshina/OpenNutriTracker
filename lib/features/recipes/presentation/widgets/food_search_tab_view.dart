@@ -17,6 +17,7 @@ import 'package:opennutritracker/features/add_meal/presentation/bloc/search_debo
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_search_bar.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/no_results_widget.dart';
+import 'package:opennutritracker/features/add_meal/presentation/widgets/online_search_progress.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 /// Reusable 3-tab food search (Products / Food / Recently) that delegates the
@@ -120,6 +121,13 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
     ),
   );
 
+  Widget _withOnlineProgress(bool searching, Widget list) => Column(
+    children: [
+      if (searching) const OnlineSearchProgress(),
+      Expanded(child: list),
+    ],
+  );
+
   Widget _buildProductsTab(BuildContext context) {
     // Rebuild on keystrokes so an empty list can tell "no results for this
     // query" apart from "the search for it is still debouncing/in flight"
@@ -144,18 +152,21 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
                 ? _pendingSpinner
                 : NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
           }
-          return ListView.builder(
-            itemCount:
-                state.products.length + (state.remoteSourceEmpty ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == state.products.length) {
-                return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
-              }
-              return _PickableMealCard(
-                meal: state.products[index],
-                onTap: widget.onMealSelected,
-              );
-            },
+          return _withOnlineProgress(
+            state.isSearchingOnline,
+            ListView.builder(
+              itemCount:
+                  state.products.length + (state.remoteSourceEmpty ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == state.products.length) {
+                  return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
+                }
+                return _PickableMealCard(
+                  meal: state.products[index],
+                  onTap: widget.onMealSelected,
+                );
+              },
+            ),
           );
         }
         if (state is ProductsFailedState) {
@@ -192,15 +203,18 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
                 ? _pendingSpinner
                 : NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
           }
-          return ListView.builder(
-            itemCount: state.food.length + (state.remoteSourceEmpty ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == state.food.length) return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
-              return _PickableMealCard(
-                meal: state.food[index],
-                onTap: widget.onMealSelected,
-              );
-            },
+          return _withOnlineProgress(
+            state.isSearchingOnline,
+            ListView.builder(
+              itemCount: state.food.length + (state.remoteSourceEmpty ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == state.food.length) return NoResultsWidget(onCreateCustomFood: widget.onCreateCustomFood);
+                return _PickableMealCard(
+                  meal: state.food[index],
+                  onTap: widget.onMealSelected,
+                );
+              },
+            ),
           );
         }
         if (state is FoodFailedState) {

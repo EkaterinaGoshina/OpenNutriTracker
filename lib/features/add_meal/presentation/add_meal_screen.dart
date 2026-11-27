@@ -27,6 +27,7 @@ import 'package:opennutritracker/features/add_meal/presentation/widgets/no_resul
 import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_item_card.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/partial_results_notice.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/quick_add_bottom_sheet.dart';
+import 'package:opennutritracker/features/add_meal/presentation/widgets/online_search_progress.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
 import 'package:opennutritracker/features/add_meal/util/meal_relevance_ranker.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
@@ -499,6 +500,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           _foodPending(fs, query)) {
                         return _pendingSpinner;
                       }
+                      // Local matches stand in for a source still searching
+                      // online.
+                      final searchingOnline =
+                          (ps is ProductsLoadedState && ps.isSearchingOnline) ||
+                          (fs is FoodLoadedState && fs.isSearchingOnline);
                       // A provider timeout or rate limit doesn't fail the
                       // bloc: the use case falls back to local matches and
                       // flags the gap on the loaded state instead.
@@ -586,6 +592,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                               onRetry: retryFailed,
                               allSourcesDown: productsFailed && foodFailed,
                             ),
+                          if (searchingOnline) const OnlineSearchProgress(),
                           Expanded(
                             child: Semantics(
                               identifier: 'add-meal-all-list',
@@ -634,23 +641,31 @@ class _AddMealScreenState extends State<AddMealScreen> {
                     );
                   }
                   return Flexible(
-                    child: Semantics(
-                      identifier: 'add-meal-products-list',
-                      container: true,
-                      child: ListView.builder(
-                        itemCount:
-                            state.products.length +
-                            (state.remoteSourceEmpty ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.products.length) {
-                            return const NoResultsWidget();
-                          }
-                          return _mealCard(
-                            state.products[index],
-                            state.usesImperialUnits,
-                          );
-                        },
-                      ),
+                    child: Column(
+                      children: [
+                        if (state.isSearchingOnline)
+                          const OnlineSearchProgress(),
+                        Expanded(
+                          child: Semantics(
+                            identifier: 'add-meal-products-list',
+                            container: true,
+                            child: ListView.builder(
+                              itemCount:
+                                  state.products.length +
+                                  (state.remoteSourceEmpty ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index == state.products.length) {
+                                  return const NoResultsWidget();
+                                }
+                                return _mealCard(
+                                  state.products[index],
+                                  state.usesImperialUnits,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 } else if (state is ProductsFailedState) {
@@ -692,22 +707,31 @@ class _AddMealScreenState extends State<AddMealScreen> {
                     );
                   }
                   return Flexible(
-                    child: Semantics(
-                      identifier: 'add-meal-food-list',
-                      container: true,
-                      child: ListView.builder(
-                        itemCount:
-                          state.food.length + (state.remoteSourceEmpty ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.food.length) {
-                            return const NoResultsWidget();
-                          }
-                          return _mealCard(
-                            state.food[index],
-                            state.usesImperialUnits,
-                          );
-                        },
-                      ),
+                    child: Column(
+                      children: [
+                        if (state.isSearchingOnline)
+                          const OnlineSearchProgress(),
+                        Expanded(
+                          child: Semantics(
+                            identifier: 'add-meal-food-list',
+                            container: true,
+                            child: ListView.builder(
+                              itemCount:
+                                  state.food.length +
+                                  (state.remoteSourceEmpty ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index == state.food.length) {
+                                  return const NoResultsWidget();
+                                }
+                                return _mealCard(
+                                  state.food[index],
+                                  state.usesImperialUnits,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 } else if (state is FoodFailedState) {

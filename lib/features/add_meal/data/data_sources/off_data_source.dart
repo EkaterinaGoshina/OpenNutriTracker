@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -14,7 +15,16 @@ import 'package:opennutritracker/features/scanner/data/product_not_found_excepti
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class OFFDataSource {
-  static const _timeoutDuration = Duration(seconds: 60);
+  static const _barcodeTimeout = Duration(seconds: 60);
+
+  // Text search runs while the user waits and types, so it gives up far
+  // sooner than a barcode lookup. A healthy Search-a-licious answers in
+  // about half a second; the classic API takes a few.
+  static const _defaultSalTimeout = Duration(seconds: 8);
+  static const _defaultLegacyTimeout = Duration(seconds: 10);
+
+  /// Ceiling for one search, fallback, retries and back-off included.
+  static const _defaultSearchDeadline = Duration(seconds: 20);
 
   /// How long to skip Search-a-licious after a failure before probing it
   /// again. Its outages historically last hours, and every probe of a dead
@@ -36,11 +46,22 @@ class OFFDataSource {
   /// singleton, so the breaker spans searches.
   DateTime? _skipSalUntil;
 
+  /// Injectable so tests need not wait out the real limits.
+  final Duration _salTimeout;
+  final Duration _legacyTimeout;
+  final Duration _searchDeadline;
+
   OFFDataSource({
     http.Client Function()? clientFactory,
     DateTime Function()? now,
+    Duration salTimeout = _defaultSalTimeout,
+    Duration legacyTimeout = _defaultLegacyTimeout,
+    Duration searchDeadline = _defaultSearchDeadline,
   })  : _clientFactory = clientFactory ?? http.Client.new,
-        _now = now ?? DateTime.now;
+        _now = now ?? DateTime.now,
+        _salTimeout = salTimeout,
+        _legacyTimeout = legacyTimeout,
+        _searchDeadline = searchDeadline;
 
   /// The app's language as a Search-a-licious relevance context, always with
   /// English appended as a fallback so non-English locales still match the
@@ -51,6 +72,7 @@ class OFFDataSource {
   }
 
   Future<OFFWordResponseDTO> fetchSearchWordResults(String searchString) async {
+    final elapsed = Stopwatch()..start();
     try {
       return await withRetry(() async {
         // Search-a-licious runs on its own infrastructure and goes down
@@ -64,6 +86,7 @@ class OFFDataSource {
           try {
             final result = await _fetchWordResults(
               OFFConst.getOffWordSearchUrl(searchString, langs: _searchLangs()),
+              _salTimeout,
             );
             _skipSalUntil = null;
             return result;
@@ -77,20 +100,31 @@ class OFFDataSource {
         }
         return await _fetchWordResults(
           OFFConst.getOffLegacyWordSearchUrl(searchString),
+          _legacyTimeout,
         );
-      });
+      },
+          // A request that hung once is not worth hanging on again, and a
+          // caller who has already been told must not keep sending.
+          shouldRetry: (e) =>
+              e is! TimeoutException && elapsed.elapsed < _searchDeadline,
+      ).timeout(_searchDeadline);
     } catch (exception, stacktrace) {
+      // Neither API answered. Holding the cooldown now would pin the next
+      // search to the fallback that has just failed too.
+      _skipSalUntil = null;
       log.severe('Exception while getting OFF word search $exception');
       Sentry.captureException(exception, stackTrace: stacktrace);
       return Future.error(exception);
     }
   }
 
-  Future<OFFWordResponseDTO> _fetchWordResults(Uri searchUrl) async {
+  Future<OFFWordResponseDTO> _fetchWordResults(
+    Uri searchUrl,
+    Duration timeout,
+  ) async {
     final userAgentString = await AppConst.getUserAgentString();
     final httpClient = ONTHttpClient(userAgentString, _clientFactory());
-    final response =
-        await httpClient.get(searchUrl).timeout(_timeoutDuration);
+    final response = await httpClient.get(searchUrl).timeout(timeout);
     log.fine('Fetching OFF results from: $searchUrl');
     if (response.statusCode == OFFConst.offHttpSuccessCode) {
       final wordResponse = OFFWordResponseDTO.fromJson(
@@ -111,7 +145,7 @@ class OFFDataSource {
           final userAgentString = await AppConst.getUserAgentString();
           final httpClient = ONTHttpClient(userAgentString, _clientFactory());
           final response =
-              await httpClient.get(searchUrl).timeout(_timeoutDuration);
+              await httpClient.get(searchUrl).timeout(_barcodeTimeout);
           log.fine('Fetching OFF result from: $searchUrl');
           if (response.statusCode == OFFConst.offHttpSuccessCode) {
             final productResponse = OFFProductResponseDTO.fromJson(

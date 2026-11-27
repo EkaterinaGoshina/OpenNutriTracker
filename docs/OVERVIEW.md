@@ -21,7 +21,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Функция | Статус | Где |
 |---|---|---|
 | Дневник еды по приёмам пищи, календарь | ✅ | `features/diary`, `features/home` |
-| Поиск еды: Open Food Facts и справочник Supabase | ✅ на телефоне, 🟡 в вебе | `features/add_meal`. В вебе Open Food Facts идёт через прокси Worker'а (`/api/off`), справочнику нужен адрес в `.env` |
+| Поиск еды: Open Food Facts и справочник Supabase | ✅ на телефоне, 🟡 в вебе | `features/add_meal`. В вебе Open Food Facts идёт через прокси Worker'а (`/api/off`), справочнику нужен адрес в `.env`. Найденное на устройстве (свои продукты, блюда, прошлые результаты) показывается сразу, с полоской загрузки, пока идёт поиск в интернете (`ProductsBloc`, `FoodBloc`). Лимиты поиска Open Food Facts: 8 с основной API, 10 с запасной, 20 с всего (`off_data_source.dart`) |
 | Сканер штрихкодов | ✅ | `features/scanner` |
 | AI: описать еду текстом или фото | ✅ | `features/add_meal`, [ai-architecture.md](ai-architecture.md) |
 | Свои продукты, избранное | ✅ | `features/add_meal`, `features/recipes` |

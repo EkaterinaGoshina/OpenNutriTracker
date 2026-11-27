@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:opennutritracker/core/domain/entity/app_theme_entity.dart';
 import 'package:opennutritracker/core/domain/entity/config_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
 import 'package:opennutritracker/features/add_meal/domain/usecase/search_products_usecase.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
@@ -16,11 +18,20 @@ class _FakeSearchProductsUseCase implements SearchProductsUseCase {
   final List<Completer<SearchProductsResult>> calls = [];
   final List<String> queries = [];
 
+  /// What the device already has; answered at once, and not counted in
+  /// [calls], which stand for remote searches.
+  List<MealEntity> localMeals = const [];
+
   @override
   Future<SearchProductsResult> searchOFFProductsByString(
     String searchString, {
     bool skipRemote = false,
   }) {
+    if (skipRemote) {
+      return Future.value(
+        SearchProductsResult(meals: localMeals, remoteSourceEmpty: false),
+      );
+    }
     queries.add(searchString);
     final completer = Completer<SearchProductsResult>();
     calls.add(completer);
@@ -32,7 +43,7 @@ class _FakeSearchProductsUseCase implements SearchProductsUseCase {
     String searchString, {
     bool skipRemote = false,
     bool forResolution = false,
-  }) => searchOFFProductsByString(searchString);
+  }) => searchOFFProductsByString(searchString, skipRemote: skipRemote);
 
   @override
   dynamic noSuchMethod(Invocation invocation) =>
@@ -48,6 +59,19 @@ class _FakeGetConfigUsecase implements GetConfigUsecase {
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('Unexpected call: ${invocation.memberName}');
 }
+
+MealEntity _meal(String name) => MealEntity(
+  code: name,
+  name: name,
+  url: null,
+  mealQuantity: null,
+  mealUnit: 'g',
+  servingQuantity: null,
+  servingUnit: 'g',
+  servingSize: null,
+  nutriments: MealNutrimentsEntity.empty(),
+  source: MealSourceEntity.custom,
+);
 
 const _emptyResult = SearchProductsResult(
   meals: [],
@@ -203,6 +227,58 @@ void main() {
       expect(bloc.state, isA<ProductsLoadedState>());
     });
   });
+  group('local matches while the remote search is running', () {
+    late _FakeSearchProductsUseCase useCase;
+
+    setUp(() {
+      useCase = _FakeSearchProductsUseCase()
+        ..localMeals = [_meal('own apple')];
+    });
+
+    Future<void> pumpEvents() =>
+        Future<void>.delayed(const Duration(milliseconds: 50));
+
+    test('are shown at once, then replaced by the full result', () async {
+      final bloc = ProductsBloc(useCase, _FakeGetConfigUsecase());
+      addTearDown(bloc.close);
+      bloc.add(const LoadProductsEvent(searchString: 'apple'));
+      await pumpEvents();
+
+      final preview = bloc.state as ProductsLoadedState;
+      expect(preview.products.single.name, 'own apple');
+      expect(preview.query, 'apple');
+      expect(preview.isSearchingOnline, isTrue);
+      expect(preview.remoteSourceEmpty, isFalse);
+
+      useCase.calls.single.complete(
+        SearchProductsResult(
+          meals: [_meal('own apple'), _meal('online apple')],
+          remoteSourceEmpty: false,
+        ),
+      );
+      await pumpEvents();
+
+      final full = bloc.state as ProductsLoadedState;
+      expect(full.products, hasLength(2));
+      expect(full.isSearchingOnline, isFalse);
+    });
+
+    test('are shown on the food tab too', () async {
+      final bloc = FoodBloc(useCase, _FakeGetConfigUsecase());
+      addTearDown(bloc.close);
+      bloc.add(const LoadFoodEvent(searchString: 'apple'));
+      await pumpEvents();
+
+      final preview = bloc.state as FoodLoadedState;
+      expect(preview.food.single.name, 'own apple');
+      expect(preview.isSearchingOnline, isTrue);
+
+      useCase.calls.single.complete(_emptyResult);
+      await pumpEvents();
+      expect((bloc.state as FoodLoadedState).isSearchingOnline, isFalse);
+    });
+  });
+
   // #1282 review: the restartable transformer only cancels runs of its own
   // event type, so a Retry still awaiting a provider used to land after a
   // newer typed search and replace its results with the old query's,

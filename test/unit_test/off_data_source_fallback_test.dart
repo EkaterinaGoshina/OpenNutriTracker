@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +110,66 @@ void main() {
       await dataSource.fetchSearchWordResults('apfel');
       expect(requestedHosts.where((h) => h == _salHost), hasLength(3));
       expect(requestedHosts.last, _salHost);
+    });
+
+    test('a hanging Search-a-licious is abandoned for the fallback', () async {
+      final dataSource = OFFDataSource(
+        salTimeout: const Duration(milliseconds: 50),
+        clientFactory: () => MockClient((request) async {
+          if (request.url.host == _salHost) {
+            return Completer<http.Response>().future;
+          }
+          return http.Response(_legacyBody(), 200);
+        }),
+      );
+
+      final response = await dataSource.fetchSearchWordResults('brot');
+
+      expect(response.products.single.code, '123');
+    });
+
+    test(
+        'when both APIs hang the search fails after one pass, and the next '
+        'one probes Search-a-licious again', () async {
+      final requestedHosts = <String>[];
+      final dataSource = OFFDataSource(
+        salTimeout: const Duration(milliseconds: 50),
+        legacyTimeout: const Duration(milliseconds: 50),
+        clientFactory: () => MockClient((request) {
+          requestedHosts.add(request.url.host);
+          return Completer<http.Response>().future;
+        }),
+      );
+
+      await expectLater(
+        dataSource.fetchSearchWordResults('brot'),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(requestedHosts, hasLength(2), reason: 'a timeout is not retried');
+
+      await expectLater(
+        dataSource.fetchSearchWordResults('milch'),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(requestedHosts.where((h) => h == _salHost), hasLength(2),
+          reason: 'a failed fallback must not hold the cooldown');
+    });
+
+    test('the deadline caps a search that keeps being retried', () async {
+      final dataSource = OFFDataSource(
+        searchDeadline: const Duration(milliseconds: 200),
+        clientFactory: () =>
+            MockClient((request) async => http.Response('Unavailable', 503)),
+      );
+      final elapsed = Stopwatch()..start();
+
+      await expectLater(
+        dataSource.fetchSearchWordResults('brot'),
+        throwsA(isA<TimeoutException>()),
+      );
+
+      // Without the deadline the back-off alone is three seconds.
+      expect(elapsed.elapsed, lessThan(const Duration(seconds: 1)));
     });
 
     test('a healthy Search-a-licious response never hits the fallback',

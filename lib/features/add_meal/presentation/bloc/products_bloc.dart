@@ -95,6 +95,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       emit(ProductsLoadingState());
     }
     try {
+      await _emitLocalMatches(searchString, run, emit);
       final result = await _searchProductUseCase.searchOFFProductsByString(
         searchString,
       );
@@ -119,6 +120,36 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       log.severe(error);
       _completedQuery = null;
       if (!emit.isDone) emit(ProductsFailedState());
+    }
+  }
+
+  /// Shows what the device already has for [searchString] (own foods,
+  /// dishes, earlier results) while the remote source is still answering, so
+  /// a slow network does not hide them. With nothing local it emits nothing.
+  /// Best effort: if this fails, the full search below still runs.
+  Future<void> _emitLocalMatches(
+    String searchString,
+    int run,
+    Emitter<ProductsState> emit,
+  ) async {
+    try {
+      final local = await _searchProductUseCase.searchOFFProductsByString(
+        searchString,
+        skipRemote: true,
+      );
+      if (local.meals.isEmpty) return;
+      final config = await _getConfigUsecase.getConfig();
+      if (emit.isDone || run != _generation) return;
+      emit(
+        ProductsLoadedState(
+          products: local.meals,
+          usesImperialUnits: config.usesImperialFoodUnits,
+          query: searchString,
+          isSearchingOnline: true,
+        ),
+      );
+    } catch (error) {
+      log.warning('Local matches unavailable: $error');
     }
   }
 }
