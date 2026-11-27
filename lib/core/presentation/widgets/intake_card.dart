@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/presentation/widgets/meal_value_unit_text.dart';
@@ -12,7 +11,6 @@ import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/energy_display.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
-import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/features/diary/presentation/widgets/diary_sort_type.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
@@ -202,7 +200,10 @@ class _Thumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget content;
     if (intake.meal.localImagePath != null) {
-      content = _LocalMealImage(relativePath: intake.meal.localImagePath!);
+      content = UserImage(
+        relativePath: intake.meal.localImagePath!,
+        fallback: _fallback(),
+      );
     } else if (intake.meal.mainImageUrl != null) {
       content = CachedNetworkImage(
         cacheManager: locator<CacheManager>(),
@@ -228,23 +229,4 @@ class _Thumbnail extends StatelessWidget {
         color: palette.surfaceMuted,
         child: Icon(Icons.restaurant_rounded, color: palette.textMuted, size: 24),
       );
-}
-
-class _LocalMealImage extends StatelessWidget {
-  final String relativePath;
-
-  const _LocalMealImage({required this.relativePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: UserImageStorage.absolutePath(relativePath),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const SizedBox.shrink();
-        final file = File(snapshot.data!);
-        if (!file.existsSync()) return const SizedBox.shrink();
-        return Image.file(file, fit: BoxFit.cover);
-      },
-    );
-  }
 }

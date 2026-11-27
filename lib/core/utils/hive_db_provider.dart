@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:opennutritracker/core/data/data_source/custom_activity_template_dbo.dart';
@@ -14,6 +15,7 @@ import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/weight_log_dbo.dart';
 import 'package:opennutritracker/core/utils/hive_storage_integrity_exception.dart';
+import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/hive_registrar.g.dart';
 
 /// Owns every Hive box the app uses.
@@ -44,6 +46,8 @@ class HiveDBProvider extends ChangeNotifier {
   static const trackedDayBoxName = 'TrackedDayBox';
   static const customMealBoxName = 'CustomMealBox';
   static const recipeBoxName = 'RecipeBox';
+  // Web only: bytes of the photos that are files on a phone.
+  static const userImageBoxName = 'UserImageBox';
   static const cachedOffMealBoxName = 'CachedOffMealBox';
   // Sidecar to cachedOffMealBox: maps meal `code` -> millisSinceEpoch of
   // last "touch" (creation or user re-select). Used by the TTL sweep so
@@ -172,6 +176,17 @@ class HiveDBProvider extends ChangeNotifier {
     customActivityTemplateBox = await _openEncryptedBox(
       customActivityTemplateBoxName,
     );
+    // A browser has no file system for the user's photos, so they go in a
+    // box. Lazy, so that opening the app does not read every photo.
+    if (kIsWeb) {
+      UserImageStorage.useBytesStore(
+        await Hive.openLazyBox<Uint8List>(
+          userImageBoxName,
+          encryptionCipher: _cipher,
+          crashRecovery: false,
+        ),
+      );
+    }
   }
 
   /// Opens the per-profile box-set for [profileId] / [boxSuffix] and

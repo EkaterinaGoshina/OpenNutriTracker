@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
-import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/edit_meal_screen.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/custom_meals_bloc.dart';
@@ -354,9 +352,7 @@ class CustomMealsTab extends StatelessWidget {
 
 /// Leading avatar for a custom meal row. Shows the user-attached photo
 /// when one exists, otherwise a soft fallback icon matching the recipe
-/// list's visual rhythm. Resolution is async because the absolute path
-/// is recomposed against the documents directory at render time —
-/// see [UserImageStorage.absolutePath] for the reasoning.
+/// list's visual rhythm.
 class _MealLeadingThumbnail extends StatelessWidget {
   final MealEntity meal;
 
@@ -378,17 +374,14 @@ class _MealLeadingThumbnail extends StatelessWidget {
       child: Icon(Icons.restaurant_rounded, color: accent, size: 24),
     );
     if (relative == null) return fallback;
-    return FutureBuilder<String>(
-      future: UserImageStorage.absolutePath(relative),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return fallback;
-        final file = File(snapshot.data!);
-        if (!file.existsSync()) return fallback;
-        return ClipRRect(
-          borderRadius: Dimens.borderRadiusS,
-          child: Image.file(file, width: _size, height: _size, fit: BoxFit.cover),
-        );
-      },
+    return ClipRRect(
+      borderRadius: Dimens.borderRadiusS,
+      child: UserImage(
+        relativePath: relative,
+        width: _size,
+        height: _size,
+        fallback: fallback,
+      ),
     );
   }
 }

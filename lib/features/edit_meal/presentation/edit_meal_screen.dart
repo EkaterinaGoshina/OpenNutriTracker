@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -1007,17 +1006,13 @@ class _EditMealScreenState extends State<EditMealScreen> {
     final ownerId = _mealEntity.code;
     if (ownerId == null) return;
     try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(source: source);
+      final picked = await UserImageStorage.pick(source);
       if (picked == null) return;
-      final relative = await UserImageStorage.importFrom(
+      final relative = await UserImageStorage.importPicked(
         kind: UserImageKind.meal,
         ownerId: ownerId,
-        sourcePath: picked.path,
+        picked: picked,
       );
-      // Bust the in-memory Image.file cache so the new picture shows up
-      // immediately instead of redrawing previous bytes for this path.
-      FileImage(File(await UserImageStorage.absolutePath(relative))).evict();
       if (!mounted) return;
       setState(() {
         _localImagePath = relative;

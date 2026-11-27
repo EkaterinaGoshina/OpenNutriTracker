@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -45,6 +44,15 @@ class UserImagePickerTile extends StatelessWidget {
         UserImageKind.meal => 'edit-meal-image-picker',
         UserImageKind.profile => 'profile-image-picker',
       };
+
+  Widget _placeholder(ThemeData theme) => Container(
+        color: theme.colorScheme.primaryContainer,
+        child: Icon(
+          _fallbackIcon,
+          size: 36,
+          color: theme.colorScheme.onPrimaryContainer,
+        ),
+      );
 
   _Strings _stringsFor(BuildContext context) {
     final s = S.of(context);
@@ -95,37 +103,11 @@ class UserImagePickerTile extends StatelessWidget {
                       width: 96,
                       height: 96,
                       child: hasImage
-                          ? FutureBuilder<String>(
-                              future:
-                                  UserImageStorage.absolutePath(imagePath!),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Container(
-                                    color: theme.colorScheme.primaryContainer,
-                                  );
-                                }
-                                return Image.file(
-                                  File(snapshot.data!),
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, error, stack) => Container(
-                                    color: theme.colorScheme.primaryContainer,
-                                    child: Icon(
-                                      _fallbackIcon,
-                                      color: theme
-                                          .colorScheme.onPrimaryContainer,
-                                    ),
-                                  ),
-                                );
-                              },
+                          ? UserImage(
+                              relativePath: imagePath!,
+                              fallback: _placeholder(theme),
                             )
-                          : Container(
-                              color: theme.colorScheme.primaryContainer,
-                              child: Icon(
-                                _fallbackIcon,
-                                size: 36,
-                                color: theme.colorScheme.onPrimaryContainer,
-                              ),
-                            ),
+                          : _placeholder(theme),
                     ),
                   ),
                   CircleAvatar(

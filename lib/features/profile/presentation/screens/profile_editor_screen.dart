@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:opennutritracker/core/domain/entity/profile_entity.dart';
@@ -99,14 +97,14 @@ class _ProfileEditorScreenState extends State<ProfileEditorScreen> {
   }
 
   Future<void> _onPickImage({required ImageSource source}) async {
-    final picked = await ImagePicker().pickImage(source: source);
+    final picked = await UserImageStorage.pick(source);
     if (picked == null) return;
-    final relative = await UserImageStorage.importFrom(
+    final relative = await UserImageStorage.importPicked(
       kind: UserImageKind.profile,
       ownerId: widget.profile.id,
-      sourcePath: picked.path,
+      picked: picked,
     );
-    FileImage(File(await UserImageStorage.absolutePath(relative))).evict();
+    if (!mounted) return;
     setState(() {
       _imagePath = relative;
       // importFrom deletes any stale credit sidecar, so re-read once.

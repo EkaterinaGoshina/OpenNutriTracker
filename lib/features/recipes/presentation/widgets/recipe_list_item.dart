@@ -1,16 +1,14 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/energy_display.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
-import 'package:opennutritracker/core/utils/user_image_storage.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class RecipeListItem extends StatelessWidget {
@@ -141,22 +139,14 @@ class _UserImageThumbnail extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final palette = isDark ? AppPalette.dark : AppPalette.light;
     final accent = Theme.of(context).colorScheme.primary;
-    return FutureBuilder<String>(
-      future: UserImageStorage.absolutePath(relativePath),
-      builder: (context, snapshot) {
-        final fallback = RecipeListItem._fallbackThumb(palette, accent);
-        if (!snapshot.hasData) return fallback;
-        return ClipRRect(
-          borderRadius: Dimens.borderRadiusS,
-          child: Image.file(
-            File(snapshot.data!),
-            fit: BoxFit.cover,
-            width: RecipeListItem._thumbSize,
-            height: RecipeListItem._thumbSize,
-            errorBuilder: (_, error, stack) => fallback,
-          ),
-        );
-      },
+    return ClipRRect(
+      borderRadius: Dimens.borderRadiusS,
+      child: UserImage(
+        relativePath: relativePath,
+        width: RecipeListItem._thumbSize,
+        height: RecipeListItem._thumbSize,
+        fallback: RecipeListItem._fallbackThumb(palette, accent),
+      ),
     );
   }
 }

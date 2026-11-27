@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:opennutritracker/core/data/data_source/custom_activity_template_dbo.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/favourite_meal_dbo.dart';
@@ -207,27 +205,13 @@ class ImportDataUsecase {
         );
       }
 
-      // Photos are files in the app's folder, which the web build does not
-      // have: an archive made on a phone restores everything but its photos.
-      if (!kIsWeb) {
-        final recipeDir = await UserImageStorage.ensureDirectory(
-          UserImageKind.recipe,
+      for (final entry in archive.files) {
+        if (!entry.isFile) continue;
+        // Anything that is not a photo slug is ignored by [writeBytes].
+        await UserImageStorage.writeBytes(
+          entry.name,
+          entry.content as List<int>,
         );
-        final mealDir = await UserImageStorage.ensureDirectory(
-          UserImageKind.meal,
-        );
-        for (final entry in archive.files) {
-          if (!entry.isFile) continue;
-          final sanitized = UserImageStorage.sanitizeRelative(entry.name);
-          if (sanitized == null) continue;
-          final parts = sanitized.split('/');
-          final targetDir = parts[0] == UserImageKind.recipe.subdir
-              ? recipeDir
-              : mealDir;
-          final destPath = '${targetDir.path}/${parts[1]}';
-          final destFile = File(destPath);
-          await destFile.writeAsBytes(entry.content as List<int>, flush: true);
-        }
       }
 
       return true;

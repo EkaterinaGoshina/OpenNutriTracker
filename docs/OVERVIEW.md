@@ -35,7 +35,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Активности и расход калорий | ✅, по умолчанию скрыто | `features/add_activity`, включается в настройках |
 | Вес, тренды, цели по калориям и макросам | ✅ | `features/profile`, `features/trends`, `features/settings` |
 | Несколько локальных профилей на устройстве | ✅ | `core/utils/hive_db_provider.dart` |
-| Экспорт и импорт (zip, JSON, CSV) | ✅ на телефоне; в вебе 🟡 скачивание и загрузка файла через браузер, без фото (их в вебе нет). В браузере ещё не проверено вручную | `features/settings`, `core/utils/picked_file.dart`, [export-format.md](export-format.md) |
+| Экспорт и импорт (zip, JSON, CSV) | ✅ на телефоне; в вебе 🟡 скачивание и загрузка файла через браузер, вместе с фото. В браузере ещё не проверено вручную | `features/settings`, `core/utils/picked_file.dart`, [export-format.md](export-format.md) |
 | Apple Health / Health Connect, виджет iOS, напоминания | ✅ на телефоне; в вебе строки Health и напоминаний (настройки и онбординг) скрыты, виджет молчит | `core/data/data_source/health`, [ios-calorie-widget.md](ios-calorie-widget.md) |
 | Демо-режим | ✅ | `core/utils/demo`, [demo-data.md](demo-data.md) |
 | Русский язык | ✅ fork | `lib/l10n/intl_ru.arb`, [ru-translation-guide.md](ru-translation-guide.md) |
@@ -46,6 +46,7 @@ Fork [OpenNutriTracker](https://github.com/simonoppowa/OpenNutriTracker) — т�
 | Общие блюда семьи и синхронизация «Кухни» | 🟡 сервер готов, в приложении нет. Не сделано в приложении: метки «семья» у блюд, «Отправить в семью», конфликт правок | `supabase/migrations/20261106130000_family_dishes.sql` |
 | Повар раскладывает порции: «На семью» в листе «Ам» у блюда и на экране любого продукта, порции приходят в дневники остальных с пометкой «положил(а)» | ✅ миграция `family_portions` применена к рабочему проекту 2026-11-11, код и тесты готовы; вживую на двух аккаунтах ещё не проверено | `features/family/data/family_portion_service.dart`, `features/home/presentation/widgets/kitchen_eat_sheet.dart`, `supabase/migrations/20261111120000_family_portions.sql`, [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 | Cloudflare Worker: сайт и прокси Open Food Facts | ✅ | `worker/src/index.js` |
+| Фото блюд, своих продуктов и профиля | ✅ на телефоне файлами; в вебе байтами в зашифрованном ящике Hive `UserImageBox`, уменьшает их браузер при выборе (до 1024 px по длинной стороне). Фото остаются только на этом устройстве. В «Кухне» на главной фото не показываются | `core/utils/user_image_storage.dart`, `core/presentation/widgets/user_image.dart`. Фото профиля: «Вы» → имя сверху → «Управление профилями» → карандаш |
 | Фото блюд в R2 | ⬜ | [WEB_ARCHITECTURE.md](WEB_ARCHITECTURE.md) |
 
 ## Архитектура приложения

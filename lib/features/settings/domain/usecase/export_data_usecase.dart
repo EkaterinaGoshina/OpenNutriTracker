@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
@@ -390,12 +389,8 @@ class ExportDataUsecase {
   /// there. A missing file is not an error: the photo may have been cleared
   /// by the OS, and losing one image is not worth failing an export over.
   Future<void> _addUserImage(Archive archive, String sanitized) async {
-    // Photos live in app files, which the web build does not have.
-    if (kIsWeb) return;
-    final absolute = await UserImageStorage.absolutePath(sanitized);
-    final file = File(absolute);
-    if (!await file.exists()) return;
-    final bytes = await file.readAsBytes();
+    final bytes = await UserImageStorage.readBytes(sanitized);
+    if (bytes == null) return;
     archive.addFile(ArchiveFile(sanitized, bytes.length, bytes));
   }
 }

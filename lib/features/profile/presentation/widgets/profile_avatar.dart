@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/domain/entity/profile_entity.dart';
-import 'package:opennutritracker/core/utils/user_image_storage.dart';
 
 /// Round avatar for a profile: shows the profile picture when one is set,
 /// otherwise the first letter of the name, falling back to a person icon
@@ -18,26 +16,7 @@ class ProfileAvatar extends StatelessWidget {
     final theme = Theme.of(context);
     final imagePath = profile.imagePath;
 
-    if (imagePath != null) {
-      return FutureBuilder<String>(
-        future: UserImageStorage.absolutePath(imagePath),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircleAvatar(
-              radius: radius,
-              backgroundColor: theme.colorScheme.primaryContainer,
-            );
-          }
-          return CircleAvatar(
-            radius: radius,
-            backgroundColor: theme.colorScheme.primaryContainer,
-            backgroundImage: FileImage(File(snapshot.data!)),
-          );
-        },
-      );
-    }
-
-    return CircleAvatar(
+    final initial = CircleAvatar(
       radius: radius,
       backgroundColor: theme.colorScheme.primaryContainer,
       foregroundColor: theme.colorScheme.onPrimaryContainer,
@@ -47,6 +26,15 @@ class ProfileAvatar extends StatelessWidget {
               profile.name.trim().characters.first.toUpperCase(),
               style: TextStyle(fontSize: radius * 0.9),
             ),
+    );
+    if (imagePath == null) return initial;
+    return ClipOval(
+      child: UserImage(
+        relativePath: imagePath,
+        width: radius * 2,
+        height: radius * 2,
+        fallback: initial,
+      ),
     );
   }
 }

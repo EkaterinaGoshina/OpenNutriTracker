@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Two flavours of user-attached photo the app persists on disk.
@@ -40,6 +43,104 @@ enum UserImageKind {
 /// targets.
 class UserImageStorage {
   static const String _extension = 'webp';
+
+  /// Longest edge and quality asked of the picker in a browser, where there
+  /// is no WebP re-encoder and the browser's canvas does the downscaling.
+  static const double _webMaxEdge = 1024;
+  static const int _webQuality = 80;
+
+  /// Set in the browser, which has no file system: photos then live as bytes
+  /// in this box, keyed by the same relative slug the DBOs store. Null on
+  /// phones, where they are files.
+  static LazyBox<Uint8List>? _bytesBox;
+
+  // Hands out the same bytes object for a slug until it changes, so that
+  // [MemoryImage] hits Flutter's image cache instead of decoding again.
+  static final Map<String, Uint8List> _bytesCache = {};
+
+  /// Bumped whenever a stored photo changes. A replaced photo keeps its slug,
+  /// so whoever is showing it cannot tell from the slug alone.
+  static final ValueNotifier<int> revision = ValueNotifier(0);
+
+  static void useBytesStore(LazyBox<Uint8List>? box) {
+    _bytesBox = box;
+    _bytesCache.clear();
+  }
+
+  /// Opens the camera or the gallery. Null when the user backs out.
+  static Future<XFile?> pick(ImageSource source) => ImagePicker().pickImage(
+    source: source,
+    // On phones [importFrom] does the downscaling, so the picker must not.
+    maxWidth: kIsWeb ? _webMaxEdge : null,
+    maxHeight: kIsWeb ? _webMaxEdge : null,
+    imageQuality: kIsWeb ? _webQuality : null,
+  );
+
+  /// Stores a photo returned by [pick] and returns the slug to persist.
+  static Future<String> importPicked({
+    required UserImageKind kind,
+    required String ownerId,
+    required XFile picked,
+  }) async {
+    if (_bytesBox == null) {
+      return importFrom(kind: kind, ownerId: ownerId, sourcePath: picked.path);
+    }
+    final relative = relativePathFor(kind, ownerId);
+    await writeBytes(relative, await picked.readAsBytes());
+    return relative;
+  }
+
+  /// Stores `bytes` as the photo at `relativePath`, replacing what was there.
+  static Future<void> writeBytes(String relativePath, List<int> bytes) async {
+    final sanitized = sanitizeRelative(relativePath);
+    if (sanitized == null) return;
+    final data = bytes is Uint8List ? bytes : Uint8List.fromList(bytes);
+    final box = _bytesBox;
+    if (box != null) {
+      await box.put(sanitized, data);
+      await box.delete(_creditKey(sanitized));
+      _bytesCache[sanitized] = data;
+    } else {
+      final file = File(await absolutePath(sanitized));
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(data, flush: true);
+      await _deleteCreditFile(file.path);
+      await FileImage(file).evict();
+    }
+    revision.value++;
+  }
+
+  /// The bytes of the photo at `relativePath`, or null when there is none.
+  static Future<Uint8List?> readBytes(String relativePath) async {
+    final sanitized = sanitizeRelative(relativePath);
+    if (sanitized == null) return null;
+    final box = _bytesBox;
+    if (box != null) {
+      final cached = _bytesCache[sanitized];
+      if (cached != null) return cached;
+      final stored = await box.get(sanitized);
+      if (stored != null) _bytesCache[sanitized] = stored;
+      return stored;
+    }
+    final file = File(await absolutePath(sanitized));
+    if (!await file.exists()) return null;
+    return file.readAsBytes();
+  }
+
+  /// What to hand to an [Image] widget for `relativePath`, or null when there
+  /// is no photo to show.
+  static Future<ImageProvider?> imageProvider(String relativePath) async {
+    if (_bytesBox != null) {
+      final bytes = await readBytes(relativePath);
+      return bytes == null ? null : MemoryImage(bytes);
+    }
+    final sanitized = sanitizeRelative(relativePath);
+    if (sanitized == null) return null;
+    final file = File(await absolutePath(sanitized));
+    return file.existsSync() ? FileImage(file) : null;
+  }
+
+  static String _creditKey(String relative) => '$relative.credit.json';
 
   /// The relative slug stored on the DBO for a given owner id.
   static String relativePathFor(UserImageKind kind, String ownerId) =>
@@ -111,6 +212,10 @@ class UserImageStorage {
     // previously-seeded demo one should never keep showing someone else's
     // attribution.
     await _deleteCreditFile(destPath);
+    // The photo may have replaced one at the same path, which Flutter has
+    // cached under that path.
+    await FileImage(File(destPath)).evict();
+    revision.value++;
     return relativePathFor(kind, ownerId);
   }
 
@@ -120,12 +225,20 @@ class UserImageStorage {
   static Future<void> delete(String relativePath) async {
     final sanitized = sanitizeRelative(relativePath);
     if (sanitized == null) return;
-    final absolute = await absolutePath(sanitized);
-    final file = File(absolute);
-    if (await file.exists()) {
-      await file.delete();
+    final box = _bytesBox;
+    if (box != null) {
+      await box.delete(sanitized);
+      await box.delete(_creditKey(sanitized));
+      _bytesCache.remove(sanitized);
+    } else {
+      final absolute = await absolutePath(sanitized);
+      final file = File(absolute);
+      if (await file.exists()) {
+        await file.delete();
+      }
+      await _deleteCreditFile(absolute);
     }
-    await _deleteCreditFile(absolute);
+    revision.value++;
   }
 
   /// Records a photographer credit for the image at `relativePath`, kept
@@ -140,10 +253,14 @@ class UserImageStorage {
   }) async {
     final sanitized = sanitizeRelative(relativePath);
     if (sanitized == null) return;
+    final json = jsonEncode({'name': name, 'profileUrl': profileUrl});
+    final box = _bytesBox;
+    if (box != null) {
+      await box.put(_creditKey(sanitized), utf8.encode(json));
+      return;
+    }
     final absolute = await absolutePath(sanitized);
-    await File(
-      '$absolute.credit.json',
-    ).writeAsString(jsonEncode({'name': name, 'profileUrl': profileUrl}));
+    await File('$absolute.credit.json').writeAsString(json);
   }
 
   /// The credit written by [writeCredit] for `relativePath`, or null when
@@ -154,10 +271,19 @@ class UserImageStorage {
     try {
       final sanitized = sanitizeRelative(relativePath);
       if (sanitized == null) return null;
-      final absolute = await absolutePath(sanitized);
-      final file = File('$absolute.credit.json');
-      if (!await file.exists()) return null;
-      final decoded = jsonDecode(await file.readAsString());
+      final String json;
+      final box = _bytesBox;
+      if (box != null) {
+        final stored = await box.get(_creditKey(sanitized));
+        if (stored == null) return null;
+        json = utf8.decode(stored);
+      } else {
+        final absolute = await absolutePath(sanitized);
+        final file = File('$absolute.credit.json');
+        if (!await file.exists()) return null;
+        json = await file.readAsString();
+      }
+      final decoded = jsonDecode(json);
       if (decoded is! Map) return null;
       final name = decoded['name'];
       final profileUrl = decoded['profileUrl'];
