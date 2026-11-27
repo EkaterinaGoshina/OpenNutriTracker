@@ -11,6 +11,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_ingredient_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/search_debounce.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
@@ -57,7 +58,7 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
     super.initState();
     _productsBloc = locator<ProductsBloc>();
     _foodBloc = locator<FoodBloc>();
-    _recentMealBloc = locator<RecentMealBloc>();
+    _recentMealBloc = locator<RecentIngredientBloc>();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       _onSearchSubmit(_searchStringListener.value);
@@ -268,14 +269,19 @@ class _FoodSearchTabViewState extends State<FoodSearchTabView>
     }
   }
 
-  /// Debounced search-as-you-type for the ingredient picker. Recent-added
-  /// (tab 2) stays submit-only — local-history filter, nothing to debounce.
+  /// Search-as-you-type for the ingredient picker. The remote tabs debounce;
+  /// Recent (tab 2) filters in memory, so clearing the field brings the whole
+  /// list back at once.
   void _onSearchChanged(String inputText) {
     switch (_tabController.index) {
       case 0:
         _productsBloc.add(SearchInputChangedEvent(searchString: inputText));
       case 1:
         _foodBloc.add(SearchFoodInputChangedEvent(searchString: inputText));
+      case 2:
+        _recentMealBloc.add(
+          RecentMealSearchChangedEvent(searchString: inputText),
+        );
     }
   }
 }

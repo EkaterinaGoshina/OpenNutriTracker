@@ -104,6 +104,8 @@ import 'package:opennutritracker/features/add_meal/presentation/bloc/favourite_m
 import 'package:opennutritracker/features/add_meal/presentation/bloc/favourite_toggle_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
+import 'package:opennutritracker/core/domain/usecase/get_recent_ingredients_usecase.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_ingredient_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
@@ -404,6 +406,12 @@ Future<void> initLocator() async {
   );
   locator.registerFactory<FoodBloc>(() => FoodBloc(locator(), locator()));
   locator.registerFactory(() => RecentMealBloc(locator(), locator()));
+  locator.registerFactory(
+    () => RecentIngredientBloc(locator(), locator(), locator()),
+  );
+  locator.registerLazySingleton(
+    () => GetRecentIngredientsUsecase(locator(), locator()),
+  );
   // #1307: the add-food Favourites source. Factory, and closed by the screen,
   // because it holds a subscription to the favourites box.
   locator.registerFactory(() => FavouriteMealBloc(locator(), locator()));
