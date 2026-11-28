@@ -116,6 +116,70 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('renaming a meal leaves its figures and sizes as they were',
+      (tester) async {
+    await pumpEditor(tester, customMeal(code: 'uuid-oats', name: 'Oats'));
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, l10nEn.mealNameLabel),
+      'Porridge oats',
+    );
+    await save(tester);
+
+    final (saved, _) = dataSource.saves.single;
+    expect(saved.nutriments.energyKcal100, 370);
+    expect(saved.nutriments.carbohydrates100, 60);
+    expect(saved.nutriments.fat100, 7);
+    expect(saved.nutriments.proteins100, 13);
+    expect(saved.mealQuantity, '100');
+    expect(saved.servingQuantity, 100);
+  });
+
+  testWidgets(
+      'figures typed for another weight are shown and saved per 100 g',
+      (tester) async {
+    await pumpEditor(tester, customMeal(code: 'uuid-oats', name: 'Oats'));
+    Future<void> type(String identifier, String text) => tester.enterText(
+          find.descendant(
+            of: find.bySemanticsIdentifier(identifier),
+            matching: find.byType(TextFormField),
+          ),
+          text,
+        );
+
+    await tester.tap(find.text(l10nEn.editFoodBasisOther));
+    await tester.pumpAndSettle();
+    // No weight yet: the summary asks for it and Save keeps the editor open.
+    expect(find.text(l10nEn.editFoodSummaryNeedsWeight), findsOneWidget);
+    await save(tester);
+    expect(dataSource.saves, isEmpty);
+
+    await type('edit-meal-basis-weight', '50');
+    await type('edit-meal-energy', '185');
+    await type('edit-meal-carbs', '30');
+    await type('edit-meal-fat', '3.5');
+    await type('edit-meal-protein', '6.5');
+    await type('edit-meal-pack-size', '330');
+    await tester.pumpAndSettle();
+
+    // 100 g and the whole pack, from figures typed for 50 g.
+    expect(find.text('370 ${l10nEn.kcalLabel}'), findsOneWidget);
+    expect(find.text('1221 ${l10nEn.kcalLabel}'), findsOneWidget);
+    expect(
+      find.text(l10nEn.editFoodSummaryMacros('60', '7', '13')),
+      findsOneWidget,
+    );
+
+    await save(tester);
+
+    final (saved, _) = dataSource.saves.single;
+    expect(saved.nutriments.energyKcal100, 370);
+    expect(saved.nutriments.carbohydrates100, 60);
+    expect(saved.nutriments.fat100, 7);
+    expect(saved.nutriments.proteins100, 13);
+    expect(saved.mealQuantity, '330');
+  });
+
   testWidgets('adding a barcode saves with the meal as it was before',
       (tester) async {
     await pumpEditor(tester, customMeal(code: 'uuid-oats', name: 'Oats'));

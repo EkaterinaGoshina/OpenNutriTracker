@@ -20,10 +20,19 @@ import 'package:opennutritracker/generated/l10n.dart';
 class IntakeCard extends StatelessWidget {
   static const double thumbSize = 52;
 
+  /// The smaller thumbnail and the shortest height of a [grouped] row.
+  static const double groupedThumbSize = 40;
+  static const double rowMinHeight = 60;
+
   final IntakeEntity intake;
   final Function(BuildContext, IntakeEntity)? onItemLongPressed;
   final Function(BuildContext, IntakeEntity, bool)? onItemTapped;
   final bool firstListElement;
+
+  /// A row inside a card that already holds the whole meal: no surface of its
+  /// own, a smaller thumbnail and a quieter energy figure, so the entry reads
+  /// as part of the meal and not as a block beside it.
+  final bool grouped;
   final bool usesImperialUnits;
   final DiarySortType? sortType;
 
@@ -33,6 +42,7 @@ class IntakeCard extends StatelessWidget {
     this.onItemLongPressed,
     this.onItemTapped,
     required this.firstListElement,
+    this.grouped = false,
     required this.usesImperialUnits,
     this.sortType,
   });
@@ -56,6 +66,131 @@ class IntakeCard extends StatelessWidget {
             locale: Localizations.localeOf(context).toString(),
             decimalDigits: 1,
           ).format(macro.$1);
+    final content = Row(
+      children: [
+        // A meal with no photo gets no stand-in icon: the same glyph
+        // on every row only takes the name's room.
+        if (_Thumbnail.hasImage(intake)) ...[
+          _Thumbnail(
+            intake: intake,
+            palette: palette,
+            size: grouped ? groupedThumbSize : thumbSize,
+          ),
+          const SizedBox(width: Dimens.spacing12),
+        ],
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AutoSizeText(
+                intake.meal.name ?? "?",
+                style: textTheme.titleSmall?.copyWith(color: palette.textStrong),
+                maxLines: 1,
+                minFontSize: 11,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              MealValueUnitText(
+                value: intake.amount,
+                meal: intake.meal,
+                usesImperialUnits: usesImperialUnits,
+                textStyle: textTheme.bodySmall?.copyWith(color: palette.textMuted),
+              ),
+              // A portion a family cook served: say who, so it is not
+              // mistaken for something the person logged themselves.
+              if (intake.servedBy != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.soup_kitchen_rounded,
+                        size: 14,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          intake.servedBy!.isEmpty
+                              ? s.servedByCookLabel
+                              : s.servedByLabel(intake.servedBy!),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: Dimens.spacing8),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.sizeOf(context).width * 0.4,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (macro != null)
+                Text(
+                  '$macroValue ${s.gramUnit} ${macro.$2}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: palette.textStrong,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              Text(
+                EnergyDisplay.formatWithUnit(context, intake.totalKcal),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: macro == null
+                    ? textTheme.labelMedium?.copyWith(
+                        color: grouped ? palette.textMuted : palette.textStrong,
+                        fontWeight: grouped ? FontWeight.w600 : FontWeight.w700,
+                      )
+                    : textTheme.bodySmall?.copyWith(
+                        color: palette.textMuted,
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ],
+
+    );
+    final onTap = onItemTapped != null
+        ? () => onTappedItem(context, usesImperialUnits)
+        : null;
+    final onLongPress = onItemLongPressed != null
+        ? () => onLongPressedItem(context)
+        : null;
+    if (grouped) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: rowMinHeight),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(
+              horizontal: Dimens.spacing16,
+              vertical: 10,
+            ),
+            child: content,
+          ),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: Dimens.spacing16,
@@ -65,111 +200,12 @@ class IntakeCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: radius,
-          onTap: onItemTapped != null
-              ? () => onTappedItem(context, usesImperialUnits)
-              : null,
-          onLongPress: onItemLongPressed != null
-              ? () => onLongPressedItem(context)
-              : null,
+          onTap: onTap,
+          onLongPress: onLongPress,
           child: AppCard(
             borderRadius: Dimens.radiusM,
             padding: const EdgeInsets.all(Dimens.spacing12),
-            child: Row(
-              children: [
-                // A meal with no photo gets no stand-in icon: the same glyph
-                // on every row only takes the name's room.
-                if (_Thumbnail.hasImage(intake)) ...[
-                  _Thumbnail(intake: intake, palette: palette),
-                  const SizedBox(width: Dimens.spacing12),
-                ],
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AutoSizeText(
-                        intake.meal.name ?? "?",
-                        style: textTheme.titleSmall?.copyWith(color: palette.textStrong),
-                        maxLines: 1,
-                        minFontSize: 11,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      MealValueUnitText(
-                        value: intake.amount,
-                        meal: intake.meal,
-                        usesImperialUnits: usesImperialUnits,
-                        textStyle: textTheme.bodySmall?.copyWith(color: palette.textMuted),
-                      ),
-                      // A portion a family cook served: say who, so it is not
-                      // mistaken for something the person logged themselves.
-                      if (intake.servedBy != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.soup_kitchen_rounded,
-                                size: 14,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  intake.servedBy!.isEmpty
-                                      ? s.servedByCookLabel
-                                      : s.servedByLabel(intake.servedBy!),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: Dimens.spacing8),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.sizeOf(context).width * 0.4,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (macro != null)
-                        Text(
-                          '$macroValue ${s.gramUnit} ${macro.$2}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.labelMedium?.copyWith(
-                            color: palette.textStrong,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      Text(
-                        EnergyDisplay.formatWithUnit(context, intake.totalKcal),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: macro == null
-                            ? textTheme.labelMedium?.copyWith(
-                                color: palette.textStrong,
-                                fontWeight: FontWeight.w700,
-                              )
-                            : textTheme.bodySmall?.copyWith(
-                                color: palette.textMuted,
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            child: content,
           ),
         ),
       ),
@@ -191,7 +227,13 @@ class _Thumbnail extends StatelessWidget {
   final IntakeEntity intake;
   final AppPalette palette;
 
-  const _Thumbnail({required this.intake, required this.palette});
+  final double size;
+
+  const _Thumbnail({
+    required this.intake,
+    required this.palette,
+    required this.size,
+  });
 
   static bool hasImage(IntakeEntity intake) =>
       intake.meal.localImagePath != null || intake.meal.mainImageUrl != null;
@@ -218,8 +260,8 @@ class _Thumbnail extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(Dimens.radiusS),
       child: SizedBox(
-        width: IntakeCard.thumbSize,
-        height: IntakeCard.thumbSize,
+        width: size,
+        height: size,
         child: content,
       ),
     );

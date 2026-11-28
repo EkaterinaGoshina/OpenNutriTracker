@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
-import 'package:opennutritracker/core/presentation/widgets/add_item_bottom_sheet.dart';
 import 'package:opennutritracker/core/presentation/widgets/demo_mode_banner.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/utils/health_rationale_service.dart';
@@ -10,13 +9,13 @@ import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_b
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
-import 'package:opennutritracker/core/utils/meal_type_suggester.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/diary/diary_page.dart';
 import 'package:opennutritracker/core/presentation/widgets/home_appbar.dart';
 import 'package:opennutritracker/features/home/home_page.dart';
 import 'package:opennutritracker/core/presentation/widgets/main_appbar.dart';
 import 'package:opennutritracker/features/profile/profile_page.dart';
+import 'package:opennutritracker/features/recipes/presentation/bloc/recipes_bloc.dart';
 import 'package:opennutritracker/features/trends/presentation/trends_page.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
@@ -260,24 +259,16 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     });
   }
 
+  /// "Add" goes straight to a new dish, the thing logged here most often.
+  /// A single food or an activity is added from the "+" of its own section.
   Future<void> _onFabPressed(BuildContext context) async {
-    final config = await locator<GetConfigUsecase>().getConfig();
-    if (!context.mounted) return;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return AddItemBottomSheet(
-          day: DateTime.now(),
-          showActivityTracking: config.showActivityTracking,
-          usesImperialUnits: config.usesImperialFoodUnits,
-          suggestedType: MealTypeSuggester.suggestFromTime(
-            DateTime.now(),
-            mealSharesPct: config.mealKcalSharesPct,
-          ),
-        );
-      },
-    );
+    final saved = await Navigator.of(
+      context,
+    ).pushNamed(NavigationOptions.recipeBuilderRoute);
+    if (saved != true || !mounted) return;
+    // The new dish waits in the kitchen on Home, ready to be eaten.
+    locator<RecipesBloc>().add(const LoadRecipesEvent());
+    _setPage(0);
   }
 }
 

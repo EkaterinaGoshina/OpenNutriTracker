@@ -6,6 +6,7 @@ import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/presentation/widgets/meal_value_unit_text.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
+import 'package:opennutritracker/core/presentation/widgets/user_image.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/off_const.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
@@ -130,6 +131,27 @@ class MealItemCard extends StatelessWidget {
     String? emoji,
   ) {
     final radius = BorderRadius.circular(Dimens.radiusM);
+    final localImage = mealEntity.localImagePath;
+    if (localImage != null) {
+      return ClipRRect(
+        borderRadius: radius,
+        child: UserImage(
+          relativePath: localImage,
+          width: Dimens.mealThumb,
+          height: Dimens.mealThumb,
+          fallback: Container(
+            width: Dimens.mealThumb,
+            height: Dimens.mealThumb,
+            color: palette.surfaceMuted,
+            child: Icon(
+              Icons.restaurant_rounded,
+              size: 26,
+              color: palette.textMuted,
+            ),
+          ),
+        ),
+      );
+    }
     if (mealEntity.thumbnailImageUrl != null) {
       return ClipRRect(
         borderRadius: radius,

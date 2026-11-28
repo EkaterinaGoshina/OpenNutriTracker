@@ -228,7 +228,7 @@ class _WeekDeltaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final up = delta > 0;
-    final color = up ? palette.proteinColor : palette.fatColor;
+    final color = up ? palette.proteinText : palette.fatText;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Dimens.spacing12, vertical: 6),
       decoration: BoxDecoration(

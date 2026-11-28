@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
+import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/presentation/widgets/intake_card.dart';
 import 'package:opennutritracker/features/diary/presentation/widgets/diary_sort_type.dart';
 import 'package:opennutritracker/core/domain/entity/profile_entity.dart';
@@ -123,6 +124,15 @@ IntakeEntity _buildIntake({
   );
 }
 
+IntakeEntity _copy(IntakeEntity intake) => IntakeEntity(
+  id: '${intake.id}-copy',
+  unit: intake.unit,
+  amount: intake.amount,
+  type: intake.type,
+  dateTime: intake.dateTime,
+  meal: intake.meal,
+);
+
 Widget _wrapWithMaterial(Widget child) {
   return ChangeNotifierProvider<EnergyUnitProvider>(
     create: (_) => EnergyUnitProvider(),
@@ -162,11 +172,11 @@ void main() {
     ),
   ];
 
-  String headerWithMacros() =>
-      '200 ${l10nEn.kcalLabel}\n'
-      '20 ${l10nEn.carbsLabelShort}  '
-      '10 ${l10nEn.fatLabelShort}  '
-      '5 ${l10nEn.proteinLabelShort}';
+  // Protein, fat, carbs of the whole meal, under the header row.
+  String macroLine() =>
+      '${l10nEn.proteinLabelShort.toUpperCase()} 5 · '
+      '${l10nEn.fatLabelShort.toUpperCase()} 10 · '
+      '${l10nEn.carbsLabelShort.toUpperCase()} 20';
 
   String headerKcalOnly() => '200 ${l10nEn.kcalLabel}';
 
@@ -198,7 +208,7 @@ void main() {
   });
 
   testWidgets(
-    'shows kcal + macro breakdown when showMealMacros is true',
+    'shows kcal and the meal macros when showMealMacros is true',
     (WidgetTester tester) async {
       await tester.pumpWidget(_wrapWithMaterial(IntakeVerticalList(
         day: DateTime(2026, 1, 1),
@@ -212,7 +222,9 @@ void main() {
       )));
       await tester.pump();
 
-      expect(find.text(headerWithMacros()), findsOneWidget);
+      // The header and the single row under it show the same energy.
+      expect(find.text(headerKcalOnly()), findsNWidgets(2));
+      expect(find.text(macroLine()), findsOneWidget);
     },
   );
 
@@ -231,7 +243,9 @@ void main() {
       )));
       await tester.pump();
 
-      expect(find.text(headerWithMacros()), findsNothing);
+      // The header and the single row under it show the same energy.
+      expect(find.text(headerKcalOnly()), findsNWidgets(2));
+      expect(find.text(macroLine()), findsNothing);
     },
   );
 
@@ -249,9 +263,109 @@ void main() {
       )));
       await tester.pump();
 
-      expect(find.text(headerWithMacros()), findsOneWidget);
+      expect(find.text(macroLine()), findsOneWidget);
     },
   );
+
+  testWidgets('the compact header on Home shows the meal macros too', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrapWithMaterial(IntakeVerticalList(
+      day: DateTime(2026, 1, 1),
+      title: 'Breakfast',
+      listIcon: Icons.bakery_dining_outlined,
+      addMealType: AddMealType.breakfastType,
+      intakeList: [...intakes, ...intakes.map(_copy)],
+      usesImperialUnits: false,
+      compact: true,
+      onDeleteIntakeCallback: (_, _) {},
+    )));
+    await tester.pump();
+
+    expect(
+      find.text(
+        '${l10nEn.proteinLabelShort.toUpperCase()} 10 · '
+        '${l10nEn.fatLabelShort.toUpperCase()} 20 · '
+        '${l10nEn.carbsLabelShort.toUpperCase()} 40',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('on Home the entries are rows of one meal card', (tester) async {
+    await tester.pumpWidget(_wrapWithMaterial(IntakeVerticalList(
+      day: DateTime(2026, 1, 1),
+      title: 'Breakfast',
+      listIcon: Icons.bakery_dining_outlined,
+      addMealType: AddMealType.breakfastType,
+      intakeList: [...intakes, ...intakes.map(_copy)],
+      usesImperialUnits: false,
+      compact: true,
+      onDeleteIntakeCallback: (_, _) {},
+    )));
+    await tester.pump();
+
+    // One surface for the whole meal: the entries bring none of their own.
+    expect(find.byType(AppCard), findsOneWidget);
+    final card = find.byType(AppCard);
+    expect(
+      find.descendant(of: card, matching: find.text('Breakfast')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: card, matching: find.byType(IntakeCard)),
+      findsNWidgets(2),
+    );
+  });
+
+  testWidgets('a meal card lights up under an entry of another meal only', (
+    tester,
+  ) async {
+    Widget meal(String title, List<IntakeEntity> entries) => IntakeVerticalList(
+      day: DateTime(2026, 1, 1),
+      title: title,
+      listIcon: Icons.bakery_dining_outlined,
+      addMealType: AddMealType.breakfastType,
+      intakeList: entries,
+      usesImperialUnits: false,
+      compact: true,
+      onDeleteIntakeCallback: (_, _) {},
+    );
+    await tester.pumpWidget(
+      _wrapWithMaterial(
+        Column(children: [meal('Breakfast', intakes), meal('Lunch', const [])]),
+      ),
+    );
+    await tester.pump();
+
+    Finder outlineOf(String title) => find.ancestor(
+      of: find.text(title),
+      matching: find.byWidgetPredicate(
+        // Material draws foreground painters of its own, so by name.
+        (w) =>
+            w is CustomPaint &&
+            '${w.foregroundPainter.runtimeType}' == '_DashedOutlinePainter',
+      ),
+    );
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(IntakeCard)),
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await gesture.moveBy(const Offset(0, 2));
+    await tester.pump();
+    expect(outlineOf('Breakfast'), findsNothing);
+
+    await gesture.moveTo(tester.getCenter(find.text('Lunch')));
+    await tester.pump();
+    expect(outlineOf('Lunch'), findsOneWidget);
+    expect(outlineOf('Breakfast'), findsNothing);
+
+    await gesture.cancel();
+    await tester.pumpAndSettle();
+    expect(outlineOf('Lunch'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'shows no header text when intake list is empty',
@@ -268,7 +382,7 @@ void main() {
       )));
       await tester.pump();
 
-      expect(find.text(headerWithMacros()), findsNothing);
+      expect(find.text(macroLine()), findsNothing);
       expect(find.text(headerKcalOnly()), findsNothing);
     },
   );

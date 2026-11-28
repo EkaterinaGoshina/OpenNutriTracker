@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:opennutritracker/core/presentation/widgets/intake_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -363,7 +364,15 @@ void main() {
           DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 30);
       locator<DiaryBloc>().add(const LoadDiaryYearEvent());
       await settle(tester);
-      expect(find.text('Toast'), findsNothing, reason: 'followed today');
+      // In the list only: an open edit dialog names its entry too.
+      expect(
+        find.descendant(
+          of: find.byType(IntakeCard),
+          matching: find.text('Toast'),
+        ),
+        findsNothing,
+        reason: 'followed today',
+      );
     }
 
     testWidgets('an edit adjusts the row of the day the entry is on', (

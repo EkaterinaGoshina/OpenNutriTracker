@@ -28,6 +28,7 @@ import 'package:opennutritracker/features/add_meal/presentation/log_tray.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/widgets/default_meal_image.dart';
+import 'package:opennutritracker/features/edit_meal/presentation/widgets/saved_nutrition_card.dart';
 import 'package:opennutritracker/features/meal_detail/meal_detail_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:provider/provider.dart';
@@ -53,11 +54,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
 
   late EditMealBloc _editMealBloc;
 
-  /// Tracks the active form view (#232). Hydrated from ConfigDBO once the
-  /// bloc finishes loading, and persisted back whenever the user toggles.
-  CustomMealFormMode _formMode = CustomMealFormMode.simple;
-  bool _formModeHydrated = false;
-
   final _nameTextController = TextEditingController();
   final _brandsTextController = TextEditingController();
   final _barcodeTextController = TextEditingController();
@@ -80,15 +76,23 @@ class _EditMealScreenState extends State<EditMealScreen> {
   final _vitaminDTextController = TextEditingController();
   final _vitaminB12TextController = TextEditingController();
 
-  final _units = ['g', 'ml', 'g/ml'];
-  String? selectedUnit;
-  bool _isTotal = false;
+  final _units = ['g', 'ml'];
+  String selectedUnit = 'g';
+
+  /// Whether the nutrition values are typed for 100 g/ml, as most packaging
+  /// prints them, or for the weight in [_baseQuantityTextController].
+  bool _per100 = true;
+
+  /// The energy and macro fields as they were filled in on opening, so the
+  /// consistency checks only speak about numbers the user has touched.
+  late String _initialNutritionTexts;
+
+  /// The micronutrient fields as they were filled in on opening.
+  final Map<TextEditingController, String> _initialMicroTexts = {};
   // Default on so behaviour matches what existing users are used to — the
   // meal is saved to their custom list unless they actively untick the box.
   // #249 adds the *option* to skip the save; it does not change the default.
   bool _saveForLater = true;
-
-  late List<ButtonSegment<String>> _mealUnitButtonSegment;
 
   // didChangeDependencies is called on every dependency change, including
   // ones triggered by Navigator pops returning from sub-pages (the barcode
@@ -96,8 +100,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
   // re-seeded from _mealEntity.code on every return, wiping a value the
   // user just scanned into the field.
   bool _initialised = false;
-
-  String baseQuantity = "100";
 
   /// Tracks the unit the energy field was last rendered in, so that when
   /// the user flips between kcal and kJ in Settings mid-edit we can
@@ -201,27 +203,31 @@ class _EditMealScreenState extends State<EditMealScreen> {
       );
     }
 
-    _mealUnitButtonSegment = [
-      ButtonSegment(
-        value: _units[0],
-        label: Text(
-          _usesImperialUnits ? S.of(context).ozUnit : S.of(context).gramUnit,
-        ),
-      ),
-      ButtonSegment(
-        value: _units[1],
-        label: Text(
-          _usesImperialUnits
-              ? S.of(context).flOzUnit
-              : S.of(context).milliliterUnit,
-        ),
-      ),
-      ButtonSegment(
-        value: _units[2],
-        label: Text(S.of(context).gramMilliliterUnit),
-      ),
-    ];
+    _initialNutritionTexts = _nutritionTexts();
+    for (final controller in _microControllers) {
+      _initialMicroTexts[controller] = controller.text;
+    }
   }
+
+  List<TextEditingController> get _microControllers => [
+    _fiberTextController,
+    _saturatedFatTextController,
+    _sugarsTextController,
+    _sodiumTextController,
+    _calciumTextController,
+    _ironTextController,
+    _potassiumTextController,
+    _magnesiumTextController,
+    _vitaminDTextController,
+    _vitaminB12TextController,
+  ];
+
+  String _nutritionTexts() => [
+    _kcalTextController.text,
+    _carbsTextController.text,
+    _fatTextController.text,
+    _proteinTextController.text,
+  ].join('|');
 
   @override
   void dispose() {
@@ -260,21 +266,27 @@ class _EditMealScreenState extends State<EditMealScreen> {
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(Dimens.spacing16, 0, Dimens.spacing16, 0),
-              child: Semantics(
-                identifier: 'edit-meal-save',
-                child: FilledButton(
-                  onPressed: () => _onSavePressed(_usesImperialUnits),
-                  style: FilledButton.styleFrom(
-                    shape: const RoundedRectangleBorder(borderRadius: Dimens.borderRadiusM),
-                  ),
-                  child: Text(S.of(context).buttonSaveLabel),
+        ),
+        bottomNavigationBar: Padding(
+          padding: EdgeInsets.fromLTRB(
+            Dimens.spacing16,
+            Dimens.spacing8,
+            Dimens.spacing16,
+            Dimens.spacing16 + MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: Semantics(
+            identifier: 'edit-meal-save',
+            child: FilledButton(
+              onPressed: () => _onSavePressed(_usesImperialUnits),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: Dimens.borderRadiusM,
                 ),
               ),
+              child: Text(S.of(context).buttonSaveLabel),
             ),
-          ],
+          ),
         ),
         body: BlocBuilder<EditMealBloc, EditMealState>(
           bloc: _editMealBloc,
@@ -282,10 +294,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
             if (state is EditMealLoadingState) {
               return _getLoadingContent();
             } else if (state is EditMealLoadedState) {
-              if (!_formModeHydrated) {
-                _formMode = state.formMode;
-                _formModeHydrated = true;
-              }
               return _getLoadedContent(state.usesImperialUnits, usesKj);
             }
             return const SizedBox.shrink();
@@ -330,26 +338,43 @@ class _EditMealScreenState extends State<EditMealScreen> {
   }
 
   Widget _getLoadedContent(bool usesImperialUnits, bool usesKj) {
-    final isSimple = _formMode == CustomMealFormMode.simple;
-    final energyUnitSuffix =
-        usesKj ? S.of(context).kjLabel : S.of(context).kcalLabel;
-    // The mass unit every Advanced field is read in, following the unit
-    // selector (now the first Advanced field) so the labels and the per-100
-    // helper all track the user's choice (#495).
-    final unitSuffix = _massUnitSuffix(context);
-    final String advancedHelper = _isTotal
-        ? S.of(context).mealNutrientsTotalLabel
-        : S.of(context).mealNutrientsPerQtyLabel(_getDisplayQuantity(), unitSuffix);
-    final String energyHelper = isSimple
-        ? S.of(context).customMealFormSimpleFieldHelper(energyUnitSuffix)
-        : advancedHelper;
-    final String macroHelper = isSimple
-        ? S.of(context).customMealFormSimpleFieldHelper('g')
-        : advancedHelper;
-    // perQtyHelper is the advanced-mode helper, passed to the micronutrient fields.
-    final String? perQtyHelper = isSimple ? null : advancedHelper;
+    final s = S.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? AppPalette.dark : AppPalette.light;
+    final energyUnitSuffix = usesKj ? s.kjLabel : s.kcalLabel;
+    // Packaging prints nutrition in metric, so the basis is metric whatever
+    // the size fields are shown in.
+    final basisUnit = selectedUnit == 'ml' ? s.milliliterUnit : s.gramUnit;
+    final sizeUnit = _sizeUnitSuffix(context);
+    Widget sectionTitle(String text) => Text(
+      text,
+      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+    );
+    InputDecoration decoration(String label, {String? helper}) =>
+        InputDecoration(
+          labelText: label,
+          helperText: helper,
+          helperMaxLines: 2,
+          border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
+        );
+    Widget numberField(
+      TextEditingController controller,
+      String identifier,
+      String label, {
+      String? helper,
+    }) => Semantics(
+      identifier: identifier,
+      child: TextFormField(
+        controller: controller,
+        inputFormatters: CustomTextInputFormatter.doubleOnly(),
+        decoration: decoration(label, helper: helper),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      ),
+    );
+
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Dimens.spacing16),
       children: [
         // Custom meals get the same picker tile recipes use — a single
         // tappable circle with an overlay camera icon, "Add a photo"
@@ -370,66 +395,121 @@ class _EditMealScreenState extends State<EditMealScreen> {
         else
           Center(child: _buildRemoteMealImage()),
         const SizedBox(height: 24),
-        // Simple / Advanced toggle (#232). The reporter wanted to log a
-        // homemade meal as "name + per-serving macros" without the per-100g
-        // scaffolding; the advanced view keeps the precise path for users
-        // who care about base quantities and serving math.
-        if (_mealEntity.source == MealSourceEntity.custom) ...[
-          Text(
-            S.of(context).customMealFormModeLabel,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          const SizedBox(height: 8),
-          Semantics(
-            identifier: 'edit-meal-mode-toggle',
-            child: SegmentedButton<CustomMealFormMode>(
-              segments: [
-                ButtonSegment(
-                  value: CustomMealFormMode.simple,
-                  label: Text(S.of(context).customMealFormSimple),
-                ),
-                ButtonSegment(
-                  value: CustomMealFormMode.advanced,
-                  label: Text(S.of(context).customMealFormAdvanced),
-                ),
-              ],
-              selected: {_formMode},
-              onSelectionChanged: (Set<CustomMealFormMode> selection) {
-                final newMode = selection.first;
-                setState(() {
-                  _formMode = newMode;
-                });
-                _editMealBloc.setFormMode(newMode);
-              },
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isSimple
-                ? S.of(context).customMealFormSimpleHelp
-                : S.of(context).customMealFormAdvancedHelp,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 16),
-        ],
         TextFormField(
           controller: _nameTextController,
-          decoration: InputDecoration(
-            labelText: S.of(context).mealNameLabel,
-            border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
-          ),
+          decoration: decoration(s.mealNameLabel),
           keyboardType: TextInputType.text,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Dimens.spacing24),
+        sectionTitle(s.editFoodNutritionTitle),
+        const SizedBox(height: Dimens.spacing4),
+        Text(
+          s.editFoodNutritionHint,
+          style: textTheme.bodyMedium?.copyWith(color: palette.textMuted),
+        ),
+        const SizedBox(height: Dimens.spacing16),
+        // Unit first: every quantity below is entered in it (#495).
+        Semantics(
+          identifier: 'edit-meal-unit-selector',
+          child: SegmentedButton<String>(
+            segments: [
+              ButtonSegment(value: _units[0], label: Text(s.editFoodUnitSolid)),
+              ButtonSegment(
+                value: _units[1],
+                label: Text(s.editFoodUnitLiquid),
+              ),
+            ],
+            selected: {selectedUnit},
+            onSelectionChanged: (selection) =>
+                setState(() => selectedUnit = selection.first),
+          ),
+        ),
+        const SizedBox(height: Dimens.spacing12),
+        Semantics(
+          identifier: 'edit-meal-nutrients-mode',
+          child: SegmentedButton<bool>(
+            segments: [
+              ButtonSegment(
+                value: true,
+                label: Text(s.mealNutrientsPerQtyLabel('100', basisUnit)),
+              ),
+              ButtonSegment(value: false, label: Text(s.editFoodBasisOther)),
+            ],
+            selected: {_per100},
+            onSelectionChanged: (selection) =>
+                setState(() => _per100 = selection.first),
+          ),
+        ),
+        const SizedBox(height: Dimens.spacing16),
+        if (!_per100) ...[
+          numberField(
+            _baseQuantityTextController,
+            'edit-meal-basis-weight',
+            '${s.editFoodBasisWeightLabel} ($basisUnit)',
+            helper: s.editFoodBasisWeightHelper,
+          ),
+          const SizedBox(height: Dimens.spacing16),
+        ],
+        numberField(
+          _kcalTextController,
+          'edit-meal-energy',
+          '${s.mealEnergyLabel} ($energyUnitSuffix)',
+        ),
+        const SizedBox(height: Dimens.spacing12),
+        numberField(
+          _carbsTextController,
+          'edit-meal-carbs',
+          '${s.mealCarbsLabel} (${s.gramUnit})',
+        ),
+        const SizedBox(height: Dimens.spacing12),
+        numberField(
+          _fatTextController,
+          'edit-meal-fat',
+          '${s.mealFatLabel} (${s.gramUnit})',
+        ),
+        const SizedBox(height: Dimens.spacing12),
+        numberField(
+          _proteinTextController,
+          'edit-meal-protein',
+          '${s.mealProteinLabel} (${s.gramUnit})',
+        ),
+        const SizedBox(height: Dimens.spacing16),
+        ListenableBuilder(
+          listenable: Listenable.merge([
+            _baseQuantityTextController,
+            _kcalTextController,
+            _carbsTextController,
+            _fatTextController,
+            _proteinTextController,
+            _mealQuantityTextController,
+            _servingQuantityTextController,
+          ]),
+          builder: (context, _) =>
+              _buildSavedSummary(context, energyUnitSuffix, basisUnit),
+        ),
+        const SizedBox(height: Dimens.spacing32),
+        sectionTitle(s.editFoodSizesTitle),
+        const SizedBox(height: Dimens.spacing16),
+        numberField(
+          _mealQuantityTextController,
+          'edit-meal-pack-size',
+          '${s.editFoodPackLabel} ($sizeUnit)',
+          helper: s.editFoodPackHelper,
+        ),
+        const SizedBox(height: Dimens.spacing12),
+        numberField(
+          _servingQuantityTextController,
+          'edit-meal-serving-size',
+          '${s.editFoodServingLabel} ($sizeUnit)',
+          helper: s.editFoodServingHelper,
+        ),
+        const SizedBox(height: Dimens.spacing24),
         TextFormField(
           controller: _brandsTextController,
-          decoration: InputDecoration(
-            labelText: S.of(context).mealBrandsLabel,
-            border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
-          ),
+          decoration: decoration(s.mealBrandsLabel),
           keyboardType: TextInputType.text,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Dimens.spacing12),
         // Optional barcode (#167). Lets the user attach a code to a custom
         // meal so a future scan recalls the saved version directly without
         // round-tripping through Open Food Facts.
@@ -438,13 +518,15 @@ class _EditMealScreenState extends State<EditMealScreen> {
           child: TextFormField(
             controller: _barcodeTextController,
             decoration: InputDecoration(
-              labelText: S.of(context).customMealBarcodeLabel,
-              hintText: S.of(context).customMealBarcodeHint,
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
+              labelText: s.customMealBarcodeLabel,
+              hintText: s.customMealBarcodeHint,
+              border: const OutlineInputBorder(
+                borderRadius: Dimens.borderRadiusM,
+              ),
               suffixIcon: Semantics(
                 identifier: 'edit-meal-barcode-scan',
                 child: IconButton(
-                  tooltip: S.of(context).customMealBarcodeScanButton,
+                  tooltip: s.customMealBarcodeScanButton,
                   icon: const Icon(Icons.barcode_reader),
                   onPressed: _scanBarcodeIntoField,
                 ),
@@ -453,149 +535,36 @@ class _EditMealScreenState extends State<EditMealScreen> {
             keyboardType: TextInputType.number,
           ),
         ),
-        // Advanced mode: quantity, unit, base-qty, and per/total toggle.
-        // Simple mode omits these — the user types totals for one serving
-        // and the scaffolding is hidden to reduce cognitive load (#232).
-        if (!isSimple) ...[
-          const SizedBox(height: 32),
-          // Unit first: every quantity and nutrition value below is entered
-          // in this unit, so choosing it up front keeps the form consistent
-          // and lets the labels and per-100 helper reflect it (#495).
-          Semantics(
-            identifier: 'edit-meal-unit-selector',
-            child: SegmentedButton<String>(
-              segments: _mealUnitButtonSegment,
-              selected: {selectedUnit ?? _units[2]},
-              onSelectionChanged: (Set<String> newSelection) {
-                setState(() {
-                  selectedUnit = newSelection.first;
-                });
-              },
-            ),
-          ),
-          const SizedBox(height: 24),
-          TextFormField(
-            controller: _mealQuantityTextController,
-            inputFormatters: CustomTextInputFormatter.doubleOnly(),
-            decoration: InputDecoration(
-              labelText: '${S.of(context).mealSizeLabel} ($unitSuffix)',
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
-            ),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _servingQuantityTextController,
-            inputFormatters: CustomTextInputFormatter.doubleOnly(),
-            decoration: InputDecoration(
-              labelText: '${S.of(context).servingSizeLabelMetric} ($unitSuffix)',
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
-            ),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _baseQuantityTextController,
-            inputFormatters: CustomTextInputFormatter.doubleOnly(),
-            decoration: InputDecoration(
-                labelText: '${S.of(context).baseQuantityLabel} ($unitSuffix)',
-                border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM)),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          ),
-          const SizedBox(height: 48),
-          Semantics(
-            identifier: 'edit-meal-nutrients-mode',
-            child: SegmentedButton<bool>(
-              segments: [
-                ButtonSegment(
-                  value: false,
-                  label: Text(S.of(context).mealNutrientsPerQtyLabel(
-                      _getDisplayQuantity(), unitSuffix)),
-                ),
-                ButtonSegment(
-                  value: true,
-                  label: Text(S.of(context).mealNutrientsTotalLabel),
-                ),
-              ],
-              selected: {_isTotal},
-              onSelectionChanged: (Set<bool> newSelection) {
-                setState(() {
-                  _isTotal = newSelection.first;
-                });
-              },
-            ),
-          ),
-        ],
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _kcalTextController,
-          inputFormatters: CustomTextInputFormatter.doubleOnly(),
-          decoration: InputDecoration(
-              labelText:
-                  '${S.of(context).mealEnergyLabel} ($energyUnitSuffix)',
-              helperText: energyHelper,
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM)),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        const SizedBox(height: Dimens.spacing12),
+        // Rarely filled in by hand, so folded away. They are read on the same
+        // basis as the values above.
+        ExpansionTile(
+          title: Text(s.editFoodMoreNutrientsLabel),
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(top: Dimens.spacing8),
+          shape: const Border(),
+          collapsedShape: const Border(),
+          maintainState: true,
+          children: [
+            for (final (controller, label, unit) in [
+              (_fiberTextController, s.fiberLabel, 'g'),
+              (_saturatedFatTextController, s.saturatedFatLabel, 'g'),
+              (_sugarsTextController, s.sugarLabel, 'g'),
+              (_sodiumTextController, s.sodiumLabel, 'mg'),
+              (_calciumTextController, s.calciumLabel, 'mg'),
+              (_ironTextController, s.ironLabel, 'mg'),
+              (_potassiumTextController, s.potassiumLabel, 'mg'),
+              (_magnesiumTextController, s.magnesiumLabel, 'mg'),
+              (_vitaminDTextController, s.vitaminDLabel, 'µg'),
+              (_vitaminB12TextController, s.vitaminB12Label, 'µg'),
+            ]) ...[
+              _buildMicroField(controller, label, unit),
+              const SizedBox(height: Dimens.spacing12),
+            ],
+          ],
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _carbsTextController,
-          inputFormatters: CustomTextInputFormatter.doubleOnly(),
-          decoration: InputDecoration(
-              labelText: S.of(context).mealCarbsLabel,
-              helperText: macroHelper,
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM)),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _fatTextController,
-          inputFormatters: CustomTextInputFormatter.doubleOnly(),
-          decoration: InputDecoration(
-              labelText: S.of(context).mealFatLabel,
-              helperText: macroHelper,
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM)),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _proteinTextController,
-          inputFormatters: CustomTextInputFormatter.doubleOnly(),
-          decoration: InputDecoration(
-              labelText: S.of(context).mealProteinLabel,
-              helperText: macroHelper,
-              border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM)),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        ),
-        if (!isSimple) ...[
-          const SizedBox(height: 32),
-          Text(
-            S.of(context).micronutrientsLabel,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          _buildMicroField(_fiberTextController, S.of(context).fiberLabel, 'g', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_saturatedFatTextController, S.of(context).saturatedFatLabel, 'g', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_sugarsTextController, S.of(context).sugarLabel, 'g', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_sodiumTextController, S.of(context).sodiumLabel, 'mg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_calciumTextController, S.of(context).calciumLabel, 'mg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_ironTextController, S.of(context).ironLabel, 'mg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_potassiumTextController, S.of(context).potassiumLabel, 'mg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_magnesiumTextController, S.of(context).magnesiumLabel, 'mg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_vitaminDTextController, S.of(context).vitaminDLabel, 'µg', perQtyHelper),
-          const SizedBox(height: 16),
-          _buildMicroField(_vitaminB12TextController, S.of(context).vitaminB12Label, 'µg', perQtyHelper),
-        ],
         if (!_editOnly && !_pickMode) ...[
-          const SizedBox(height: 24),
+          const SizedBox(height: Dimens.spacing16),
           _SaveForLaterField(
             value: _saveForLater,
             onChanged: (newValue) {
@@ -609,11 +578,66 @@ class _EditMealScreenState extends State<EditMealScreen> {
     );
   }
 
+  /// The weight the typed nutrition values are for, or null while "other
+  /// weight" is chosen and no usable weight is typed.
+  double? get _basisQuantity {
+    if (_per100) return 100;
+    final typed = double.tryParse(_baseQuantityTextController.text);
+    return typed != null && typed.isFinite && typed > 0 ? typed : null;
+  }
+
+  /// A size field in grams or millilitres, or null when empty or zero.
+  double? _metricSize(TextEditingController controller) {
+    if (controller.text.trim().isEmpty) return null;
+    final text = _usesImperialUnits
+        ? _convertToMetric(controller.text, selectedUnit)
+        : controller.text;
+    final value = double.tryParse(text);
+    return value != null && value > 0 ? value : null;
+  }
+
+  Widget _buildSavedSummary(
+    BuildContext context,
+    String energyUnit,
+    String basisUnit,
+  ) {
+    final s = S.of(context);
+    final basis = _basisQuantity;
+    double? per100(TextEditingController controller) {
+      final value = double.tryParse(controller.text);
+      return value == null || basis == null ? null : value * 100 / basis;
+    }
+
+    final energy = per100(_kcalTextController);
+    final String? placeholder = basis == null
+        ? s.editFoodSummaryNeedsWeight
+        : (energy == null ? s.editFoodSummaryEmpty : null);
+    String sized(double value) =>
+        '${value.toStringAsFixed(value % 1 == 0 ? 0 : 1)} $basisUnit';
+
+    final pack = _metricSize(_mealQuantityTextController);
+    final serving = _metricSize(_servingQuantityTextController);
+    return SavedNutritionCard(
+      energyPer100: energy,
+      carbsPer100: per100(_carbsTextController),
+      fatPer100: per100(_fatTextController),
+      proteinPer100: per100(_proteinTextController),
+      energyUnit: energyUnit,
+      placeholder: placeholder,
+      amounts: [
+        (title: sized(100), grams: 100),
+        if (pack != null && pack != 100)
+          (title: s.editFoodSummaryPack(sized(pack)), grams: pack),
+        if (serving != null && serving != 100)
+          (title: s.editFoodSummaryServing(sized(serving)), grams: serving),
+      ],
+    );
+  }
+
   Widget _buildMicroField(
     TextEditingController controller,
     String label,
     String unit,
-    String? helperText,
   ) {
     return TextFormField(
       controller: controller,
@@ -621,7 +645,6 @@ class _EditMealScreenState extends State<EditMealScreen> {
       decoration: InputDecoration(
         labelText: label,
         suffixText: unit,
-        helperText: helperText,
         border: const OutlineInputBorder(borderRadius: Dimens.borderRadiusM),
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -629,43 +652,21 @@ class _EditMealScreenState extends State<EditMealScreen> {
   }
 
   /// Returns "0" for empty / whitespace-only text, otherwise the original
-  /// string. Used on the Simple-mode save path so a blank macro field is
-  /// stored as an explicit 0 — see the surrounding comment at the call
-  /// site for why "empty means zero" is the right default in Simple mode.
-  String _simpleFieldOrZero(String text) {
+  /// string. A custom food's blank macro is stored as an explicit 0: the user
+  /// is the source of truth for it, many foods have none of one macro, and a
+  /// null there would make the product screen refuse to log the food (#232).
+  String _zeroIfBlank(String text) {
     return text.trim().isEmpty ? '0' : text;
   }
 
-  String _getDisplayQuantity() {
-    final text = _baseQuantityTextController.text;
-    return text.isEmpty ? baseQuantity : text;
-  }
-
-  /// The unit shown in the Advanced-mode field labels and the per-100
-  /// helper. It follows the unit selector (the first Advanced field) and the
-  /// user's metric/imperial setting, built from the existing localized unit
-  /// tokens so locales like uk/zh keep their own notation (#495).
-  String _massUnitSuffix(BuildContext context) {
+  /// The unit of the pack and serving fields. It follows the g/ml switch and
+  /// the user's metric/imperial setting (#495).
+  String _sizeUnitSuffix(BuildContext context) {
     final s = S.of(context);
-    final unit = selectedUnit ?? _units[2];
-    if (_usesImperialUnits) {
-      switch (unit) {
-        case 'g':
-          return s.ozUnit;
-        case 'ml':
-          return s.flOzUnit;
-        default:
-          return '${s.ozUnit}/${s.flOzUnit}';
-      }
+    if (selectedUnit == 'ml') {
+      return _usesImperialUnits ? s.flOzUnit : s.milliliterUnit;
     }
-    switch (unit) {
-      case 'g':
-        return s.gramUnit;
-      case 'ml':
-        return s.milliliterUnit;
-      default:
-        return s.gramMilliliterUnit;
-    }
+    return _usesImperialUnits ? s.ozUnit : s.gramUnit;
   }
 
   /// Set while a save runs, so a second tap on Save before the first one has
@@ -710,107 +711,70 @@ class _EditMealScreenState extends State<EditMealScreen> {
         }
       }
 
-      final MealEntity newMealEntity;
-      if (_formMode == CustomMealFormMode.simple) {
-        // Simple mode (#232): the user typed totals for one serving. Convert
-        // kJ → kcal if needed, then store using baseQuantity="100" so the
-        // entered values land in the per-100g fields without scaling.
-        // The earlier "1" here meant factorTo100g resolved to 100, which
-        // silently multiplied every typed value by 100 on save — 100 kcal
-        // round-tripped to 10000 kcal once the meal was reloaded.
-        final usesKjOnSave =
-            Provider.of<EnergyUnitProvider>(context, listen: false)
-                .usesKilojoules;
-        final enteredEnergyRaw = double.tryParse(_kcalTextController.text);
-        final kcalTextForSimple = (enteredEnergyRaw != null && usesKjOnSave)
-            ? UnitCalc.kjToKcal(enteredEnergyRaw).toStringAsFixed(1)
-            : _kcalTextController.text;
-        // Treat empty Simple-mode macro fields as an explicit zero rather
-        // than null. A user filling out a custom meal in Simple mode is the
-        // source of truth for that food — many real foods genuinely have
-        // zero of one macro (oil, plain meat, egg whites) and leaving the
-        // field blank should mean "this food has none", not "I don't know".
-        // The previous behaviour persisted null on the per-100g slot, which
-        // the meal-detail sheet's _hasRequiredProductInfoMissing() then
-        // blocked at log time with a "Product missing required kcal or
-        // macronutrients information" message that contradicted the on-
-        // screen 0.0 display.
-        newMealEntity = _editMealBloc.createNewMealEntity(
-          _mealEntity,
-          _nameTextController.text,
-          _brandsTextController.text,
-          "100",
-          "100",
-          "100",
-          _units[2], // g/ml
-          _simpleFieldOrZero(kcalTextForSimple),
-          _simpleFieldOrZero(_carbsTextController.text),
-          _simpleFieldOrZero(_fatTextController.text),
-          _simpleFieldOrZero(_proteinTextController.text),
-          barcodeOverride: rawBarcode,
-          localImagePathOverride: _localImagePath,
-          clearLocalImagePath: _localImageCleared && _localImagePath == null,
+      final isCustom = _mealEntity.source == MealSourceEntity.custom;
+      final basisQuantity = _basisQuantity;
+      if (basisQuantity == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.of(context).editFoodSummaryNeedsWeight)),
         );
-      } else {
-        // Advanced mode: validate nutritional consistency (#213).
-        final baseQty =
-            double.tryParse(_baseQuantityTextController.text) ?? 100.0;
-        // The energy field is rendered in the user's active unit (#177
-        // follow-up). Parse it as that unit and immediately fold it back
-        // to kcal — every downstream check, every persisted value, and
-        // every comparison expects kcal.
-        final usesKjOnSave =
-            Provider.of<EnergyUnitProvider>(context, listen: false)
-                .usesKilojoules;
-        final enteredEnergyRaw = double.tryParse(_kcalTextController.text);
-        final enteredKcal = enteredEnergyRaw == null
-            ? null
-            : (usesKjOnSave
+        return;
+      }
+
+      // The energy field is rendered in the user's active unit (#177
+      // follow-up). Parse it as that unit and immediately fold it back to
+      // kcal: every check and every persisted value expects kcal.
+      final usesKjOnSave = Provider.of<EnergyUnitProvider>(
+        context,
+        listen: false,
+      ).usesKilojoules;
+      final enteredEnergyRaw = double.tryParse(_kcalTextController.text);
+      final enteredKcal = enteredEnergyRaw == null
+          ? null
+          : (usesKjOnSave
                 ? double.parse(
-                    UnitCalc.kjToKcal(enteredEnergyRaw).toStringAsFixed(1))
+                    UnitCalc.kjToKcal(enteredEnergyRaw).toStringAsFixed(1),
+                  )
                 : enteredEnergyRaw);
-        final enteredCarbs = double.tryParse(_carbsTextController.text);
-        final enteredFat = double.tryParse(_fatTextController.text);
-        final enteredProtein = double.tryParse(_proteinTextController.text);
+      final enteredCarbs = double.tryParse(_carbsTextController.text);
+      final enteredFat = double.tryParse(_fatTextController.text);
+      final enteredProtein = double.tryParse(_proteinTextController.text);
 
-        for (final entry in {
-          'Carbs': enteredCarbs,
-          'Fat': enteredFat,
-          'Protein': enteredProtein,
-        }.entries) {
-          if (entry.value != null && entry.value! > baseQty) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    '${entry.key} cannot exceed base quantity (${baseQty}g/ml)')));
-            return;
-          }
-        }
-
-        if (enteredCarbs != null &&
-            enteredFat != null &&
-            enteredProtein != null) {
-          final totalMacros = enteredCarbs + enteredFat + enteredProtein;
-          if (totalMacros > baseQty * 1.05) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(S
+      // Nutritional consistency (#213), only for numbers the user changed: a
+      // rename must not be blocked by figures a product arrived with.
+      if (_nutritionTexts() != _initialNutritionTexts || !_per100) {
+        final macroTotal =
+            (enteredCarbs ?? 0) + (enteredFat ?? 0) + (enteredProtein ?? 0);
+        if (macroTotal > basisQuantity * 1.05) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                S
                     .of(context)
                     .editMealMacrosExceedBaseQuantityLabel(
-                        totalMacros.toStringAsFixed(1),
-                        baseQty.toStringAsFixed(0)))));
-            return;
-          }
-        }
-
-        if (enteredKcal != null && enteredKcal > baseQty * 9) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(S
-                  .of(context)
-                  .editMealKcalTooHighLabel(baseQty.toStringAsFixed(0)))));
+                      macroTotal.toStringAsFixed(1),
+                      basisQuantity.toStringAsFixed(0),
+                    ),
+              ),
+            ),
+          );
           return;
         }
 
-        // Atwater consistency check (#213): warn if entered kcal disagrees
-        // with 4·carbs + 4·protein + 9·fat by more than 5%. Non-blocking.
+        if (enteredKcal != null && enteredKcal > basisQuantity * 9) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                S
+                    .of(context)
+                    .editMealKcalTooHighLabel(basisQuantity.toStringAsFixed(0)),
+              ),
+            ),
+          );
+          return;
+        }
+
+        // Atwater check (#213): warn, without blocking, when the energy is
+        // more than 5% away from 4·carbs + 4·protein + 9·fat.
         if (enteredKcal != null &&
             enteredCarbs != null &&
             enteredFat != null &&
@@ -827,98 +791,68 @@ class _EditMealScreenState extends State<EditMealScreen> {
             }
           }
         }
-
-        // Convert meal size back to metric units if necessary
-        final mealUnitForConversion =
-            selectedUnit ?? _mealEntity.mealUnit ?? '0';
-        final mealQuantity = usesImperialUnits
-            ? _convertToMetric(
-                _mealQuantityTextController.text, mealUnitForConversion)
-            : _mealQuantityTextController.text;
-        // The serving quantity is loaded and edited in imperial too (see the
-        // initial _convertToImperial above), so it has to fold back to metric
-        // on save the same way the meal size does — otherwise an imperial
-        // serving value is stored raw into a metric field and drifts further
-        // on every reopen (#495).
-        final servingQuantity = usesImperialUnits
-            ? _convertToMetric(
-                _servingQuantityTextController.text, mealUnitForConversion)
-            : _servingQuantityTextController.text;
-
-        // Convert total → per-base-qty if in total input mode. kcalText
-        // uses the already-kcal-folded value so kJ entries are persisted
-        // in kcal regardless of the display unit.
-        String kcalText = enteredKcal == null
-            ? _kcalTextController.text
-            : enteredKcal.toStringOrEmpty();
-        String carbsText = _carbsTextController.text;
-        String fatText = _fatTextController.text;
-        String proteinText = _proteinTextController.text;
-        String fiberText = _fiberTextController.text;
-        String saturatedFatText = _saturatedFatTextController.text;
-        String sugarsText = _sugarsTextController.text;
-        String sodiumText = _sodiumTextController.text;
-        String calciumText = _calciumTextController.text;
-        String ironText = _ironTextController.text;
-        String potassiumText = _potassiumTextController.text;
-        String magnesiumText = _magnesiumTextController.text;
-        String vitaminDText = _vitaminDTextController.text;
-        String vitaminB12Text = _vitaminB12TextController.text;
-        if (_isTotal) {
-          final mealQty = double.tryParse(mealQuantity) ?? 0.0;
-          final baseQtyForConversion =
-              double.tryParse(_baseQuantityTextController.text) ?? 100.0;
-          if (mealQty > 0) {
-            String convertTotal(String text) {
-              final v = double.tryParse(text);
-              if (v == null) return text;
-              return ((v / mealQty) * baseQtyForConversion).toString();
-            }
-
-            kcalText = convertTotal(kcalText);
-            carbsText = convertTotal(carbsText);
-            fatText = convertTotal(fatText);
-            proteinText = convertTotal(proteinText);
-            fiberText = convertTotal(fiberText);
-            saturatedFatText = convertTotal(saturatedFatText);
-            sugarsText = convertTotal(sugarsText);
-            sodiumText = convertTotal(sodiumText);
-            calciumText = convertTotal(calciumText);
-            ironText = convertTotal(ironText);
-            potassiumText = convertTotal(potassiumText);
-            magnesiumText = convertTotal(magnesiumText);
-            vitaminDText = convertTotal(vitaminDText);
-            vitaminB12Text = convertTotal(vitaminB12Text);
-          }
-        }
-
-        newMealEntity = _editMealBloc.createNewMealEntity(
-          _mealEntity,
-          _nameTextController.text,
-          _brandsTextController.text,
-          mealQuantity,
-          servingQuantity,
-          _baseQuantityTextController.text,
-          selectedUnit,
-          kcalText,
-          carbsText,
-          fatText,
-          proteinText,
-          fiberText: fiberText,
-          saturatedFatText: saturatedFatText,
-          sugarsText: sugarsText,
-          sodiumText: sodiumText,
-          calciumText: calciumText,
-          ironText: ironText,
-          potassiumText: potassiumText,
-          magnesiumText: magnesiumText,
-          vitaminDText: vitaminDText,
-          vitaminB12Text: vitaminB12Text,
-          barcodeOverride: rawBarcode,
-          localImagePathOverride: _localImagePath,
-          clearLocalImagePath: _localImageCleared && _localImagePath == null,
-        );
       }
+
+      // The size fields are loaded and edited in imperial too (see the
+      // initial _convertToImperial above), so they fold back to metric (#495).
+      String metricText(TextEditingController controller) {
+        final text = controller.text;
+        return usesImperialUnits && text.trim().isNotEmpty
+            ? _convertToMetric(text, selectedUnit)
+            : text;
+      }
+
+      // `createNewMealEntity` scales everything from the basis to per 100.
+      String nutritionText(String text) => isCustom ? _zeroIfBlank(text) : text;
+
+      // A micronutrient nobody typed keeps its stored per-100 value, whatever
+      // basis was chosen for the numbers typed above it.
+      final factor = factorTo100gFromBase('$basisQuantity');
+      String microText(TextEditingController controller, double? stored) {
+        final untouched = controller.text == _initialMicroTexts[controller];
+        if (stored != null && (untouched || controller.text.trim().isEmpty)) {
+          return '${stored / factor}';
+        }
+        return controller.text;
+      }
+
+      final stored = _mealEntity.nutriments;
+      final MealEntity newMealEntity = _editMealBloc.createNewMealEntity(
+        _mealEntity,
+        _nameTextController.text,
+        _brandsTextController.text,
+        metricText(_mealQuantityTextController),
+        metricText(_servingQuantityTextController),
+        '$basisQuantity',
+        selectedUnit,
+        nutritionText(
+          enteredKcal == null
+              ? _kcalTextController.text
+              : enteredKcal.toStringOrEmpty(),
+        ),
+        nutritionText(_carbsTextController.text),
+        nutritionText(_fatTextController.text),
+        nutritionText(_proteinTextController.text),
+        fiberText: microText(_fiberTextController, stored.fiber100),
+        saturatedFatText: microText(
+          _saturatedFatTextController,
+          stored.saturatedFat100,
+        ),
+        sugarsText: microText(_sugarsTextController, stored.sugars100),
+        sodiumText: microText(_sodiumTextController, stored.sodium100),
+        calciumText: microText(_calciumTextController, stored.calcium100),
+        ironText: microText(_ironTextController, stored.iron100),
+        potassiumText: microText(_potassiumTextController, stored.potassium100),
+        magnesiumText: microText(_magnesiumTextController, stored.magnesium100),
+        vitaminDText: microText(_vitaminDTextController, stored.vitaminD100),
+        vitaminB12Text: microText(
+          _vitaminB12TextController,
+          stored.vitaminB12100,
+        ),
+        barcodeOverride: rawBarcode,
+        localImagePathOverride: _localImagePath,
+        clearLocalImagePath: _localImageCleared && _localImagePath == null,
+      );
 
       // Persist custom meal template (#267). Skipped for one-off entries
       // (#249) when the user has turned off "Save for next time" — the
@@ -1061,12 +995,10 @@ class _EditMealScreenState extends State<EditMealScreen> {
     );
   }
 
-  String? _switchButtonUnit(String? unit) {
-    if (!_units.contains(unit)) {
-      return _units[2]; // Default to g/ml
-    }
-    return unit;
-  }
+  /// Grams unless the food is measured by volume, including the older
+  /// "g/ml" foods, which no longer have a button of their own.
+  String _switchButtonUnit(String? unit) =>
+      MealEntity.liquidUnits.contains(unit) ? _units[1] : _units[0];
 
   String _convertToImperial(String value, String unit) {
     final double quantityValue = double.tryParse(value) ?? 0.0;

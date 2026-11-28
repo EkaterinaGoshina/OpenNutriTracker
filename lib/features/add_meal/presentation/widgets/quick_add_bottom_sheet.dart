@@ -51,7 +51,11 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
   final _proteinController = TextEditingController();
+  final _weightController = TextEditingController();
 
+  /// Whether the energy and macros typed are for 100 g, as packaging prints
+  /// them, or for the whole portion eaten.
+  bool _per100 = true;
   bool _saving = false;
 
   @override
@@ -59,17 +63,20 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
     super.initState();
     _titleController.addListener(_onRequiredFieldChanged);
     _energyController.addListener(_onRequiredFieldChanged);
+    _weightController.addListener(_onRequiredFieldChanged);
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_onRequiredFieldChanged);
     _energyController.removeListener(_onRequiredFieldChanged);
+    _weightController.removeListener(_onRequiredFieldChanged);
     _titleController.dispose();
     _energyController.dispose();
     _carbsController.dispose();
     _fatController.dispose();
     _proteinController.dispose();
+    _weightController.dispose();
     super.dispose();
   }
 
@@ -83,10 +90,22 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
     return value;
   }
 
+  /// Grams eaten, or null while a per-100 g entry still lacks them. A
+  /// whole-portion entry is stored as 100 g, see [_buildIntake].
+  double? get _amount {
+    if (!_per100) return 100;
+    final weight = _parsed(_weightController);
+    return weight != null && weight > 0 ? weight : null;
+  }
+
   bool get _canSubmit {
     final energy = _parsed(_energyController);
     final hasTitle = _titleController.text.trim().isNotEmpty;
-    return !_saving && hasTitle && energy != null && energy > 0;
+    return !_saving &&
+        hasTitle &&
+        energy != null &&
+        energy > 0 &&
+        _amount != null;
   }
 
   Future<void> _onSubmit() async {
@@ -100,6 +119,7 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
     final fat = _parsed(_fatController);
     final protein = _parsed(_proteinController);
     final title = _titleController.text.trim();
+    final amount = _amount!;
 
     try {
       final intake = _buildIntake(
@@ -108,6 +128,7 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
         fat: fat,
         protein: protein,
         title: title,
+        amount: amount,
       );
       final logTray = widget.logTray;
       if (logTray != null) {
@@ -116,7 +137,9 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
             meal: intake.meal,
             unit: intake.unit,
             amount: intake.amount,
-            amountLabel: S.of(context).quickAddCardLabel,
+            amountLabel: _per100
+                ? '${_weightController.text.trim()} ${S.of(context).gramUnit}'
+                : S.of(context).quickAddCardLabel,
           ),
         );
         Navigator.of(context).pop();
@@ -145,15 +168,11 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
       // removes every route (including this sheet's), so reading from
       // context afterwards would be looking up a deactivated widget.
       final addedMessage = S.of(context).quickAddAddedSnack(mealTypeLabel);
-      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-        NavigationOptions.mainRoute,
-        (route) => false,
-      );
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Text(addedMessage),
-        ),
-      );
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pushNamedAndRemoveUntil(NavigationOptions.mainRoute, (route) => false);
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(addedMessage)));
     } catch (e, st) {
       _log.severe('Quick Add save failed', e, st);
       Sentry.captureException(e, stackTrace: st);
@@ -168,8 +187,10 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
     required double? fat,
     required double? protein,
     required String title,
+    required double amount,
   }) {
-    // Store per-100g, intake amount = 100g, so totals math returns the
+    // Nutriments are stored per 100 g. A per-100 g entry carries the grams
+    // eaten; a whole-portion one carries 100 g, so totals math returns the
     // exact values the user typed.
     final nutriments = MealNutrimentsEntity(
       energyKcal100: kcal,
@@ -191,11 +212,12 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
       servingSize: '',
       nutriments: nutriments,
       source: MealSourceEntity.custom,
+      backendSource: _per100 ? null : MealEntity.wholePortionBackendSource,
     );
     return IntakeEntity(
       id: IdGenerator.getUniqueID(),
       unit: 'g',
-      amount: 100,
+      amount: amount,
       type: widget.intakeType,
       meal: meal,
       dateTime: widget.day,
@@ -269,10 +291,33 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
               numeric: false,
               autofocus: true,
             ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Semantics(
+                identifier: 'quick-add-basis',
+                child: SegmentedButton<bool>(
+                  segments: [
+                    ButtonSegment(
+                      value: true,
+                      label: Text(s.quickAddBasisPer100),
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      label: Text(s.quickAddBasisPortion),
+                    ),
+                  ],
+                  selected: {_per100},
+                  onSelectionChanged: (selection) =>
+                      setState(() => _per100 = selection.first),
+                ),
+              ),
+            ),
             _field(
               controller: _energyController,
               identifier: 'quick-add-energy',
-              label: usesKj ? s.quickAddEnergyLabelKj : s.quickAddEnergyLabelKcal,
+              label: usesKj
+                  ? s.quickAddEnergyLabelKj
+                  : s.quickAddEnergyLabelKcal,
               isRequired: true,
               numeric: true,
             ),
@@ -297,6 +342,16 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
               isRequired: false,
               numeric: true,
             ),
+            if (_per100) ...[
+              _field(
+                controller: _weightController,
+                identifier: 'quick-add-weight',
+                label: s.quickAddWeightLabel,
+                isRequired: true,
+                numeric: true,
+              ),
+              ?_totalLine(usesKj),
+            ],
             const SizedBox(height: 16),
             Semantics(
               identifier: 'quick-add-submit',
@@ -314,6 +369,21 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
           ],
         ),
       ),
+    );
+  }
+
+  /// What a per-100 g entry comes to for the grams typed, so the number
+  /// that will be logged is on screen before it is.
+  Widget? _totalLine(bool usesKj) {
+    final energy = _parsed(_energyController);
+    final amount = _amount;
+    if (energy == null || amount == null) return null;
+    final s = S.of(context);
+    final total = (energy * amount / 100).round();
+    return Text(
+      s.quickAddTotalLabel('$total ${usesKj ? s.kjLabel : s.kcalLabel}'),
+      style: Theme.of(context).textTheme.titleMedium,
+      textAlign: TextAlign.center,
     );
   }
 
@@ -335,7 +405,9 @@ class _QuickAddBottomSheetState extends State<QuickAddBottomSheet> {
           keyboardType: numeric
               ? const TextInputType.numberWithOptions(decimal: true)
               : TextInputType.text,
-          inputFormatters: numeric ? CustomTextInputFormatter.doubleOnly() : null,
+          inputFormatters: numeric
+              ? CustomTextInputFormatter.doubleOnly()
+              : null,
           decoration: InputDecoration(
             labelText: isRequired ? '$label *' : label,
             border: const OutlineInputBorder(),

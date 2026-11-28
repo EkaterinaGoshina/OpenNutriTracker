@@ -79,6 +79,7 @@ class _KitchenCardState extends State<KitchenCard> {
         vertical: Dimens.spacing8,
       ),
       child: AppCard(
+        bordered: false,
         padding: const EdgeInsets.fromLTRB(
           Dimens.spacing16,
           Dimens.spacing12,

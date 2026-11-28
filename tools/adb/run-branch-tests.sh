@@ -168,10 +168,9 @@ probe_weight_tracking_38() {
 
 probe_custom_activity_70() {
   walk_onboarding || return 1
-  tap_id 'fab-add-item' || return 1; sleep 1
-  wait_for_id 'add-item-activity' 5 || { _log "  ✗ add-item-activity not found"; return 1; }
-  _log "  ✓ add-item-activity visible"
-  tap_id 'add-item-activity'; sleep 2
+  wait_for_id 'add-activity-placeholder' 5 || { _log "  ✗ add-activity-placeholder not found"; return 1; }
+  _log "  ✓ add-activity-placeholder visible"
+  tap_id 'add-activity-placeholder'; sleep 2
   _log "  ✓ activity screen loaded"
   press_back; sleep 0.5
 }
@@ -195,9 +194,9 @@ probe_ephemeral_249() {
   # selected). Navigate to the breakfast search screen and prompt the tester
   # to scan a barcode or tap a search result, then verify.
   walk_onboarding || return 1
-  tap_id 'fab-add-item' || return 1; sleep 1
-  wait_for_id 'add-item-breakfast' 5 || return 1
-  tap_id 'add-item-breakfast'; sleep 2
+  # The first meal section on Home is Breakfast.
+  wait_for_id 'add-meal-placeholder' 5 || return 1
+  tap_id 'add-meal-placeholder'; sleep 2
   _log "  ── MANUAL STEP ───────────────────────────────────────"
   _log "  App is on the Breakfast search screen."
   _log "  Scan a food barcode or search for and tap a food item."
@@ -208,38 +207,18 @@ probe_ephemeral_249() {
 }
 
 probe_simplify_custom_232() {
-  # "New Custom Food" pushes EditMealScreen with an empty MealEntity,
-  # which starts in Simple mode and shows the Simple / Advanced toggle.
+  # "New Custom Food" pushes EditMealScreen with an empty MealEntity: one
+  # form with the unit and basis switches, no Simple / Advanced views.
   walk_onboarding || return 1
   tap_id 'nav-recipes' || return 1; sleep 1.5
   _tap_text 'Add' || { _log "  ✗ Add menu not found on Recipes tab"; return 1; }
   sleep 1
   _tap_text 'New Custom Food' || { _log "  ✗ New Custom Food not found"; return 1; }
   sleep 2
-  wait_for_id 'edit-meal-mode-toggle' 8 || { _log "  ✗ edit-meal-mode-toggle not found"; return 1; }
-  _log "  ✓ edit-meal-mode-toggle visible"
-
-  # In Simple mode the unit selector is hidden — confirm it is absent.
-  if id_exists 'edit-meal-unit-selector'; then
-    _log "  ✗ edit-meal-unit-selector visible in Simple mode (should be hidden)"
-    return 1
-  fi
-  _log "  ✓ unit selector absent in Simple mode"
-
-  # Tap "Advanced" and wait for the unit selector to appear.
-  _tap_text 'Advanced' || { _log "  ✗ Advanced segment not found"; return 1; }
-  sleep 1.5
-  wait_for_id 'edit-meal-unit-selector' 8 || { _log "  ✗ edit-meal-unit-selector not visible after switching to Advanced"; return 1; }
-  _log "  ✓ unit selector visible in Advanced mode"
-
-  # Tap "Simple" — unit selector should disappear again.
-  _tap_text 'Simple' || { _log "  ✗ Simple segment not found"; return 1; }
-  sleep 1.5
-  if id_exists 'edit-meal-unit-selector'; then
-    _log "  ✗ edit-meal-unit-selector still visible after returning to Simple mode"
-    return 1
-  fi
-  _log "  ✓ unit selector hidden again after returning to Simple mode"
+  wait_for_id 'edit-meal-unit-selector' 8 || { _log "  ✗ edit-meal-unit-selector not found"; return 1; }
+  _log "  ✓ edit-meal-unit-selector visible"
+  wait_for_id 'edit-meal-nutrients-mode' 8 || { _log "  ✗ edit-meal-nutrients-mode not found"; return 1; }
+  _log "  ✓ edit-meal-nutrients-mode visible"
 }
 
 probe_per_nutrient_173() {

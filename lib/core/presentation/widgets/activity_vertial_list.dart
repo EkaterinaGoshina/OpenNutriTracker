@@ -14,6 +14,7 @@ enum _ActivityPopupMenuSelection { onCopy, onShare, onImport }
 
 class ActivityVerticalList extends StatefulWidget {
   final DateTime day;
+  final bool bordered;
   final String title;
   final List<UserActivityEntity> userActivityList;
   final Function(BuildContext, UserActivityEntity) onItemLongPressedCallback;
@@ -24,6 +25,7 @@ class ActivityVerticalList extends StatefulWidget {
   const ActivityVerticalList({
     super.key,
     required this.day,
+    this.bordered = true,
     required this.title,
     required this.userActivityList,
     required this.onItemLongPressedCallback,
@@ -123,6 +125,7 @@ class _ActivityVerticalListState extends State<ActivityVerticalList> {
                 onItemTapped: widget.onItemTappedCallback,
                 onItemDragCallback: widget.onItemDragCallback,
                 firstListElement: false,
+                bordered: widget.bordered,
               ),
             PlaceholderCard(
               day: widget.day,

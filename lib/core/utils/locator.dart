@@ -1,5 +1,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:opennutritracker/features/top_foods/domain/get_top_foods_usecase.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/custom_activity_template_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/favourite_meal_data_source.dart';
@@ -136,6 +137,7 @@ import 'package:opennutritracker/features/settings/domain/usecase/import_recipes
 import 'package:opennutritracker/features/settings/presentation/bloc/custom_meals_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:opennutritracker/features/add_meal/data/dto/sp/sp_const.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final locator = GetIt.instance;
@@ -411,6 +413,9 @@ Future<void> initLocator() async {
   );
   locator.registerLazySingleton(
     () => GetRecentIngredientsUsecase(locator(), locator()),
+  );
+  locator.registerLazySingleton(
+    () => GetTopFoodsUsecase(locator(), locator(), locator()),
   );
   // #1307: the add-food Favourites source. Factory, and closed by the screen,
   // because it holds a subscription to the favourites box.
@@ -691,7 +696,11 @@ Future<void> initLocator() async {
     () => PhysicalActivityDataSource(),
   );
   locator.registerLazySingleton<OFFDataSource>(() => OFFDataSource());
-  locator.registerLazySingleton<SpFoodDataSource>(() => SpFoodDataSource());
+  locator.registerLazySingleton<SpFoodDataSource>(
+    () => SpFoodDataSource(
+      isConfigured: SPConst.isBackendUrl(Env.supabaseProjectUrl),
+    ),
+  );
   locator.registerLazySingleton(() => TrackedDayDataSource(hiveDBProvider));
   locator.registerLazySingleton<WeightLogDataSource>(
     () => WeightLogDataSource(hiveDBProvider),

@@ -1,11 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/meal_value_unit_text.dart';
-import 'package:opennutritracker/core/presentation/widgets/image_full_screen.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
@@ -23,7 +20,6 @@ import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_detail_macro_nutrients.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_detail_nutriments_table.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_info_button.dart';
-import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_placeholder.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_title_expanded.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/off_disclaimer.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -36,8 +32,6 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
-  static const _containerSize = 350.0;
-
   static const String _initialQuantityMetric = '100';
   static const String _initialQuantityImperial = '1';
 
@@ -74,16 +68,11 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   /// rendered value — not the unit we're currently switching to. Without
   /// this guard the echo would (a) dispatch a stale-unit UpdateKcalEvent
   /// on top of the explicit one below, (b) flip [_userChangedSelection]
-  /// to true although nobody touched anything, and (c) call
-  /// `_scrollToCalorieText` on open — enough scroll to collapse the app
-  /// bar and push the product image out of view.
+  /// to true although nobody touched anything.
   bool _applyingInitialSelection = false;
 
-  // Scroll distance from expandedHeight down to the collapsed SliverAppBar
-  // (toolbar + bottom bar): 268-124 with the DailyKcalOverview bottom bar,
-  // 200-56 without it — always 144 either way, so no need to key it off
-  // dayKcalGoal.
-  static const double _collapseScrollThreshold = 144.0;
+  // About where the name under the bar has scrolled out of view.
+  static const double _titleScrollThreshold = 56.0;
   bool _showAppBarTitle = false;
 
   @override
@@ -103,7 +92,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   }
 
   void _handleScroll() {
-    final show = _scrollController.offset >= _collapseScrollThreshold - 4;
+    final show = _scrollController.offset >= _titleScrollThreshold;
     if (show != _showAppBarTitle) {
       setState(() => _showAppBarTitle = show);
     }
@@ -219,7 +208,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         // with the unit the sheet last rendered (#1216). That echo is also
         // what `_applyingInitialSelection` makes `onQuantityOrUnitChanged`
         // ignore, so neither the stale unit nor the phantom
-        // `_userChangedSelection` flip nor the scroll reaches the screen.
+        // `_userChangedSelection` flip reaches the screen.
         _mealDetailBloc.add(
           UpdateKcalEvent(
             meal: meal,
@@ -328,7 +317,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
           pinned: true,
           backgroundColor: palette.surface,
           surfaceTintColor: Colors.transparent,
-          expandedHeight: dayKcalGoal > 0 ? 268 : 200,
           // The real toolbar title slot, not FlexibleSpaceBar.title: that
           // widget bottom-anchors itself within the whole flexible-space
           // stack (which includes the `bottom` bar's height), so with the
@@ -352,17 +340,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               dayKcalConsumed: dayKcalConsumed,
               dayKcalGoal: dayKcalGoal,
               currentSelectionKcal: totalKcal,
-            ),
-          ),
-          flexibleSpace: FlexibleSpaceBar(
-            background: Padding(
-              padding: EdgeInsets.only(
-                bottom: dayKcalGoal > 0 ? 68 : 0,
-              ),
-              child: MealTitleExpanded(
-                meal: meal,
-                usesImperialUnits: _usesImperialUnits,
-              ),
             ),
           ),
           actions: [
@@ -392,36 +369,20 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         ),
         SliverList(
           delegate: SliverChildListDelegate([
-            const SizedBox(height: 16),
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(80),
-                child: GestureDetector(
-                  child: Hero(
-                    tag: ImageFullScreen.fullScreenHeroTag,
-                    child: CachedNetworkImage(
-                      width: 250,
-                      height: 250,
-                      cacheManager: locator<CacheManager>(),
-                      imageUrl: meal.mainImageUrl ?? "",
-                      fit: BoxFit.cover,
-                      placeholder: (context, string) => const MealPlaceholder(),
-                      errorWidget: (context, url, error) =>
-                          const MealPlaceholder(),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NavigationOptions.imageFullScreenRoute,
-                      arguments: ImageFullScreenArguments(
-                        meal.mainImageUrl ?? "",
-                      ),
-                    );
-                  },
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Dimens.spacing16,
+                Dimens.spacing16,
+                Dimens.spacing16,
+                0,
+              ),
+              child: MealTitleExpanded(
+                meal: meal,
+                usesImperialUnits: _usesImperialUnits,
               ),
             ),
-            UnsplashCreditLine(imageUrl: meal.mainImageUrl),
+            if (meal.localImagePath == null)
+              UnsplashCreditLine(imageUrl: meal.mainImageUrl),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -522,8 +483,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     if (_applyingInitialSelection) {
       // Echo from `_applyInitialSelection`'s own controller.text write;
       // that method dispatches an authoritative UpdateKcalEvent itself.
-      // Treating this as a user edit would collapse the app bar on open
-      // via `_scrollToCalorieText` and record a phantom selection.
+      // Treating this as a user edit would record a phantom selection.
       return;
     }
     _userChangedSelection = true;
@@ -534,17 +494,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
         selectedUnit: unit,
       ),
     );
-    _scrollToCalorieText();
-  }
-
-  void _scrollToCalorieText() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _containerSize - 50,
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeInOut,
-      );
-    }
   }
 }
 

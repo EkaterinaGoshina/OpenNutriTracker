@@ -43,6 +43,17 @@ class AppPalette {
   Color get fat => fatColor;
   Color get protein => proteinColor;
 
+  /// The macro colours as text. The bright ones above are for dots, bars and
+  /// rings; as lettering on the light surface they fail WCAG AA, so the light
+  /// theme writes in a deeper shade of the same hue (4.6:1 or better, tinted
+  /// chips included). On the dark surface the bright ones already pass.
+  Color get carbsText => _onLight(const Color(0xFF955C00), carbsColor);
+  Color get fatText => _onLight(const Color(0xFFBF3412), fatColor);
+  Color get proteinText => _onLight(const Color(0xFF00705F), proteinColor);
+
+  Color _onLight(Color deep, Color bright) =>
+      brightness == Brightness.light ? deep : bright;
+
   static const light = AppPalette(
     brightness: Brightness.light,
     canvas: Color(0xFFF7F4EF),
@@ -54,9 +65,9 @@ class AppPalette {
     // WCAG AA (~4.6:1) on the light surface — buttons, nav labels and the ring.
     accent: Color(0xFF0E7A4D),
     onAccent: Color(0xFFFFFFFF),
-    carbsColor: Color(0xFFB87410),
-    fatColor: Color(0xFFD05536),
-    proteinColor: Color(0xFF1F8E80),
+    carbsColor: Color(0xFFF59E0B),
+    fatColor: Color(0xFFFA5230),
+    proteinColor: Color(0xFF00B39B),
     textStrong: Color(0xFF2B2A27),
     // Darkened from #8A857C (~3.5:1) to ~4.6:1 so secondary text passes AA.
     textMuted: Color(0xFF6E685E),
@@ -71,9 +82,9 @@ class AppPalette {
     shadow: Color(0x33000000),
     accent: Color(0xFF34D08A),
     onAccent: Color(0xFF06281A),
-    carbsColor: Color(0xFFF2B45A),
-    fatColor: Color(0xFFFF937B),
-    proteinColor: Color(0xFF49C9B8),
+    carbsColor: Color(0xFFFFC233),
+    fatColor: Color(0xFFFF7452),
+    proteinColor: Color(0xFF1FE0C2),
     textStrong: Color(0xFFECE8E1),
     textMuted: Color(0xFFA39E94),
   );
@@ -108,11 +119,11 @@ class AppPalette {
         onPrimary: onAccent,
         primaryContainer: accent,
         onPrimaryContainer: onAccent,
-        secondary: proteinColor,
+        secondary: proteinText,
         onSecondary: onAccent,
         secondaryContainer: surfaceMuted,
         onSecondaryContainer: textStrong,
-        tertiary: carbsColor,
+        tertiary: carbsText,
         onTertiary: onAccent,
         tertiaryContainer: surfaceMuted,
         onTertiaryContainer: textStrong,

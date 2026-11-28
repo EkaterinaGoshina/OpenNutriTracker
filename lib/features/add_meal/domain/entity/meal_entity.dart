@@ -26,6 +26,11 @@ class MealEntity extends Equatable {
   static const liquidUnits = {'ml', 'l', 'dl', 'cl', 'fl oz', 'fl.oz'};
   static const solidUnits = {'kg', 'g', 'mg', 'µg', 'oz'};
 
+  /// [backendSource] of a quick-add entry typed for the whole portion: its
+  /// "per 100 g" figures are the portion's, so it must not be compared with
+  /// other foods per 100 g.
+  static const wholePortionBackendSource = 'quick_add_portion';
+
   final String? code;
   final String? name;
 

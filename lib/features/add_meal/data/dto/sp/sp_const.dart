@@ -13,6 +13,15 @@ import 'package:opennutritracker/core/utils/supported_language.dart';
 class SPConst {
   static const maxNumberOfItems = 20;
 
+  /// Whether [url] can be a backend address at all. `.env.example` ships the
+  /// word `PROJECT_URL` in its place, which is not one.
+  static bool isBackendUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    return uri != null &&
+        (uri.isScheme('https') || uri.isScheme('http')) &&
+        uri.host.isNotEmpty;
+  }
+
   // Relations
   static const foodSummaryTable = 'food_summary';
   static const foodTranslationTable = 'food_translation';

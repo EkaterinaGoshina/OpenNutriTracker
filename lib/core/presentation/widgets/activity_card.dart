@@ -16,11 +16,15 @@ class ActivityCard extends StatelessWidget {
   final Function(bool isDragging)? onItemDragCallback;
   final bool firstListElement;
 
+  /// Home draws its blocks without the hairline outline.
+  final bool bordered;
+
   const ActivityCard({
     super.key,
     required this.activityEntity,
     required this.onItemLongPressed,
     required this.firstListElement,
+    this.bordered = true,
     this.onItemTapped,
     this.onItemDragCallback,
   });
@@ -49,6 +53,7 @@ class ActivityCard extends StatelessWidget {
               ? () => onItemLongPressed(context, activityEntity)
               : null,
           child: AppCard(
+            bordered: bordered,
             borderRadius: Dimens.radiusM,
             padding: const EdgeInsets.all(Dimens.spacing12),
             child: Row(

@@ -25,4 +25,5 @@ class NavigationOptions {
   static const healthSyncRoute = "healthSync";
   static const manageProfilesRoute = "manageProfiles";
   static const familyRoute = "family";
+  static const topFoodsRoute = "topFoods";
 }

@@ -343,7 +343,7 @@
   "duplicateRecipeLabel": "Дублировать",
   "duplicateRecipeNameSuffix": "(копия)",
   "editItemDialogTitle": "Изменить позицию",
-  "editMealLabel": "Изменить приём пищи",
+  "editMealLabel": "Изменить продукт",
   "editRecipeTitle": "Изменить рецепт",
   "energyLabel": "энергия",
   "energyLeftLabel": "осталось",
@@ -880,6 +880,17 @@
       }
     }
   },
+  "quickAddBasisPer100": "На 100 г",
+  "quickAddBasisPortion": "На порцию",
+  "quickAddWeightLabel": "Сколько съедено (г)",
+  "quickAddTotalLabel": "Итого: {energy}",
+  "@quickAddTotalLabel": {
+    "placeholders": {
+      "energy": {
+        "type": "String"
+      }
+    }
+  },
   "quickAddBottomSheetTitle": "Быстрое добавление",
   "quickAddCardLabel": "Быстрое добавление",
   "quickAddCarbsHint": "Углеводы (г, необязательно)",
@@ -898,6 +909,62 @@
   "recipeBreakdownNoData": "нет данных",
   "recipeBreakdownProteinPerEnergy": "{grams} г белка на 100 {unit}",
   "@recipeBreakdownProteinPerEnergy": {"placeholders": {"grams": {"type": "String"}, "unit": {"type": "String"}}},
+  "editFoodNutritionTitle": "Пищевая ценность",
+  "editFoodNutritionHint": "Перепишите цифры с упаковки и выберите, на сколько они указаны.",
+  "editFoodUnitSolid": "Граммы",
+  "editFoodUnitLiquid": "Миллилитры",
+  "editFoodBasisOther": "Другое количество",
+  "editFoodBasisWeightLabel": "На какое количество эти цифры",
+  "editFoodBasisWeightHelper": "Например, порция 45 или вся пачка 330",
+  "editFoodSummaryTitle": "Что запишется",
+  "editFoodSummaryEmpty": "Впишите калории, и здесь появится итог",
+  "editFoodSummaryNeedsWeight": "Укажите, на какое количество даны цифры",
+  "editFoodSummaryPack": "Вся упаковка, {amount}",
+  "@editFoodSummaryPack": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSummaryServing": "Порция, {amount}",
+  "@editFoodSummaryServing": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSummaryMacros": "Углеводы {carbs} г · жиры {fat} г · белки {protein} г",
+  "@editFoodSummaryMacros": {
+    "placeholders": {
+      "carbs": {
+        "type": "String"
+      },
+      "fat": {
+        "type": "String"
+      },
+      "protein": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSizesTitle": "Упаковка и порция (необязательно)",
+  "editFoodPackLabel": "Вся упаковка",
+  "editFoodPackHelper": "Покажем, сколько выходит за всю упаковку",
+  "editFoodServingLabel": "Обычная порция",
+  "editFoodServingHelper": "Подставится как количество, когда будете записывать",
+  "editFoodMoreNutrientsLabel": "Клетчатка, сахар, витамины",
+  "dayBreakdownTitle": "Что дало за сегодня",
+  "dayBreakdownTotal": "За сегодня: {total}",
+  "@dayBreakdownTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "dayBreakdownEmpty": "Сегодня ещё ничего не записано",
   "recipeBreakdownTitle": "Вклад ингредиентов",
   "recipeBreakdownTotal": "Во всём блюде: {total}",
   "@recipeBreakdownTotal": {"placeholders": {"total": {"type": "String"}}},
@@ -1824,5 +1891,20 @@
   "@servedByLabel": {"placeholders": {"name": {"type": "String"}}},
   "servedByCookLabel": "Положил(а) повар из семьи",
   "familyPortionsReceived": "{count, plural, one{Новая порция от семьи: {count}} few{Новые порции от семьи: {count}} many{Новые порции от семьи: {count}} other{Новые порции от семьи: {count}}}",
-  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}}
+  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}},
+  "topFoodsTitle": "Топ продуктов",
+  "topFoodsCardHint": "Меньше калорий и больше белка среди добавленных",
+  "topFoodsSortProtein": "Больше белка",
+  "topFoodsSortCalories": "Меньше калорий",
+  "topFoodsLimitUnder": "До {energy}",
+  "@topFoodsLimitUnder": {"placeholders": {"energy": {"type": "String"}}},
+  "topFoodsLimitAll": "Все",
+  "topFoodsPer100Note": "На 100 г или мл",
+  "topFoodsMacros": "Б {protein} · Ж {fat} · У {carbs}",
+  "@topFoodsMacros": {"placeholders": {"protein": {"type": "String"}, "fat": {"type": "String"}, "carbs": {"type": "String"}}},
+  "topFoodsEmpty": "Добавляйте продукты в дневник, блюда или избранное, и здесь появится их топ.",
+  "topFoodsEmptyForLimit": "Таких лёгких продуктов пока нет. Выберите предел повыше.",
+  "topFoodsSkippedNote": "Не вошли в топ: {count}. У них нет калорий или белков, или цифры указаны не на 100 г.",
+  "@topFoodsSkippedNote": {"placeholders": {"count": {"type": "int"}}},
+  "topFoodsError": "Не удалось загрузить продукты"
 }

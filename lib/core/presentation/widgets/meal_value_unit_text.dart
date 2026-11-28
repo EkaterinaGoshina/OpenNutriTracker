@@ -21,14 +21,19 @@ class MealValueUnitText extends StatelessWidget {
     this.prefix = '',
   });
 
-  @override
-  Widget build(BuildContext context) {
+  /// The text this widget shows, without [prefix], for places that build a
+  /// longer line around it.
+  String format(BuildContext context) {
     final mealUnit = meal.mealUnit ?? S.of(context).gramMilliliterUnit;
     final unitToDisplay = displayUnit ?? _convertUnit(context, mealUnit);
     final convertedValue = _convertValue(value, mealUnit, unitToDisplay);
+    return '${_formatValue(convertedValue)} $unitToDisplay';
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Text(
-      '$prefix${_formatValue(convertedValue)} $unitToDisplay',
+      '$prefix${format(context)}',
       style: textStyle,
       overflow: TextOverflow.ellipsis,
       maxLines: 1,

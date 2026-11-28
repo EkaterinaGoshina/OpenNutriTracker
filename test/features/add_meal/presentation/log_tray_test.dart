@@ -594,6 +594,8 @@ void main() {
         of: find.bySemanticsIdentifier(id),
         matching: find.byType(TextField),
       );
+      await tester.tap(find.text(l10nEn.quickAddBasisPortion));
+      await tester.pumpAndSettle();
       await tester.enterText(field('quick-add-title'), 'Cake');
       await tester.enterText(field('quick-add-energy'), '350');
       await tester.pumpAndSettle();
@@ -608,6 +610,47 @@ void main() {
       await tester.tap(_logButton());
       await tester.pumpAndSettle();
       expect(_mealDetailBloc.writes.single.name, 'Cake');
+    });
+
+    testWidgets('Quick add per 100 g scales by the grams eaten', (
+      tester,
+    ) async {
+      await _register([]);
+      await _openAddMeal(tester, []);
+
+      await tester.tap(find.bySemanticsIdentifier('add-meal-quick-add'));
+      await tester.pumpAndSettle();
+      Finder field(String id) => find.descendant(
+        of: find.bySemanticsIdentifier(id),
+        matching: find.byType(TextField),
+      );
+      await tester.enterText(field('quick-add-title'), 'Curd');
+      await tester.enterText(field('quick-add-energy'), '120');
+      await tester.pumpAndSettle();
+      final submit = find.descendant(
+        of: find.bySemanticsIdentifier('quick-add-submit'),
+        matching: find.byType(FilledButton),
+      );
+      // The values are per 100 g, so without the grams there is nothing to log.
+      expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+
+      await tester.ensureVisible(field('quick-add-weight'));
+      await tester.enterText(field('quick-add-weight'), '150');
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10nEn.quickAddTotalLabel('180 ${l10nEn.kcalLabel}')),
+        findsOneWidget,
+      );
+      await tester.ensureVisible(submit);
+      await tester.tap(submit);
+      await tester.pumpAndSettle();
+
+      expect(find.text('180 kcal'), findsWidgets);
+      await tester.tap(_logButton());
+      await tester.pumpAndSettle();
+      final write = _mealDetailBloc.writes.single;
+      expect(write.unit, 'g');
+      expect(write.amount, '150.0');
     });
 
     testWidgets('+ on a thin search hit uses the full record\'s serving', (

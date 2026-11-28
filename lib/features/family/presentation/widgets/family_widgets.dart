@@ -88,9 +88,9 @@ class FamilyAvatar extends StatelessWidget {
     final palette = paletteOf(context);
     final colors = [
       palette.accent,
-      palette.carbs,
-      palette.fat,
-      palette.protein,
+      palette.carbsText,
+      palette.fatText,
+      palette.proteinText,
     ];
     final color = colors[colorIndex % colors.length];
     final initial = name.trim().isEmpty

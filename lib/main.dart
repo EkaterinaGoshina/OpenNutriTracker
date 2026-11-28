@@ -26,6 +26,7 @@ import 'package:opennutritracker/core/utils/hive_storage_integrity_exception.dar
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/logger_config.dart';
 import 'package:opennutritracker/core/utils/sentry_config.dart';
+import 'package:opennutritracker/core/utils/web/web_page_color.dart';
 import 'package:opennutritracker/core/utils/web/web_safe_area.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/energy_unit_provider.dart';
@@ -52,6 +53,7 @@ import 'package:opennutritracker/features/settings/presentation/bloc/settings_bl
 import 'package:opennutritracker/features/settings/presentation/widgets/accent_colour_screen.dart';
 import 'package:opennutritracker/features/settings/presentation/widgets/health_sync_screen.dart';
 import 'package:opennutritracker/features/settings/settings_screen.dart';
+import 'package:opennutritracker/features/top_foods/presentation/top_foods_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -367,10 +369,13 @@ class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp>
       ],
       supportedLocales: _appLocales,
       // Above the Navigator, so dialogs and sheets are covered too.
-      builder: (context, child) => _withWebSafeArea(
-        context,
-        KeyboardDismisser(child: child ?? const SizedBox.shrink()),
-      ),
+      builder: (context, child) {
+        setWebPageColor(Theme.of(context).scaffoldBackgroundColor);
+        return _withWebSafeArea(
+          context,
+          KeyboardDismisser(child: child ?? const SizedBox.shrink()),
+        );
+      },
       initialRoute: NavigationOptions.splashRoute,
       routes: {
         NavigationOptions.splashRoute: (context) =>
@@ -411,6 +416,7 @@ class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp>
         NavigationOptions.manageProfilesRoute: (context) =>
             const ManageProfilesScreen(),
         NavigationOptions.familyRoute: (context) => const FamilyScreen(),
+        NavigationOptions.topFoodsRoute: (context) => const TopFoodsScreen(),
       },
     );
   }

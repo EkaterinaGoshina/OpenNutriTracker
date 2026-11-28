@@ -94,7 +94,7 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
       bloc: _bloc,
       listener: (context, state) {
         if (state.didSave) {
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(true);
           return;
         }
         // Sync the auto-computed total weight into the controller so the
@@ -121,6 +121,9 @@ class _RecipeBuilderScreenState extends State<RecipeBuilderScreen> {
           },
           child: Scaffold(
             appBar: AppBar(
+            // A cross, not an arrow: the form opens over whatever tab "Add"
+            // was pressed on. It still asks before dropping what was typed.
+            leading: const CloseButton(),
             toolbarHeight: MediaQuery.textScalerOf(context).scale(kToolbarHeight),
             title: Text(
               state.isExistingRecipe

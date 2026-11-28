@@ -62,6 +62,14 @@ class SpFoodDataSource {
     SupportedLanguage.fromCode(AppLocale.localeName),
   );
 
+  /// False when `.env` carries no address for the food backend. Every request
+  /// would then fail, and a search would sit through all its retries first —
+  /// seconds the merged "All" list spends waiting. So nothing is asked and
+  /// the source answers with no foods.
+  final bool _isConfigured;
+
+  SpFoodDataSource({bool isConfigured = true}) : _isConfigured = isConfigured;
+
   /// The twenty rows the app keeps of the backend's hundred for
   /// [searchString], cut by the resolver's rule (see
   /// [rankAndTruncateFoodsByName]). [forResolution] says whose twenty they
@@ -72,6 +80,7 @@ class SpFoodDataSource {
     String searchString, {
     bool forResolution = false,
   }) async {
+    if (!_isConfigured) return const [];
     try {
       return await withRetry(() async {
         log.fine('Fetching Supabase food results');

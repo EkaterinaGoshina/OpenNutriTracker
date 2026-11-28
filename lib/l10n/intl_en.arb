@@ -958,6 +958,17 @@
   "proteinLabelShort": "p",
   "quantityLabel": "Quantity",
   "quickAddAddedSnack": "Added to {mealType}",
+  "quickAddBasisPer100": "Per 100 g",
+  "quickAddBasisPortion": "Whole portion",
+  "quickAddWeightLabel": "Amount eaten (g)",
+  "quickAddTotalLabel": "Total: {energy}",
+  "@quickAddTotalLabel": {
+    "placeholders": {
+      "energy": {
+        "type": "String"
+      }
+    }
+  },
   "quickAddBottomSheetTitle": "Quick add",
   "quickAddCardLabel": "Quick add",
   "quickAddCarbsHint": "Carbs (g, optional)",
@@ -976,6 +987,62 @@
   "recipeBreakdownNoData": "no data",
   "recipeBreakdownProteinPerEnergy": "{grams} g protein per 100 {unit}",
   "@recipeBreakdownProteinPerEnergy": {"placeholders": {"grams": {"type": "String"}, "unit": {"type": "String"}}},
+  "editFoodNutritionTitle": "Nutrition",
+  "editFoodNutritionHint": "Copy the numbers from the label and choose the amount they are for.",
+  "editFoodUnitSolid": "Grams",
+  "editFoodUnitLiquid": "Millilitres",
+  "editFoodBasisOther": "Other amount",
+  "editFoodBasisWeightLabel": "Amount these numbers are for",
+  "editFoodBasisWeightHelper": "For example, a 45 serving or the whole 330 pack",
+  "editFoodSummaryTitle": "What will be saved",
+  "editFoodSummaryEmpty": "Type the energy to see the totals",
+  "editFoodSummaryNeedsWeight": "Type the amount these numbers are for",
+  "editFoodSummaryPack": "Whole pack, {amount}",
+  "@editFoodSummaryPack": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSummaryServing": "Serving, {amount}",
+  "@editFoodSummaryServing": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSummaryMacros": "Carbs {carbs} g · fat {fat} g · protein {protein} g",
+  "@editFoodSummaryMacros": {
+    "placeholders": {
+      "carbs": {
+        "type": "String"
+      },
+      "fat": {
+        "type": "String"
+      },
+      "protein": {
+        "type": "String"
+      }
+    }
+  },
+  "editFoodSizesTitle": "Pack and serving (optional)",
+  "editFoodPackLabel": "Whole pack",
+  "editFoodPackHelper": "Shows what the whole pack comes to",
+  "editFoodServingLabel": "Your usual serving",
+  "editFoodServingHelper": "Offered as the amount when you log this food",
+  "editFoodMoreNutrientsLabel": "Fibre, sugar, vitamins",
+  "dayBreakdownTitle": "What gave it today",
+  "dayBreakdownTotal": "Today: {total}",
+  "@dayBreakdownTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "dayBreakdownEmpty": "Nothing logged today yet",
   "recipeBreakdownTitle": "What each ingredient adds",
   "recipeBreakdownTotal": "Whole dish: {total}",
   "@recipeBreakdownTotal": {"placeholders": {"total": {"type": "String"}}},
@@ -1589,5 +1656,20 @@
   "@servedByLabel": {"placeholders": {"name": {"type": "String"}}},
   "servedByCookLabel": "Served by a family member",
   "familyPortionsReceived": "{count, plural, one{1 new portion from your family} other{{count} new portions from your family}}",
-  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}}
+  "@familyPortionsReceived": {"placeholders": {"count": {"type": "num"}}},
+  "topFoodsTitle": "Top foods",
+  "topFoodsCardHint": "Fewer calories, more protein, from foods you have added",
+  "topFoodsSortProtein": "More protein",
+  "topFoodsSortCalories": "Fewer calories",
+  "topFoodsLimitUnder": "Up to {energy}",
+  "@topFoodsLimitUnder": {"placeholders": {"energy": {"type": "String"}}},
+  "topFoodsLimitAll": "All",
+  "topFoodsPer100Note": "Per 100 g or ml",
+  "topFoodsMacros": "Protein {protein} · Fat {fat} · Carbs {carbs}",
+  "@topFoodsMacros": {"placeholders": {"protein": {"type": "String"}, "fat": {"type": "String"}, "carbs": {"type": "String"}}},
+  "topFoodsEmpty": "Add foods to the diary, your dishes or favourites, and they will be ranked here.",
+  "topFoodsEmptyForLimit": "None of your foods are this light. Try a higher limit.",
+  "topFoodsSkippedNote": "Not ranked: {count}. They have no calories or protein, or their figures are not per 100 g.",
+  "@topFoodsSkippedNote": {"placeholders": {"count": {"type": "int"}}},
+  "topFoodsError": "Couldn't load your foods"
 }

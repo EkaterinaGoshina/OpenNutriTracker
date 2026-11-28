@@ -3,6 +3,10 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
+import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
 import 'package:opennutritracker/core/domain/entity/kcal_goal_breakdown_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_breakdown_usecase.dart';
 import 'package:opennutritracker/core/utils/energy_unit_provider.dart';
@@ -127,4 +131,71 @@ void main() {
       semanticsHandle.dispose();
     },
   );
+
+  testWidgets('tapping a macro lists what gave it today, biggest first',
+      (tester) async {
+    IntakeEntity intake(String name, double protein, IntakeTypeEntity type) =>
+        IntakeEntity(
+          id: name,
+          unit: 'g',
+          amount: 100,
+          type: type,
+          dateTime: DateTime(2026, 11, 28),
+          meal: MealEntity(
+            code: name,
+            name: name,
+            url: null,
+            mealQuantity: null,
+            mealUnit: 'g',
+            servingQuantity: null,
+            servingUnit: 'g',
+            servingSize: null,
+            nutriments: MealNutrimentsEntity(
+              energyKcal100: 200,
+              carbohydrates100: 10,
+              fat100: 5,
+              proteins100: protein,
+              sugars100: null,
+              saturatedFat100: null,
+              fiber100: null,
+            ),
+            source: MealSourceEntity.custom,
+          ),
+        );
+
+    await tester.pumpWidget(
+      _wrap(
+        DashboardWidget(
+          totalKcalSupplied: 400,
+          totalKcalBurned: 0,
+          totalKcalDaily: 2500,
+          totalKcalLeft: 2100,
+          totalCarbsIntake: 20,
+          totalFatsIntake: 10,
+          totalProteinsIntake: 40,
+          totalCarbsGoal: 375,
+          totalFatsGoal: 69,
+          totalProteinsGoal: 93,
+          intakes: [
+            intake('Bun', 10, IntakeTypeEntity.breakfast),
+            intake('Chicken', 30, IntakeTypeEntity.lunch),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.bySemanticsIdentifier('home-macro-protein'));
+    await tester.pumpAndSettle();
+
+    final s = S.of(tester.element(find.byType(DashboardWidget)));
+    expect(find.text(s.dayBreakdownTitle), findsOneWidget);
+    expect(find.text(s.dayBreakdownTotal('40 ${s.gramUnit}')), findsOneWidget);
+    expect(find.text('30 ${s.gramUnit} · 75%'), findsOneWidget);
+    expect(find.textContaining(s.lunchLabel), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Chicken')).dy,
+      lessThan(tester.getTopLeft(find.text('Bun')).dy),
+    );
+  });
 }

@@ -9,10 +9,18 @@ import 'package:opennutritracker/generated/l10n.dart';
 
 /// Bottom sheet answering "which ingredient brought this much protein?",
 /// opened from a value on the dish's nutrition card.
+///
+/// The home screen asks the same of a day, so what only makes sense for a dish
+/// can be replaced: [title], the [totalLabel] line and the [amountLabel] under
+/// each name. [emptyLabel] shows when there is nothing to list.
 Future<void> showIngredientBreakdownSheet(
   BuildContext context, {
   required List<RecipeIngredientEntity> ingredients,
   required BreakdownNutrient initialNutrient,
+  String? title,
+  String Function(String total)? totalLabel,
+  String Function(RecipeIngredientEntity ingredient)? amountLabel,
+  String? emptyLabel,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -22,6 +30,10 @@ Future<void> showIngredientBreakdownSheet(
     builder: (_) => _IngredientBreakdownSheet(
       ingredients: ingredients,
       initialNutrient: initialNutrient,
+      title: title,
+      totalLabel: totalLabel,
+      amountLabel: amountLabel,
+      emptyLabel: emptyLabel,
     ),
   );
 }
@@ -30,9 +42,18 @@ class _IngredientBreakdownSheet extends StatefulWidget {
   final List<RecipeIngredientEntity> ingredients;
   final BreakdownNutrient initialNutrient;
 
+  final String? title;
+  final String Function(String total)? totalLabel;
+  final String Function(RecipeIngredientEntity ingredient)? amountLabel;
+  final String? emptyLabel;
+
   const _IngredientBreakdownSheet({
     required this.ingredients,
     required this.initialNutrient,
+    this.title,
+    this.totalLabel,
+    this.amountLabel,
+    this.emptyLabel,
   });
 
   @override
@@ -77,14 +98,16 @@ class _IngredientBreakdownSheetState extends State<_IngredientBreakdownSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  s.recipeBreakdownTitle,
+                  widget.title ?? s.recipeBreakdownTitle,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: Dimens.spacing4),
                 Text(
-                  s.recipeBreakdownTotal(_format(breakdown.total)),
+                  (widget.totalLabel ?? s.recipeBreakdownTotal)(
+                    _format(breakdown.total),
+                  ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: palette.textMuted,
                   ),
@@ -130,9 +153,17 @@ class _IngredientBreakdownSheetState extends State<_IngredientBreakdownSheet> {
                 Dimens.spacing24,
               ),
               children: [
+                if (breakdown.items.isEmpty && widget.emptyLabel != null)
+                  Text(
+                    widget.emptyLabel!,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: palette.textMuted,
+                    ),
+                  ),
                 for (final item in breakdown.items)
                   _ContributionRow(
                     item: item,
+                    amountLabel: widget.amountLabel?.call(item.ingredient),
                     nutrient: _nutrient,
                     color: color,
                     palette: palette,
@@ -169,8 +200,11 @@ class _ContributionRow extends StatelessWidget {
   final Color color;
   final AppPalette palette;
 
+  final String? amountLabel;
+
   const _ContributionRow({
     required this.item,
+    this.amountLabel,
     required this.nutrient,
     required this.color,
     required this.palette,
@@ -201,7 +235,8 @@ class _ContributionRow extends StatelessWidget {
     // protein gets "per 100 kcal", since more carbs or fat per calorie is not
     // a reason to prefer a food.
     final details = <String>[
-      '$amountStr ${ingredientUnitLabel(context, ingredient.unit)}',
+      amountLabel ??
+          '$amountStr ${ingredientUnitLabel(context, ingredient.unit)}',
       if (nutrient != BreakdownNutrient.energy && item.energyKcal != null)
         EnergyDisplay.formatWithUnit(context, item.energyKcal!),
     ];

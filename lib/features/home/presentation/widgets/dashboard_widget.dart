@@ -1,10 +1,13 @@
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_card.dart';
 import 'package:opennutritracker/core/styles/app_palette.dart';
 import 'package:opennutritracker/core/styles/dimens.dart';
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
 import 'package:opennutritracker/core/utils/energy_unit_provider.dart';
+import 'package:opennutritracker/features/home/presentation/widgets/day_breakdown_sheet.dart';
+import 'package:opennutritracker/features/recipes/domain/entity/ingredient_breakdown.dart';
 import 'package:opennutritracker/features/settings/presentation/widgets/kcal_goal_info_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:opennutritracker/generated/l10n.dart';
@@ -22,6 +25,10 @@ class DashboardWidget extends StatefulWidget {
   final double totalFatsGoal;
   final double totalProteinsGoal;
 
+  /// The day's diary entries, listed when a macro is tapped.
+  final List<IntakeEntity> intakes;
+  final bool usesImperialUnits;
+
   const DashboardWidget({
     super.key,
     required this.totalKcalSupplied,
@@ -34,6 +41,8 @@ class DashboardWidget extends StatefulWidget {
     required this.totalCarbsGoal,
     required this.totalFatsGoal,
     required this.totalProteinsGoal,
+    this.intakes = const [],
+    this.usesImperialUnits = false,
   });
 
   @override
@@ -46,6 +55,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
       MaterialPageRoute<void>(
         builder: (_) => const KcalGoalInfoScreen(),
       ),
+    );
+  }
+
+  void _openBreakdown(BreakdownNutrient nutrient) {
+    showDayBreakdownSheet(
+      context,
+      intakes: widget.intakes,
+      initialNutrient: nutrient,
+      usesImperialUnits: widget.usesImperialUnits,
     );
   }
 
@@ -92,7 +110,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
       child: Column(
         children: [
           AppCard(
-            padding: const EdgeInsets.fromLTRB(Dimens.spacing24, Dimens.spacing20, Dimens.spacing24, Dimens.spacing24),
+            bordered: false,
+            padding: const EdgeInsets.fromLTRB(Dimens.spacing24, Dimens.spacing20, Dimens.spacing24, Dimens.spacing16),
             child: Column(
               children: [
                 Semantics(
@@ -163,13 +182,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                 ),
                 // Macros share the calorie card: one summary surface for the
                 // day instead of a card per nutrient.
-                const SizedBox(height: Dimens.spacing24),
+                const SizedBox(height: Dimens.spacing16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: _MacroColumn(
                         label: S.of(context).carbsLabel,
+                        identifier: 'home-macro-carbs',
+                        onTap: () => _openBreakdown(BreakdownNutrient.carbs),
                         intake: widget.totalCarbsIntake,
                         goal: widget.totalCarbsGoal,
                         color: palette.carbs,
@@ -180,6 +201,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                     Expanded(
                       child: _MacroColumn(
                         label: S.of(context).fatLabel,
+                        identifier: 'home-macro-fat',
+                        onTap: () => _openBreakdown(BreakdownNutrient.fat),
                         intake: widget.totalFatsIntake,
                         goal: widget.totalFatsGoal,
                         color: palette.fat,
@@ -190,6 +213,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                     Expanded(
                       child: _MacroColumn(
                         label: S.of(context).proteinLabel,
+                        identifier: 'home-macro-protein',
+                        onTap: () => _openBreakdown(BreakdownNutrient.protein),
                         intake: widget.totalProteinsIntake,
                         goal: widget.totalProteinsGoal,
                         color: palette.protein,
@@ -214,7 +239,12 @@ class _MacroColumn extends StatelessWidget {
   final Color color;
   final AppPalette palette;
 
+  final String identifier;
+  final VoidCallback onTap;
+
   const _MacroColumn({
+    required this.identifier,
+    required this.onTap,
     required this.label,
     required this.intake,
     required this.goal,
@@ -226,7 +256,7 @@ class _MacroColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final pct = (goal <= 0) ? 0.0 : (intake / goal).clamp(0.0, 1.0);
-    return Column(
+    final column = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -252,6 +282,18 @@ class _MacroColumn extends StatelessWidget {
           style: textTheme.bodySmall?.copyWith(color: palette.textStrong, fontWeight: FontWeight.w700),
         ),
       ],
+    );
+    return Semantics(
+      identifier: identifier,
+      button: true,
+      child: InkWell(
+        borderRadius: Dimens.borderRadiusS,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Dimens.spacing8),
+          child: column,
+        ),
+      ),
     );
   }
 }

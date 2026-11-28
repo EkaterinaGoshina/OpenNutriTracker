@@ -141,35 +141,6 @@ flutter:
     - family: CustomIcons
       fonts:
       - asset: fonts/CustomIcons.ttf
-    - family: Poppins
-      fonts:
-      - asset: fonts/Poppins-Black.ttf
-      - asset: fonts/Poppins-BlackItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Bold.ttf
-      - asset: fonts/Poppins-BoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-ExtraBold.ttf
-      - asset: fonts/Poppins-ExtraBoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-ExtraLight.ttf
-      - asset: fonts/Poppins-ExtraLightItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Italic.ttf
-        style: italic
-      - asset: fonts/Poppins-Light.ttf
-      - asset: fonts/Poppins-LightItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Medium.ttf
-      - asset: fonts/Poppins-MediumItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Regular.ttf
-      - asset: fonts/Poppins-SemiBold.ttf
-      - asset: fonts/Poppins-SemiBoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Thin.ttf
-      - asset: fonts/Poppins-ThinItalic.ttf
-        style: italic
     # Nunito.ttf is a variable font (wght 200-1000); Flutter instances the
     # axis from TextStyle.fontWeight, so one asset covers the whole scale.
     - family: Nunito

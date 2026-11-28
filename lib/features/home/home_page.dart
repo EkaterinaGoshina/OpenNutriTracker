@@ -27,6 +27,7 @@ import 'package:opennutritracker/features/home/presentation/widgets/dashboard_wi
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/kitchen_card.dart';
 import 'package:opennutritracker/core/domain/entity/body_weight_unit_entity.dart';
+import 'package:opennutritracker/features/top_foods/presentation/top_foods_card.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class HomePage extends StatefulWidget {
@@ -181,17 +182,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               totalCarbsGoal: totalCarbsGoal,
               totalFatsGoal: totalFatsGoal,
               totalProteinsGoal: totalProteinsGoal,
+              intakes: [
+                ...breakfastIntakeList,
+                ...lunchIntakeList,
+                ...dinnerIntakeList,
+                ...snackIntakeList,
+              ],
+              usesImperialUnits: usesImperialUnits,
             ),
             // The kitchen sits where the empty-day hint used to: dishes to
             // make, open and eat, and its own empty text points at creating
             // the first one.
             const KitchenCard(),
+            const TopFoodsCard(),
             if (CalorieGoalCalc.isBelowRecommendedDailyKcalFloor(
               goalKcal: totalKcalDaily,
               gender: userGender,
               caloriesProfile: userCaloriesProfile,
             ))
               LowKcalWarningCard(
+                bordered: false,
                 thresholdKcal: CalorieGoalCalc.recommendedDailyKcalFloor(
                   gender: userGender,
                   caloriesProfile: userCaloriesProfile,
@@ -199,6 +209,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             if (showActivityTracking)
               ActivityVerticalList(
+                bordered: false,
                 day: DateTime.now(),
                 title: S.of(context).activityLabel,
                 userActivityList: userActivities,

@@ -40,6 +40,18 @@
 
   <title>Калории</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    The two canvas colours of AppPalette, for the page while the app loads. iOS
+    takes the status bar colour of the home-screen app from the page background
+    only at load; see ontSetPageColor below for what happens after that.
+  -->
+  <style>
+    html, body { background-color: #1b1a18; }
+    @media (prefers-color-scheme: light) {
+      html, body { background-color: #f7f4ef; }
+    }
+  </style>
 </head>
 <body>
   <script>
@@ -52,13 +64,42 @@
       document.body.appendChild(probe);
       var cs = getComputedStyle(probe);
       var r = {
-        top: parseFloat(cs.paddingTop) || 0,
+        // The status bar strip (below) lies over the top of the page.
+        top: Math.max(parseFloat(cs.paddingTop) || 0, ontStatusStripHeight()),
         right: parseFloat(cs.paddingRight) || 0,
         bottom: parseFloat(cs.paddingBottom) || 0,
         left: parseFloat(cs.paddingLeft) || 0
       };
       document.body.removeChild(probe);
       return JSON.stringify(r);
+    };
+
+    // The theme picked in the app can differ from the system one, so Dart
+    // reports its canvas colour (lib/core/utils/web/web_page_color_web.dart).
+    //
+    // In the iPhone home-screen app iOS does not repaint the status bar when
+    // the page background changes, and cannot see colours drawn on Flutter's
+    // canvas: a dark theme on a light system kept a light status bar. It does
+    // follow a fixed element at the very top. On the iOS 27.2 simulator it had
+    // to be over the canvas and 12px did it; 4px, one hidden behind the canvas
+    // or one mostly off screen did not. Taps pass through it.
+    var ontStripHeight = 12;
+    window.ontStatusStripHeight = function () {
+      return window.navigator.standalone === true ? ontStripHeight : 0;
+    };
+    var ontStrip = null;
+    window.ontSetPageColor = function (color) {
+      document.documentElement.style.backgroundColor = color;
+      document.body.style.backgroundColor = color;
+      if (!ontStatusStripHeight()) return;
+      if (!ontStrip) {
+        ontStrip = document.createElement('div');
+        ontStrip.setAttribute('aria-hidden', 'true');
+        ontStrip.style.cssText = 'position:fixed;top:0;left:0;width:100%;' +
+          'pointer-events:none;z-index:2147483647;height:' + ontStripHeight + 'px';
+        document.body.appendChild(ontStrip);
+      }
+      ontStrip.style.backgroundColor = color;
     };
   </script>
   <!--
